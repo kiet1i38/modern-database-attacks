@@ -1,0 +1,390 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light">
+  <title>Code &amp; Security Flow · Modern Database Attacks</title>
+  <style>
+:root {
+  color-scheme: light;
+  --bg: #f3f6fb;
+  --surface: #ffffff;
+  --ink: #172033;
+  --muted: #5b6b86;
+  --line: #d8dfeb;
+  --accent: #2457d6;
+  --code-bg: #111827;
+  --code-ink: #d8e3f4;
+  --safe-bg: #eaf8ef;
+  --safe-line: #43a866;
+  --lab-bg: #fff6df;
+  --lab-line: #cc7a00;
+  --danger-bg: #fff0f0;
+  --danger-line: #cf4b4b;
+}
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--ink);
+  font: 16px/1.7 Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+.page { width: min(1160px, calc(100% - 32px)); margin: 0 auto; padding: 32px 0 64px; }
+.site-header {
+  margin-bottom: 24px;
+  padding: 24px 28px;
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  background: var(--surface);
+  box-shadow: 0 12px 32px rgb(26 42 70 / 7%);
+}
+.site-header h1 { margin: 0 0 6px; font-size: clamp(1.6rem, 4vw, 2.4rem); line-height: 1.2; }
+.site-header p { margin: 0; color: var(--muted); }
+.doc-nav { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 18px; }
+.doc-nav a {
+  padding: 6px 10px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  color: var(--accent);
+  text-decoration: none;
+  font-size: .92rem;
+}
+.doc-nav a:hover, .doc-nav a.active { background: #e8efff; border-color: #b9c9f5; }
+.content {
+  padding: 32px clamp(20px, 5vw, 56px);
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  background: var(--surface);
+  box-shadow: 0 12px 32px rgb(26 42 70 / 7%);
+}
+h1, h2, h3, h4 { line-height: 1.25; scroll-margin-top: 24px; }
+h1 { margin-top: 0; font-size: clamp(2rem, 5vw, 3rem); }
+h2 { margin-top: 2.2em; padding-bottom: .35em; border-bottom: 1px solid var(--line); }
+h3 { margin-top: 1.8em; }
+a { color: var(--accent); }
+p, ul, ol, table, blockquote, pre { margin-top: 1em; }
+li + li { margin-top: .35em; }
+blockquote {
+  margin-left: 0;
+  padding: 12px 16px;
+  border-left: 4px solid var(--lab-line);
+  background: var(--lab-bg);
+  color: #6d4600;
+}
+code {
+  padding: .12em .35em;
+  border-radius: 5px;
+  background: #edf1f7;
+  color: #253552;
+  font-size: .92em;
+}
+pre {
+  padding: 16px 18px;
+  overflow-x: auto;
+  border-radius: 10px;
+  background: var(--code-bg);
+  color: var(--code-ink);
+  box-shadow: inset 0 0 0 1px rgb(255 255 255 / 6%);
+}
+pre code { padding: 0; background: transparent; color: inherit; }
+table { width: 100%; border-collapse: collapse; display: block; overflow-x: auto; }
+th, td { min-width: 150px; padding: 10px 12px; border: 1px solid var(--line); text-align: left; vertical-align: top; }
+th { background: #eef3fb; }
+hr { margin: 2em 0; border: 0; border-top: 1px solid var(--line); }
+.footer { margin-top: 20px; color: var(--muted); font-size: .9rem; text-align: center; }
+.banner {
+  margin: 20px 0;
+  padding: 16px 18px;
+  border: 1px solid var(--lab-line);
+  border-left-width: 5px;
+  border-radius: 10px;
+  background: var(--lab-bg);
+}
+.banner.safe { border-color: var(--safe-line); background: var(--safe-bg); color: #174d2a; }
+.banner.danger { border-color: var(--danger-line); background: var(--danger-bg); color: #762424; }
+.mode-grid, .flow-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+  gap: 14px;
+  margin: 18px 0;
+}
+.mode-card, .flow-step {
+  padding: 16px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: #fbfcfe;
+}
+.mode-card h3, .flow-step h3 { margin: 0 0 6px; font-size: 1.05rem; }
+.mode-card p, .flow-step p { margin: 0; }
+.mode-card.safe { border-top: 4px solid var(--safe-line); }
+.mode-card.lab { border-top: 4px solid var(--lab-line); }
+.mode-card.blocked { border-top: 4px solid var(--danger-line); }
+.flow-step { position: relative; }
+.flow-step strong { color: var(--accent); }
+.kicker { color: var(--muted); font-size: .95rem; }
+.checklist { padding-left: 1.35rem; }
+.link-list { padding-left: 1.2rem; }
+@media (max-width: 640px) {
+  .page { width: min(100% - 20px, 1160px); padding-top: 10px; }
+  .site-header, .content { padding: 20px; border-radius: 12px; }
+  body { font-size: 15px; }
+}
+</style>
+</head>
+<body>
+  <div class="page">
+    <header class="site-header">
+      <h1>Code &amp; Security Flow</h1>
+      <p>Giải thích toàn bộ luồng code, lab mode và secure mode</p>
+      <nav class="doc-nav" aria-label="Documentation">
+        <a href="index.html">All docs</a>
+        <a href="API.html">API</a>
+        <a href="ARCHITECTURE.html">ARCHITECTURE</a>
+        <a href="DATABASE.html">DATABASE</a>
+        <a href="DEMO_GUIDE.html">DEMO GUIDE</a>
+        <a href="DEVELOPMENT.html">DEVELOPMENT</a>
+        <a href="PROJECT_OVERVIEW.html">PROJECT OVERVIEW</a>
+        <a href="RUN_AND_TEST.html">RUN AND TEST</a>
+        <a href="SECURITY.html">SECURITY</a>
+        <a href="TESTING.html">TESTING</a>
+        <a class="active" aria-current="page" href="CODE_AND_SECURITY_FLOW.html">CODE &amp; SECURITY FLOW</a>
+      </nav>
+    </header>
+
+    <main class="content">
+      <p class="kicker">Mục tiêu của trang này: giải thích vì sao project có một đoạn code cố ý không an toàn để minh họa, nhưng khi tắt lab thì secure route vẫn không bị bypass.</p>
+
+      <div class="banner safe">
+        <strong>Kết luận ngắn:</strong> project không làm toàn bộ ứng dụng mất bảo mật. Nó tách thành secure route và một lab route local-only. Lab route mới chứa query cố ý dễ bị operator injection; secure route không dùng query password do client kiểm soát.
+      </div>
+
+      <h2 id="1-modes">1. Ba trạng thái chạy của project</h2>
+
+      <div class="mode-grid">
+        <article class="mode-card safe">
+          <h3>Secure-only</h3>
+          <p><code>LAB_MODE=false</code>, là chế độ mặc định của Docker Compose.</p>
+          <p>Secure login hoạt động; lab endpoint bị disable hoặc trả <code>404</code>.</p>
+        </article>
+        <article class="mode-card lab">
+          <h3>Local lab</h3>
+          <p><code>LAB_MODE=true</code>, chỉ dùng với dữ liệu synthetic trên máy local.</p>
+          <p>Secure route vẫn an toàn; lab route cho phép quan sát 6 payload đã allowlist.</p>
+        </article>
+        <article class="mode-card blocked">
+          <h3>Production</h3>
+          <p>Nếu <code>NODE_ENV=production</code>, lab route bị chặn ngay cả khi có bật flag.</p>
+          <p>Lab cũng yêu cầu request loopback, không phải public endpoint.</p>
+        </article>
+      </div>
+
+      <h2 id="2-architecture">2. Kiến trúc và trách nhiệm từng file</h2>
+
+      <table>
+        <thead>
+          <tr><th>File / thư mục</th><th>Vai trò</th><th>Điểm cần hiểu</th></tr>
+        </thead>
+        <tbody>
+          <tr><td><code>src/server.js</code></td><td>Khởi động app và MongoDB</td><td>Connect database, tạo index, start server, graceful shutdown.</td></tr>
+          <tr><td><code>src/app.js</code></td><td>Lắp ráp Express app</td><td>JSON parser, static UI, health route, secure route, lab route, error handler.</td></tr>
+          <tr><td><code>src/config/env.js</code></td><td>Đọc và kiểm tra environment</td><td>Đọc <code>LAB_MODE</code>, <code>NODE_ENV</code>, MongoDB URI/database name và giới hạn body.</td></tr>
+          <tr><td><code>src/middleware/lab-guard.js</code></td><td>Khóa lab</td><td>Yêu cầu lab bật, không production và request từ loopback.</td></tr>
+          <tr><td><code>src/modules/auth/validation.js</code></td><td>Kiểm tra input</td><td>Secure chỉ nhận string; lab chỉ nhận 6 operator với value bị giới hạn.</td></tr>
+          <tr><td><code>src/modules/auth/secure.routes.js</code></td><td>Secure API</td><td><code>POST /api/auth/login</code>; object password bị từ chối trước database lookup.</td></tr>
+          <tr><td><code>src/modules/auth/lab.routes.js</code></td><td>Lab API</td><td><code>POST /api/lab/login-observation</code>; gọi service quan sát query shape.</td></tr>
+          <tr><td><code>src/modules/auth/auth.service.js</code></td><td>Authentication logic</td><td>Secure service verify hash; lab service cố ý đưa object password vào query.</td></tr>
+          <tr><td><code>src/public/app.js</code></td><td>Browser client</td><td>Chọn mode và gửi object JSON thật, không biến payload thành escaped string.</td></tr>
+          <tr><td><code>scripts/seed.js</code></td><td>Dữ liệu synthetic</td><td>Tạo secure user trong <code>users</code> và lab user trong <code>lab_users</code>.</td></tr>
+          <tr><td><code>tests/</code></td><td>Kiểm chứng</td><td>Unit, security-boundary và integration test với MongoDB thật.</td></tr>
+        </tbody>
+      </table>
+
+      <h2 id="3-request-flow">3. Request flow tổng quát</h2>
+
+      <div class="flow-grid">
+        <div class="flow-step"><strong>1 · Browser</strong><p>Người dùng chọn Secure comparison hoặc Local lab observation.</p></div>
+        <div class="flow-step"><strong>2 · Express route</strong><p>Route parse JSON và chuyển body vào validator tương ứng.</p></div>
+        <div class="flow-step"><strong>3 · Validator</strong><p>Kiểm tra loại dữ liệu, field name và operator allowlist.</p></div>
+        <div class="flow-step"><strong>4 · Auth service</strong><p>Secure và lab dùng hai logic database khác nhau.</p></div>
+        <div class="flow-step"><strong>5 · MongoDB</strong><p>Chỉ lab route mới cho object password trở thành một phần query.</p></div>
+      </div>
+
+      <h2 id="4-secure-flow">4. Secure mode: vì sao object không bypass được</h2>
+
+      <p>Secure mode dùng password như một giá trị scalar và verify hash trong application code. Password do client gửi không được đưa vào MongoDB filter.</p>
+
+      <pre><code>// secure.routes.js
+const input = validateSecureLoginBody(request.body);
+const result = await authenticateSecure(dbClient.db(), input);</code></pre>
+
+      <pre><code>// auth.service.js — secure path
+const user = await database.collection(COLLECTIONS.USERS).findOne({
+  username,
+  active: true
+});
+
+if (!user || !verifyPassword(password, user.passwordHash)) {
+  return { authenticated: false };
+}</code></pre>
+
+      <ol class="checklist">
+        <li><code>validateSecureLoginBody</code> yêu cầu <code>username</code> và <code>password</code> là string.</li>
+        <li>Object, array, number, boolean, null và field thừa bị trả <code>400 INVALID_INPUT</code>.</li>
+        <li>MongoDB chỉ tìm user theo <code>username</code> và <code>active</code>.</li>
+        <li>Password được kiểm tra bằng hash scrypt trong application code.</li>
+        <li>Vì object không đi qua validation nên không thể trở thành MongoDB operator trong secure query.</li>
+      </ol>
+
+      <div class="banner safe">
+        Khi <code>LAB_MODE=false</code>, đây là đường login duy nhất có thể dùng cho demo bình thường. Payload object không bypass được đường này.
+      </div>
+
+      <h2 id="5-lab-flow">5. Lab mode: đoạn code cố ý dễ bị tấn công</h2>
+
+      <p>Lab route không đại diện cho code production. Nó được giữ lại để chứng minh lỗi xảy ra khi application đưa một object do client kiểm soát vào query MongoDB.</p>
+
+      <pre><code>// lab.routes.js
+const input = validateLabLoginBody(request.body);
+const result = await observeLabLogin(dbClient.db(), input);</code></pre>
+
+      <pre><code>// auth.service.js — intentionally unsafe lab path
+const user = await database.collection(COLLECTIONS.LAB_USERS).findOne({
+  username,
+  password
+});</code></pre>
+
+      <p>Nếu <code>password</code> là string, MongoDB xử lý nó như equality value. Nếu <code>password</code> là object có key operator, MongoDB có thể diễn giải object đó như predicate cho field password. Đó là nguyên nhân lab route có thể trả authenticated success mà không cần password scalar đúng.</p>
+
+      <p>Điểm quan trọng: validator vẫn allowlist và giới hạn payload. Project không mở một generic query injection cho mọi operator.</p>
+
+      <h2 id="6-operator-catalog">6. Sáu operator đang được demo</h2>
+
+      <table>
+        <thead>
+          <tr><th>Operator</th><th>Payload trong password</th><th>Ý nghĩa query</th><th>Kết quả local mong đợi</th></tr>
+        </thead>
+        <tbody>
+          <tr><td><code>$gt</code></td><td><code>{ "$gt": "" }</code></td><td>Password lớn hơn chuỗi rỗng.</td><td><code>200</code>, authenticated.</td></tr>
+          <tr><td><code>$gte</code></td><td><code>{ "$gte": "" }</code></td><td>Password lớn hơn hoặc bằng chuỗi rỗng.</td><td><code>200</code>, authenticated.</td></tr>
+          <tr><td><code>$ne</code></td><td><code>{ "$ne": "not-the-password" }</code></td><td>Password khác một giá trị không phải password thật.</td><td><code>200</code>, authenticated.</td></tr>
+          <tr><td><code>$regex</code></td><td><code>{ "$regex": ".*" }</code></td><td>Regex match chuỗi password.</td><td><code>200</code>, authenticated.</td></tr>
+          <tr><td><code>$nin</code></td><td><code>{ "$nin": ["not-the-password"] }</code></td><td>Password không nằm trong danh sách.</td><td><code>200</code>, authenticated.</td></tr>
+          <tr><td><code>$exists</code></td><td><code>{ "$exists": true }</code></td><td>Field password tồn tại.</td><td><code>200</code>, authenticated.</td></tr>
+        </tbody>
+      </table>
+
+      <blockquote><strong>Lưu ý về đề bài:</strong> <code>{ "gt": "" }</code> không có dấu <code>$</code> không phải cú pháp operator MongoDB. Project dùng cú pháp thật <code>{ "$gt": "" }</code>; hình dạng không có <code>$</code> được test như invalid input.</blockquote>
+
+      <h2 id="7-why-lab-is-vulnerable">7. Vì sao lab route không bảo vệ được</h2>
+
+      <ol class="checklist">
+        <li>Password trong lab collection là plaintext synthetic để query operator có thể so sánh trực tiếp.</li>
+        <li>Client được phép gửi password dưới dạng object thay vì scalar string.</li>
+        <li>Service dùng trực tiếp <code>password</code> trong <code>findOne</code>.</li>
+        <li>MongoDB không biết field đó “đáng lẽ là password”; nó chỉ thấy một query predicate hợp lệ.</li>
+        <li>Nếu predicate match document, service trả <code>authenticated: true</code>.</li>
+      </ol>
+
+      <div class="banner danger">
+        Đây là lỗi thiết kế được mô phỏng có chủ đích. Không được copy <code>observeLabLogin</code> vào authentication production và không được bật lab trên hệ thống public.
+      </div>
+
+      <h2 id="8-why-secure-when-lab-off">8. Vì sao tắt lab thì secure</h2>
+
+      <table>
+        <thead>
+          <tr><th>Điều kiện</th><th>Lab route</th><th>Secure route</th></tr>
+        </thead>
+        <tbody>
+          <tr><td><code>LAB_MODE=false</code></td><td>Disabled / <code>404</code>.</td><td>Hoạt động; chỉ nhận scalar và verify hash.</td></tr>
+          <tr><td><code>LAB_MODE=true</code></td><td>Hoạt động nhưng chỉ local, non-production và 6 operator.</td><td>Vẫn reject object; không bị biến thành vulnerable route.</td></tr>
+          <tr><td><code>NODE_ENV=production</code></td><td>Luôn bị từ chối.</td><td>Secure route vẫn có thể chạy bình thường.</td></tr>
+          <tr><td>Request không phải loopback</td><td>Bị chặn <code>403 LAB_LOCAL_ONLY</code>.</td><td>Không mở thêm quyền lab.</td></tr>
+        </tbody>
+      </table>
+
+      <p>Vì vậy câu “tắt lab thì phần bảo mật không bị tấn công” là đúng trong phạm vi code hiện tại: đường secure không nhận object và đường vulnerable bị disable.</p>
+
+      <h2 id="9-data-model">9. Hai collection và lý do tách riêng</h2>
+
+      <table>
+        <thead>
+          <tr><th>Collection</th><th>Dữ liệu</th><th>Được dùng bởi</th><th>Mục đích</th></tr>
+        </thead>
+        <tbody>
+          <tr><td><code>users</code></td><td><code>passwordHash</code> scrypt, không lưu plaintext</td><td>Secure route</td><td>So sánh authentication an toàn.</td></tr>
+          <tr><td><code>lab_users</code></td><td>Password plaintext synthetic</td><td>Lab route</td><td>Cho query operator có thể match trong classroom demo.</td></tr>
+        </tbody>
+      </table>
+
+      <p>Việc tách collection làm giảm nguy cơ lab code chạm vào user data của secure path. Cả hai collection vẫn chỉ dùng dữ liệu giả trong môi trường local.</p>
+
+      <h2 id="10-docker-run">10. Docker: chạy secure và chạy lab</h2>
+
+      <h3>Secure-only mặc định</h3>
+      <pre><code>docker compose up --build -d
+docker compose run --rm app node scripts/seed.js</code></pre>
+      <p>Ở chế độ này, chọn Secure comparison. Không kỳ vọng operator payload hoạt động vì lab route chưa được bật.</p>
+
+      <h3>Bật lab cho buổi demo local</h3>
+      <pre><code>docker compose down
+docker compose -f docker-compose.yml -f docker-compose.lab.yml up --build -d
+docker compose -f docker-compose.yml -f docker-compose.lab.yml run --rm app node scripts/seed.js --lab</code></pre>
+      <p>File <code>docker-compose.lab.yml</code> chỉ override <code>LAB_MODE=true</code>; nó không làm secure route thành vulnerable route.</p>
+
+      <h3>Cleanup</h3>
+      <pre><code>docker compose down</code></pre>
+      <p>Sau khi demo, tắt lab hoặc dừng stack. Không public port MongoDB và không dùng dữ liệu thật.</p>
+
+      <h2 id="11-testing">11. Test chứng minh code đã hoạt động</h2>
+
+      <table>
+        <thead>
+          <tr><th>Test</th><th>Điều nó chứng minh</th></tr>
+        </thead>
+        <tbody>
+          <tr><td><code>tests/unit/validation.test.js</code></td><td>Six operator payloads được accept trong lab; operator lạ, object không có <code>$</code> và value sai bị reject.</td></tr>
+          <tr><td><code>tests/security/routes.test.js</code></td><td>Secure route reject object trước database lookup; lab route trả success cho catalog trong test double.</td></tr>
+          <tr><td><code>tests/integration/mongodb.test.js</code></td><td>MongoDB thật evaluate six operator payloads và xác nhận object không có <code>$</code> không match scalar password.</td></tr>
+          <tr><td>GitHub Actions</td><td>Unit, security, integration và Docker/Compose checks đã pass trên CI.</td></tr>
+        </tbody>
+      </table>
+
+      <pre><code>npm test
+npm run test:integration
+npm run test:all</code></pre>
+
+      <h2 id="12-demo-checklist">12. Checklist thuyết trình / demo</h2>
+
+      <ol class="checklist">
+        <li>Chạy secure-only, login đúng password và sai password.</li>
+        <li>Gửi object vào secure route; cho thấy kết quả <code>400 INVALID_INPUT</code>.</li>
+        <li>Bật lab local và seed <code>lab_users</code>.</li>
+        <li>Chọn từng operator trong UI; cho thấy request password là object thật.</li>
+        <li>Giải thích query lab khác query secure ở điểm nào.</li>
+        <li>Nhấn mạnh lab route chỉ là controlled observation, không phải authentication implementation.</li>
+        <li>Tắt stack hoặc tắt lab sau khi thu evidence.</li>
+      </ol>
+
+      <h2 id="13-safety">13. Giới hạn an toàn</h2>
+
+      <div class="banner danger">
+        Chỉ chạy với localhost, dữ liệu synthetic và database do nhóm sở hữu. Không dùng các payload này vào website, tài khoản hoặc database của người khác.
+      </div>
+
+      <ul class="link-list">
+        <li><a href="https://github.com/kiet1i38/modern-database-attacks/blob/main/src/modules/auth/auth.service.js">auth.service.js</a> — secure và lab authentication service.</li>
+        <li><a href="https://github.com/kiet1i38/modern-database-attacks/blob/main/src/modules/auth/validation.js">validation.js</a> — input validation và operator allowlist.</li>
+        <li><a href="https://github.com/kiet1i38/modern-database-attacks/blob/main/src/modules/auth/lab.routes.js">lab.routes.js</a> — guarded lab endpoint.</li>
+        <li><a href="https://github.com/kiet1i38/modern-database-attacks/blob/main/src/modules/auth/secure.routes.js">secure.routes.js</a> — secure login endpoint.</li>
+        <li><a href="https://github.com/kiet1i38/modern-database-attacks/blob/main/src/public/app.js">public/app.js</a> — browser payload selection.</li>
+        <li><a href="https://github.com/kiet1i38/modern-database-attacks/blob/main/PROJECT_STATUS.md">PROJECT_STATUS.md</a> — gates, SOP và trạng thái thực thi.</li>
+      </ul>
+    </main>
+
+    <p class="footer">Code explanation for the controlled local educational laboratory.</p>
+  </div>
+</body>
+</html>
