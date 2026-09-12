@@ -1,96 +1,184 @@
 # Topic 12 – Modern Database Attacks
 
-> Documentation-only architecture for a controlled local security lab about MongoDB-backed authentication and NoSQL operator injection.
+> A controlled local MongoDB authentication laboratory. Use synthetic data only.
 
-## Project purpose
+The repository now contains a runnable Node.js/Express application with:
 
-This repository will contain a small, reproducible web application that explains how untrusted JSON input can change a MongoDB query when the application does not enforce the expected data type.
+- A secure comparison login route.
+- A separate local-only lab route that intentionally demonstrates unsafe query construction.
+- A browser login form with normal and structured-payload modes.
+- MongoDB seed scripts and Docker Compose.
+- Unit, security-boundary and real-MongoDB integration tests.
 
-The project has two intentionally separated behaviors:
+Never point this project at a real account, real credential or a database that the team does not own.
 
-- A lab-only vulnerable path used to observe the problem.
-- A secure path used to demonstrate the corrected design.
+## 1. Quick start on the host
 
-The project must run only on localhost or a private lab machine. It must never be used to test systems, accounts, APIs or databases that the team does not own.
+Prerequisites:
 
-## Main learning outcomes
+- Node.js 20 or newer.
+- npm.
+- Docker Desktop or another Docker Compose installation.
+- A browser.
 
-- Understand the difference between SQL and NoSQL data models.
-- Trace JSON parsing, application validation, driver serialization and MongoDB query execution.
-- Explain where query semantics can be changed by untrusted input.
-- Distinguish authentication from authorization.
-- Compare a vulnerable login flow with a secure password-verification flow.
-- Reproduce the same test cases before and after the security fix.
+Clone and install:
 
-## Proposed stack
+~~~bash
+git clone https://github.com/kiet1i38/modern-database-attacks.git
+cd modern-database-attacks
+npm install
+cp .env.example .env
+~~~
 
-- Node.js with Express.
-- MongoDB using the official Node.js driver.
-- Zod or an equivalent strict request-schema validator.
-- bcrypt or Argon2 for password verification.
-- Plain HTML, CSS and JavaScript for the small browser client.
-- Docker Compose for a reproducible local MongoDB instance.
+Start only MongoDB:
 
-## Documentation map
+~~~bash
+docker compose up -d mongodb
+npm run seed -- --lab
+~~~
 
-- [`docs/PROJECT_OVERVIEW.md`](docs/PROJECT_OVERVIEW.md): goals, scope, assumptions and acceptance criteria.
-- [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md): components, layers, source tree and request flows.
-- [`docs/DATABASE.md`](docs/DATABASE.md): collections, schemas, indexes, seed data and query rules.
-- [`docs/API.md`](docs/API.md): endpoints, request and response contracts, errors and status codes.
-- [`docs/SECURITY.md`](docs/SECURITY.md): threat model, trust boundaries and defenses.
-- [`docs/TESTING.md`](docs/TESTING.md): unit, integration, security and manual test strategy.
-- [`docs/DEVELOPMENT.md`](docs/DEVELOPMENT.md): setup, environment variables, implementation phases and workflow.
-- [`docs/DEMO_GUIDE.md`](docs/DEMO_GUIDE.md): local demonstration script, evidence and explanation order.
+For a local lab run, open .env and change:
 
-## Planned repository tree
+~~~dotenv
+LAB_MODE=true
+~~~
 
-```text
-modern-database-attacks/
-├── README.md
-├── package.json
-├── package-lock.json
-├── .env.example
-├── .gitignore
-├── docker-compose.yml
-├── Dockerfile
-├── docs/
-│   ├── PROJECT_OVERVIEW.md
-│   ├── ARCHITECTURE.md
-│   ├── DATABASE.md
-│   ├── API.md
-│   ├── SECURITY.md
-│   ├── TESTING.md
-│   ├── DEVELOPMENT.md
-│   └── DEMO_GUIDE.md
-├── src/
-│   ├── server.js
-│   ├── app.js
-│   ├── config/
-│   ├── db/
-│   ├── middleware/
-│   ├── modules/
-│   │   ├── auth/
-│   │   └── health/
-│   ├── shared/
-│   └── public/
-├── scripts/
-│   ├── seed.js
-│   └── reset-db.js
-└── tests/
-    ├── unit/
-    ├── integration/
-    └── security/
-```
+Then start the application:
 
-## Current repository state
+~~~bash
+npm start
+~~~
 
-The repository starts as an empty documentation and architecture project. Source code should be added only after the documents are reviewed and the data/API contracts are agreed.
+Open http://127.0.0.1:3000.
 
-## Non-negotiable principles
+The synthetic credentials are:
 
-- Keep the vulnerable behavior isolated, labeled and disabled outside the lab mode.
-- Never use real credentials or real user data.
-- Never expose MongoDB to the public Internet.
-- Never pass the entire request body directly into a database query.
-- Make the secure path the default path.
-- Keep the README and test evidence reproducible on a clean machine.
+| Purpose | Username | Password |
+| --- | --- | --- |
+| Secure comparison | alice | synthetic-demo-password |
+| Lab normal string | alice | lab-only-demo-password |
+| Lab object payload | alice | Use the payload mode in the form |
+
+The values above are synthetic and exist only for this local exercise.
+
+## 2. Run everything with Docker
+
+The default Compose file starts the app with the lab route disabled:
+
+~~~bash
+docker compose up --build -d
+docker compose run --rm app node scripts/seed.js --lab
+~~~
+
+Open http://127.0.0.1:3000 and use secure comparison mode.
+
+To enable the isolated lab route, use the lab override:
+
+~~~bash
+docker compose down
+docker compose -f docker-compose.yml -f docker-compose.lab.yml up --build -d
+docker compose -f docker-compose.yml -f docker-compose.lab.yml run --rm app node scripts/seed.js --lab
+~~~
+
+The override only changes LAB_MODE to true. The application is still bound to the host loopback interface and the route checks that requests are local.
+
+Stop the services:
+
+~~~bash
+docker compose down
+~~~
+
+Remove the disposable local MongoDB volume only when you want a clean database:
+
+~~~bash
+docker compose down -v
+~~~
+
+## 3. API smoke checks
+
+Health:
+
+~~~bash
+curl http://127.0.0.1:3000/api/health
+~~~
+
+Secure login with a string:
+
+~~~bash
+curl -X POST http://127.0.0.1:3000/api/auth/login \
+  -H "Content-Type: application/json" \
+  -d '{"username":"alice","password":"synthetic-demo-password"}'
+~~~
+
+Brief-shaped object in the lab route:
+
+~~~bash
+curl -X POST http://127.0.0.1:3000/api/lab/login-observation \
+  -H "Content-Type: application/json" \
+  -d '{"username":"alice","password":{"gt":""}}'
+~~~
+
+MongoDB operator-shaped object in the lab route:
+
+~~~bash
+curl -X POST http://127.0.0.1:3000/api/lab/login-observation \
+  -H "Content-Type: application/json" \
+  -d '{"username":"alice","password":{"$gt":""}}'
+~~~
+
+The two object requests are intentionally recorded separately. The lab route is not a secure authentication implementation.
+
+## 4. Tests
+
+Unit and security-boundary tests do not require MongoDB:
+
+~~~bash
+npm test
+~~~
+
+The integration test requires a running MongoDB. It uses the separate database named by MONGODB_TEST_DATABASE and synthetic data:
+
+~~~bash
+npm run test:integration
+~~~
+
+Run everything:
+
+~~~bash
+npm run test:all
+~~~
+
+The integration test verifies the normal equality query, the brief-shaped object and the dollar-prefixed operator object against a real MongoDB server.
+
+## 5. Application behavior
+
+| Route | Mode | Behavior |
+| --- | --- | --- |
+| GET /api/health | All | Reports HTTP and MongoDB readiness. |
+| POST /api/auth/login | Secure | Accepts scalar strings, finds by username and verifies a password hash. |
+| POST /api/lab/login-observation | Local lab | Accepts a structured password value and observes the unsafe query shape. |
+| GET /api/lab/status | All | Reports whether lab mode is enabled without exposing database details. |
+
+The lab route is available only when LAB_MODE=true, NODE_ENV is not production and the request is from loopback.
+
+## 6. Repository map
+
+- PROJECT_STATUS.md: execution status, SOP, gates and next work item.
+- docs/ARCHITECTURE.md: module boundaries and request flows.
+- docs/DATABASE.md: collections, seed data and indexes.
+- docs/API.md: request and response contracts.
+- docs/SECURITY.md: trust boundary and lab safety.
+- docs/TESTING.md: test commands and evidence.
+- docs/DEVELOPMENT.md: local workflow.
+- docs/DEMO_GUIDE.md: presentation and recovery steps.
+- src/: application source and browser client.
+- scripts/: seed and guarded reset commands.
+- tests/: unit, security and MongoDB integration checks.
+
+## 7. Safety boundary
+
+- Keep the lab local and synthetic.
+- Do not publish the MongoDB port beyond loopback.
+- Do not commit .env, credentials, hashes from real accounts or session tokens.
+- Do not reuse the lab route as an authentication implementation.
+- Keep LAB_MODE=false unless the isolated observation is being performed.

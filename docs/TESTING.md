@@ -1,126 +1,129 @@
 # Testing Strategy
 
-## 1. Testing goals
+## 1. Test commands
 
-Tests must demonstrate both functional correctness and the security boundary:
+Install dependencies:
 
-- Valid credentials work.
-- Invalid credentials fail.
-- Unexpected JSON types are rejected.
-- The secure route does not construct a query from a client-controlled object.
-- Database failures return controlled responses.
-- The lab behavior is isolated and reproducible under its documented configuration.
+~~~bash
+npm install
+~~~
+
+Run unit and security-boundary tests:
+
+~~~bash
+npm test
+~~~
+
+Run the real MongoDB integration test:
+
+~~~bash
+npm run test:integration
+~~~
+
+Run all tests:
+
+~~~bash
+npm run test:all
+~~~
 
 ## 2. Test layers
 
 ### Unit tests
 
-Test pure functions without MongoDB:
+Located in tests/unit/:
 
-- Username normalization.
-- Request schema validation.
-- Error mapping.
-- Password verification wrapper.
-- Runtime-mode guard.
+- Scalar credential validation.
+- Structured lab payload validation.
+- Unknown-field rejection.
+- Password hashing and verification.
+- Malformed hash failure behavior.
 
-### Integration tests
+### Security-boundary tests
 
-Run against a disposable MongoDB database:
+Located in tests/security/:
 
-- Seed users.
-- Create indexes.
-- Find a user by username.
-- Authenticate correct and incorrect credentials.
-- Handle unavailable database.
+- Secure route rejects an object password before user lookup.
+- Secure route accepts the correct synthetic scalar password.
+- Lab route can expose the object-shaped behavior in an isolated test double.
+- Lab route returns 404 when LAB_MODE is disabled.
 
-### Security regression tests
+These tests do not require MongoDB.
 
-These tests must remain after the demonstration code is replaced or refactored:
+### Real MongoDB integration test
 
-- Object password is rejected.
-- Array password is rejected.
-- Number password is rejected.
-- Null password is rejected.
-- Unknown request keys are rejected.
-- Username object is rejected.
-- A client cannot select an arbitrary collection or operator.
-- Password or password hash is absent from responses and logs.
+Located in tests/integration/mongodb.test.js.
 
-### Manual browser test
+The test connects to MONGODB_TEST_DATABASE and inserts only a synthetic temporary document. It verifies:
 
-Use the browser to verify the user-visible flow, status text, error handling and lab-only labels.
+- String equality finds the document.
+- The brief-shaped object does not match the string field.
+- The dollar-prefixed greater-than object matches the non-empty string field.
+- Temporary test data is removed in a finally block.
 
-## 3. Test matrix
+Start MongoDB before running this test.
 
-| Case | Input | Expected secure result |
-| --- | --- | --- |
-| Correct credentials | Two valid strings | `200`, authenticated user |
-| Wrong password | Valid username and wrong string | `401`, generic error |
-| Unknown username | Unknown string username | `401`, generic error |
-| Operator object | Password object | `400`, validation error |
-| Array value | Password array | `400`, validation error |
-| Number value | Password number | `400`, validation error |
-| Null value | Password null | `400`, validation error |
-| Unknown key | Extra body field | `400`, validation error |
-| Username object | Username object | `400`, validation error |
-| Oversized body | Body above limit | `413` or controlled `400` |
-| Database down | MongoDB unavailable | `503`, no stack trace |
-| Inactive user | `active=false` | `401`, generic error |
+## 3. Required manual matrix
 
-## 4. Example test payloads
+| Case | Route | Input | Expected observation |
+| --- | --- | --- | --- |
+| Health | GET /api/health | None | Database reports up. |
+| Correct secure login | POST /api/auth/login | Two strings | HTTP 200. |
+| Wrong secure password | POST /api/auth/login | Wrong string | HTTP 401. |
+| Unknown secure user | POST /api/auth/login | Unknown string username | HTTP 401. |
+| Brief object | POST /api/lab/login-observation | password: {"gt": ""} | Record actual result. |
+| Operator object | POST /api/lab/login-observation | password: {"$gt": ""} | Record actual result. |
+| Escaped object text | Lab or secure route | password: "{\"$gt\":\"\"}" | Treated as a string. |
+| Secure object | POST /api/auth/login | password object | HTTP 400, no user lookup. |
+| Lab disabled | Lab route | Any valid JSON | HTTP 404. |
 
-Normal request:
+## 4. Evidence checklist
 
-```json
+- [ ] Docker or local MongoDB version recorded.
+- [ ] Node.js and mongodb driver versions recorded.
+- [ ] Seed command recorded.
+- [ ] Health response captured.
+- [ ] Correct and wrong string results captured.
+- [ ] Both object variants captured.
+- [ ] Working lab response captured if available.
+- [ ] Secure object rejection captured.
+- [ ] No real secret, hash, token or personal data is visible.
+- [ ] README and PROJECT_STATUS.md match the run.
+
+## 5. Failure diagnosis
+
+### MongoDB connection failure
+
+Check:
+
+- Docker container status.
+- Port 27017 availability.
+- MONGODB_URI.
+- MONGODB_DATABASE.
+- Application logs without publishing credentials.
+
+### Lab route returns 404
+
+Check:
+
+- LAB_MODE=true.
+- NODE_ENV is not production.
+- The running process was restarted after changing .env.
+- The request is sent to localhost or 127.0.0.1.
+
+### Object is sent as a string
+
+Check the browser result panel or network tab. The request must contain:
+
+~~~json
 {
-  "username": "alice",
-  "password": "synthetic-demo-password"
-}
-```
-
-Wrong password:
-
-```json
-{
-  "username": "alice",
-  "password": "wrong-password"
-}
-```
-
-Object-type security regression:
-
-```json
-{
-  "username": "alice",
   "password": {
     "$gt": ""
   }
 }
-```
+~~~
 
-The secure route must reject the object before the authentication query is executed.
+It must not contain an escaped JSON string.
 
-## 5. Evidence checklist
+## 6. Evidence safety
 
-- [ ] Test command and Node.js version recorded.
-- [ ] MongoDB and driver versions recorded.
-- [ ] Seed command recorded.
-- [ ] Correct credentials result captured.
-- [ ] Wrong credentials result captured.
-- [ ] Object-type rejection captured.
-- [ ] Database failure behavior captured.
-- [ ] Secure response contains no password or hash.
-- [ ] Logs contain no plaintext credential.
-- [ ] Lab route is disabled outside local mode.
-
-## 6. Future CI pipeline
-
-A future GitHub Actions workflow should:
-
-1. Install dependencies with the lockfile.
-2. Start a disposable MongoDB service.
-3. Run lint and unit tests.
-4. Run integration and security regression tests.
-5. Upload test output without secrets.
-
-CI must never point tests at a personal or production database.
+Do not store real credentials, production data, password hashes from real users, session tokens or public database connection strings.

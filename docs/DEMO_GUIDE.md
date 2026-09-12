@@ -2,115 +2,140 @@
 
 ## 1. Purpose
 
-This guide explains how to present the project as a controlled experiment. The presenter should show the request, the application decision, the database interaction and the corrected behavior.
+Show a repeatable local experiment:
 
-Run only on localhost or a private machine owned by the team.
+1. A normal MongoDB-backed login form.
+2. Correct and incorrect scalar credential behavior.
+3. A structured payload sent as an object.
+4. The observed result in the isolated lab route.
+5. The secure route rejecting the same object.
+
+Use only the synthetic local account.
 
 ## 2. Preparation
 
-Before presenting:
+Host workflow:
 
-1. Start Docker and MongoDB.
-2. Run the seed script.
-3. Start the Node.js server.
-4. Check the health endpoint.
-5. Open the browser client.
-6. Verify that the secure route works.
-7. Enable lab mode only if the local observation is needed.
-8. Keep a recorded run and terminal commands as backup.
+~~~bash
+npm install
+docker compose up -d mongodb
+npm run seed -- --lab
+~~~
 
-## 3. Recommended explanation order
+Set LAB_MODE=true in .env and start:
 
-### Part A: data models
+~~~bash
+npm start
+~~~
 
-Explain that SQL commonly uses tables and SQL statements, while MongoDB uses collections, documents and query documents. Emphasize that both still have query semantics and parsers.
+Docker workflow:
 
-### Part B: request lifecycle
+~~~bash
+docker compose -f docker-compose.yml -f docker-compose.lab.yml up --build -d
+docker compose -f docker-compose.yml -f docker-compose.lab.yml run --rm app node scripts/seed.js --lab
+~~~
 
-Show the path:
+Check:
 
-```text
-Browser JSON -> JSON parser -> application object -> validation -> repository -> MongoDB
-```
+~~~bash
+curl http://127.0.0.1:3000/api/health
+~~~
 
-Explain that validation is the security boundary. The database should receive a query shape designed by the application.
+## 3. Demonstration order
 
-### Part C: normal authentication
+### Step A: normal secure login
 
-1. Submit the synthetic correct password.
-2. Show the successful response.
-3. Explain that the secure path finds the user by username and verifies the hash in application code.
+Select Secure comparison.
 
-### Part D: incorrect authentication
+Use:
 
-1. Submit a wrong password string.
-2. Show the generic failure response.
-3. Explain that the response does not reveal whether the username exists.
+- Username: alice
+- Password: synthetic-demo-password
 
-### Part E: isolated lab observation
+Show HTTP 200 and the public username/role only.
 
-If lab mode is enabled, show that a password object is a different JSON type from a password string. Explain that an unsafe query can treat the object as a predicate.
+### Step B: wrong password
 
-Do not claim that the input works against every MongoDB application. Show the exact environment and the observed result.
+Keep the username and enter a wrong string. Show HTTP 401 and the generic invalid-credentials response.
 
-### Part F: corrected behavior
+### Step C: exact brief-shaped object
 
-1. Send the same object-type input to the secure route.
-2. Show the validation error.
-3. Explain that the secure route does not query by password.
-4. Show the test or log proving the database query was not executed for invalid input.
+Select Local lab observation and choose the assignment-shaped object. The browser sends:
 
-## 4. Evidence to capture
+~~~json
+{
+  "username": "alice",
+  "password": {
+    "gt": ""
+  }
+}
+~~~
 
-- Browser request and response.
-- Server-side request ID.
-- Sanitized input type.
-- Fixed secure query shape.
-- Database document without exposing a password hash.
-- Test output.
-- MongoDB and driver versions.
-- Runtime mode and local host.
+Record the status and response. This spelling must not be silently replaced.
 
-Never capture real passwords, tokens, connection strings or personal data.
+### Step D: MongoDB operator object
 
-## 5. Questions and short answers
+Choose the operator variant. The browser sends:
 
-### Why does a parser not automatically stop injection?
+~~~json
+{
+  "username": "alice",
+  "password": {
+    "$gt": ""
+  }
+}
+~~~
 
-A parser checks whether input is valid for the language. It does not know whether the client is authorized to request that meaning.
+Record the status, input type, payload variant and authenticated marker. The result is valid evidence only for the documented local environment.
 
-### Where is the actual design mistake?
+### Step E: secure comparison
 
-At the application boundary, when a client-controlled value is allowed to become part of a query structure.
+Send an object password to POST /api/auth/login. The secure route should return HTTP 400 before database authentication because the field is not a string.
 
-### Why not query by password hash?
+## 4. What to explain
 
-The application should retrieve the user by username and use a password-hash verification function. This keeps the password input out of the database predicate.
+- JSON has multiple value types; a password field is not automatically a string.
+- The application is responsible for validating the type and owning the query shape.
+- The lab route intentionally shows the unsafe construction with synthetic data.
+- The secure route finds by username and verifies a hash in application code.
+- A local result does not prove universal behavior or production exposure.
 
-### Is a login bypass the same as full database access?
+## 5. Evidence to capture
 
-No. The impact depends on database privileges, session handling and authorization checks on later routes.
+- Browser form and mode label.
+- Health response.
+- Correct credential success.
+- Wrong credential failure.
+- Exact brief-shaped request.
+- Operator-shaped request.
+- Successful lab response if produced.
+- Secure-route object rejection.
+- Node.js, MongoDB and driver versions.
+- Relevant commit and README commands.
 
-### Does removing a dollar sign solve the problem?
-
-Not reliably. A blacklist is incomplete. The stronger defense is strict type validation, explicit query construction and rejecting unexpected structures.
+Do not capture real credentials, tokens, connection strings or personal data.
 
 ## 6. Recovery plan
 
-If the live run fails:
+If a live run fails:
 
-- Use the recorded video.
-- Show the test output.
-- Show the documented request lifecycle.
-- Explain which environmental dependency failed.
-- Do not improvise against an external target.
+- Use the saved curl output or screen recording.
+- Show the integration test output.
+- Check Docker status and the configured database URI.
+- Confirm that the payload is an object, not escaped text.
+- Confirm LAB_MODE and local host.
+- Explain the environment limitation instead of testing an external target.
 
 ## 7. Cleanup
 
-After the session:
+~~~bash
+docker compose down
+~~~
 
-- Stop the local containers.
-- Remove temporary test data if required.
-- Disable lab mode.
-- Check that no secrets or logs were committed.
-- Keep only synthetic evidence in the repository.
+Then:
+
+- Set LAB_MODE=false.
+- Remove temporary evidence containing credentials.
+- Check git status.
+- Confirm .env is ignored.
+- Do not commit database volumes or logs.

@@ -2,55 +2,56 @@
 
 ## 1. Conventions
 
-- Base path: `/api`.
-- Request and response format: `application/json`.
-- All responses include an `ok` boolean.
-- Authentication failures use a generic message.
+- Base path: /api.
+- Request and response format: application/json.
+- Authentication failures use generic messages.
 - Validation failures do not include database details.
-- A request ID is included in logs and responses when available.
+- Passwords, password hashes and query internals are never returned.
 
 ## 2. Health endpoint
 
-### `GET /api/health`
+### GET /api/health
 
-Purpose: verify that the HTTP process is alive and report database connectivity without leaking credentials.
+Purpose: verify that the process is alive and report MongoDB connectivity.
 
 Success:
 
-```json
+~~~json
 {
   "ok": true,
   "service": "modern-database-attacks",
   "database": "up"
 }
-```
+~~~
 
 Database unavailable:
 
-```json
+~~~json
 {
   "ok": false,
   "service": "modern-database-attacks",
   "database": "down"
 }
-```
+~~~
+
+The unavailable response uses HTTP 503.
 
 ## 3. Secure login
 
-### `POST /api/auth/login`
+### POST /api/auth/login
 
 Request:
 
-```json
+~~~json
 {
   "username": "alice",
   "password": "synthetic-demo-password"
 }
-```
+~~~
 
 Success:
 
-```json
+~~~json
 {
   "ok": true,
   "user": {
@@ -58,11 +59,11 @@ Success:
     "role": "student"
   }
 }
-```
+~~~
 
 Invalid credentials:
 
-```json
+~~~json
 {
   "ok": false,
   "error": {
@@ -70,11 +71,11 @@ Invalid credentials:
     "message": "Invalid credentials"
   }
 }
-```
+~~~
 
-Invalid input type:
+Invalid input:
 
-```json
+~~~json
 {
   "ok": false,
   "error": {
@@ -82,72 +83,120 @@ Invalid input type:
     "message": "Invalid request"
   }
 }
-```
+~~~
 
-The secure route must reject a password object, array, number, boolean, null value or unknown body field before any user query is executed.
+The secure route accepts only a string username and string password. It rejects objects, arrays, numbers, booleans, null values and unknown body fields before user lookup.
 
-## 4. Lab observation route
+## 4. Lab status
 
-### `POST /api/lab/login-observation`
+### GET /api/lab/status
 
-This route is optional and must be enabled only in explicit local lab mode. Its purpose is to make the unsafe query construction visible using synthetic data.
+This endpoint is safe to call from the browser and reports the mode without returning database details.
 
-The route must:
+Lab disabled:
 
-- Be disabled when `NODE_ENV=production`.
-- Be disabled for non-local hosts.
-- Use the separate `lab_users` collection.
-- Display a clear lab-only label.
-- Never accept real credentials.
-- Never be copied into a production authentication flow.
-
-The request and response contract should be documented in the running application and test fixtures, but the route must not be treated as a secure login endpoint.
-
-## 5. Logout
-
-### `POST /api/auth/logout`
-
-If sessions are implemented, this endpoint invalidates the current synthetic session. A stateless demonstration may return a successful response after clearing the browser-side state.
-
-```json
-{
-  "ok": true
-}
-```
-
-## 6. Optional identity endpoint
-
-### `GET /api/auth/me`
-
-Returns the authenticated synthetic identity without password fields or internal database details.
-
-```json
+~~~json
 {
   "ok": true,
+  "enabled": false,
+  "mode": "secure-only"
+}
+~~~
+
+Lab enabled:
+
+~~~json
+{
+  "ok": true,
+  "enabled": true,
+  "mode": "lab"
+}
+~~~
+
+## 5. Lab observation route
+
+### POST /api/lab/login-observation
+
+This route is available only when LAB_MODE=true, NODE_ENV is not production and the request is local.
+
+Normal string request:
+
+~~~json
+{
+  "username": "alice",
+  "password": "lab-only-demo-password"
+}
+~~~
+
+Brief-shaped object request:
+
+~~~json
+{
+  "username": "alice",
+  "password": {
+    "gt": ""
+  }
+}
+~~~
+
+Operator-shaped object request:
+
+~~~json
+{
+  "username": "alice",
+  "password": {
+    "$gt": ""
+  }
+}
+~~~
+
+Successful controlled observation:
+
+~~~json
+{
+  "ok": true,
+  "authenticated": true,
+  "mode": "lab",
+  "inputType": "object",
+  "payloadVariant": "$gt",
   "user": {
     "username": "alice",
     "role": "student"
-  }
+  },
+  "note": "Controlled local lab result; do not reuse this route in production"
 }
-```
+~~~
+
+Failed lab observation returns HTTP 401 with the same mode and input metadata, but never returns a password or query object.
+
+## 6. Logout
+
+### POST /api/auth/logout
+
+The current application does not create a persistent session. The endpoint exists as a safe placeholder:
+
+~~~json
+{
+  "ok": true
+}
+~~~
 
 ## 7. Status code policy
 
 | Status | Meaning |
 | --- | --- |
-| `200` | Request completed successfully. |
-| `400` | Body type, shape or field validation failed. |
-| `401` | Credentials are invalid or session is missing. |
-| `404` | Route does not exist. |
-| `429` | Rate limit exceeded. |
-| `503` | Database or required service is unavailable. |
-| `500` | Unexpected server error; details stay in server logs. |
+| 200 | Request completed successfully. |
+| 400 | Body type, shape or field validation failed. |
+| 401 | Credentials are invalid. |
+| 403 | The lab request is not from loopback. |
+| 404 | Route is disabled or does not exist. |
+| 503 | MongoDB is unavailable. |
+| 500 | Unexpected server error; details stay in server logs. |
 
-## 8. API implementation rules
+## 8. Implementation rules
 
-- Routes call services; routes do not write MongoDB filters directly.
-- Services call repositories; repositories accept typed application values.
-- Error messages are stable and generic.
-- Request bodies have a small size limit.
-- Unknown fields are rejected on authentication requests.
-- Sensitive fields are removed from every response.
+- Routes call services; services own authentication decisions.
+- The secure route queries by username and verifies a stored hash in application code.
+- The lab route is intentionally isolated and explicitly labelled.
+- The browser sends JSON with Content-Type application/json.
+- The browser never stores the password after submission.

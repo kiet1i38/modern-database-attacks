@@ -2,137 +2,126 @@
 
 ## 1. Prerequisites
 
-- Node.js LTS.
+- Node.js 20 or newer.
 - npm.
-- Docker and Docker Compose.
 - Git.
+- Docker Desktop with Compose.
 - A local browser.
 
-## 2. Environment variables
+## 2. First setup
 
-Create `.env` from `.env.example`:
-
-```dotenv
-NODE_ENV=development
-PORT=3000
-MONGODB_URI=mongodb://localhost:27017
-MONGODB_DATABASE=modern_database_attacks
-MONGODB_TEST_DATABASE=modern_database_attacks_test
-LAB_MODE=false
-SESSION_SECRET=replace-with-local-only-secret
-```
-
-Rules:
-
-- `.env` must be ignored by Git.
-- `.env.example` contains placeholders only.
-- `LAB_MODE` defaults to `false`.
-- The lab route must refuse to run in production mode.
-
-## 3. Local commands
-
-The eventual `package.json` should provide commands similar to:
-
-```bash
+~~~bash
+git clone https://github.com/kiet1i38/modern-database-attacks.git
+cd modern-database-attacks
 npm install
-npm run db:up
-npm run db:seed
-npm run dev
-npm test
-npm run test:security
-npm run lint
-```
+cp .env.example .env
+~~~
 
-The exact commands should be kept synchronized with the README after implementation.
+On Windows PowerShell, use Copy-Item instead of cp.
 
-## 4. Docker Compose responsibilities
+## 3. Host application with Docker MongoDB
 
-Docker Compose should:
+Start MongoDB:
 
-- Start one local MongoDB container.
-- Persist data only in a named local volume.
-- Avoid publishing MongoDB to all network interfaces when possible.
-- Use a health check.
-- Use a pinned image version tested by the team.
-- Avoid committing production credentials.
+~~~bash
+docker compose up -d mongodb
+~~~
 
-The application may run on the host during development or in its own container after the host workflow is stable.
+Seed the secure user and lab user:
 
-## 5. Implementation phases
+~~~bash
+npm run seed -- --lab
+~~~
 
-### Phase 1: repository and runtime
+Enable the lab route in .env:
 
-- Add `package.json` and lockfile.
-- Add environment loader.
-- Add Docker Compose.
-- Add MongoDB connection and health endpoint.
+~~~dotenv
+LAB_MODE=true
+~~~
 
-### Phase 2: data and seed
+Start the host application:
 
-- Add collections and indexes.
-- Add idempotent seed script.
-- Add synthetic secure user.
-- Add optional synthetic lab user.
+~~~bash
+npm start
+~~~
 
-### Phase 3: secure authentication
+Open http://127.0.0.1:3000.
 
-- Add strict schemas.
-- Add user repository.
-- Add authentication service.
-- Add secure login route.
-- Add safe error handling.
+## 4. All-in-one Docker
 
-### Phase 4: isolated lab observation
+Secure-only mode:
 
-- Add explicit local-mode guard.
-- Add a separate lab collection and route.
-- Add visible lab-only labels.
-- Add tests that prove the route is disabled outside local mode.
+~~~bash
+docker compose up --build -d
+docker compose run --rm app node scripts/seed.js --lab
+~~~
 
-### Phase 5: browser client
+Local lab mode:
 
-- Add a small login page.
-- Show normal and invalid responses.
-- Show lab mode clearly when enabled.
-- Do not display or store passwords after submission.
+~~~bash
+docker compose down
+docker compose -f docker-compose.yml -f docker-compose.lab.yml up --build -d
+docker compose -f docker-compose.yml -f docker-compose.lab.yml run --rm app node scripts/seed.js --lab
+~~~
 
-### Phase 6: verification
+The Compose app uses mongodb as the database hostname inside the Docker network. Host-based commands use localhost.
 
-- Add unit, integration and security tests.
-- Run the project from a clean checkout.
-- Record versions and evidence.
-- Review the docs against the implemented behavior.
+## 5. Environment variables
 
-## 6. Coding conventions
+| Variable | Default | Purpose |
+| --- | --- | --- |
+| NODE_ENV | development | Runtime mode. |
+| HOST | 127.0.0.1 | Bind address for host execution. |
+| PORT | 3000 | HTTP port. |
+| MONGODB_URI | mongodb://localhost:27017 | MongoDB connection. |
+| MONGODB_DATABASE | modern_database_attacks | Demo database. |
+| MONGODB_TEST_DATABASE | modern_database_attacks_test | Integration database. |
+| LAB_MODE | false | Enables the guarded lab route. |
+| JSON_BODY_LIMIT | 16kb | Request body limit. |
+| DEMO_USERNAME | alice | Synthetic username. |
+| SECURE_DEMO_PASSWORD | synthetic-demo-password | Synthetic secure password. |
+| LAB_DEMO_PASSWORD | lab-only-demo-password | Synthetic lab string password. |
 
-- Use one responsibility per module.
-- Prefer explicit names over generic helper functions.
-- Keep database calls in repositories.
-- Keep authentication decisions in services.
+Never put a real secret in .env.example or commit .env.
+
+## 6. Implementation order
+
+1. Runtime and MongoDB health.
+2. Seed and indexes.
+3. Secure login behavior.
+4. Browser form.
+5. Guarded local lab observation.
+6. Manual evidence and integration test.
+7. Optional CI and additional hardening.
+
+## 7. Coding conventions
+
+- Keep database calls in database or service modules.
 - Validate at the HTTP boundary.
-- Return stable error codes.
+- Use explicit query shapes.
+- Keep lab code visibly isolated.
+- Keep response shapes stable.
 - Avoid logging sensitive values.
-- Add a test when a security behavior is fixed.
+- Add a regression test when changing a security boundary.
 
-## 7. Git workflow
+## 8. Shutdown and reset
 
-Use small commits grouped by concern:
+Stop services:
 
-- `docs: define architecture`
-- `build: add local runtime`
-- `feat: add secure authentication`
-- `test: add security regression cases`
-- `docs: synchronize implementation guide`
+~~~bash
+docker compose down
+~~~
 
-Each implementation phase should be runnable or clearly marked as incomplete.
+Reset the named local application database:
 
-## 8. Definition of done
+~~~bash
+ALLOW_LOCAL_RESET=true npm run db:reset
+~~~
 
-A phase is complete when:
+Remove the Docker volume for a clean MongoDB instance:
 
-- The code and documentation agree.
-- The relevant tests pass.
-- A clean machine can reproduce the behavior.
-- No secret is committed.
-- The security boundary is visible in code and tests.
-- The change has a focused commit message.
+~~~bash
+docker compose down -v
+~~~
+
+Only use reset commands with the project’s local database names.

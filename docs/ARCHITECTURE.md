@@ -2,161 +2,150 @@
 
 ## 1. Architectural style
 
-Use a small modular monolith. The application is simple enough to run as one Node.js process, but its modules should have clear boundaries so the data flow remains easy to explain and test.
+The application is a small modular monolith. It runs as one Node.js process while keeping configuration, database access, authentication and the browser client in separate modules.
 
-The proposed layers are:
+The two authentication paths are intentionally separate:
 
-1. **Presentation layer:** static browser page and JSON HTTP responses.
-2. **HTTP layer:** routes, request parsing, response status and error mapping.
-3. **Validation layer:** strict schemas for body, headers and parameters.
-4. **Application layer:** authentication use cases and business decisions.
-5. **Repository layer:** explicit database operations.
-6. **Infrastructure layer:** MongoDB connection, logging, configuration and server startup.
+- Secure path: strict scalar validation, username lookup and password-hash verification.
+- Lab path: local-only, opt-in observation of an unsafe query shape using synthetic data.
 
-## 2. High-level topology
+## 2. Runtime topology
 
-```mermaid
-flowchart LR
-  Browser["Browser client"] --> HTTP["Express HTTP layer"]
-  HTTP --> Validation["Strict input validation"]
-  Validation --> Auth["Authentication service"]
-  Auth --> Repo["User repository"]
-  Repo --> Mongo["MongoDB"]
-```
+~~~mermaid
+flowchart TD
+  Browser["Browser login form"] --> Express["Express application"]
+  Express --> Secure["Secure route"]
+  Express --> Lab["Guarded lab route"]
+  Secure --> Users["users collection"]
+  Lab --> LabUsers["lab_users collection"]
+~~~
 
-The secure route must pass through validation and an application-level password verification step. It must not let the browser define a database predicate.
+MongoDB is never exposed directly to the browser.
 
-## 3. Planned source tree
+## 3. Source tree
 
-```text
+~~~text
 src/
-├── server.js
 ├── app.js
+├── server.js
 ├── config/
-│   ├── env.js
-│   └── logger.js
+│   └── env.js
 ├── db/
 │   ├── client.js
 │   ├── collections.js
 │   └── indexes.js
 ├── middleware/
-│   ├── error-handler.js
-│   ├── not-found.js
-│   ├── rate-limit.js
-│   └── request-id.js
+│   └── lab-guard.js
 ├── modules/
-│   ├── auth/
-│   │   ├── auth.routes.js
-│   │   ├── auth.schemas.js
-│   │   ├── auth.service.js
-│   │   ├── auth.repository.js
-│   │   └── auth.errors.js
-│   └── health/
-│       └── health.routes.js
-├── shared/
-│   ├── http-errors.js
-│   ├── result.js
-│   └── constants.js
-└── public/
-    ├── index.html
-    ├── app.js
-    └── styles.css
-```
+│   ├── health/
+│   │   └── health.routes.js
+│   └── auth/
+│       ├── auth.service.js
+│       ├── lab.routes.js
+│       ├── password.js
+│       ├── secure.routes.js
+│       └── validation.js
+├── public/
+│   ├── app.js
+│   ├── index.html
+│   └── styles.css
+└── shared/
+    └── errors.js
+~~~
+
+Supporting scripts are under scripts/ and tests are under tests/.
 
 ## 4. Module responsibilities
 
-### `server.js`
+### app.js
 
-- Load environment configuration.
-- Connect to MongoDB.
-- Create indexes.
-- Start the HTTP server.
-- Handle graceful shutdown.
+- Creates the Express application.
+- Registers JSON parsing with a small body limit.
+- Serves the static browser client.
+- Mounts health, secure and lab routes.
+- Registers safe 404 and error responses.
 
-### `app.js`
+### server.js
 
-- Create the Express application.
-- Register JSON parsing with a small body limit.
-- Register security middleware.
-- Mount routes.
-- Register not-found and error handlers.
+- Loads configuration.
+- Connects to MongoDB.
+- Creates indexes.
+- Starts the HTTP server.
+- Closes the HTTP server and database client on shutdown.
 
-### `auth.routes.js`
+### config/env.js
 
-- Translate HTTP requests into use-case calls.
-- Never contain database query construction.
-- Return stable response shapes and status codes.
+- Parses environment variables.
+- Validates ports and database names.
+- Provides safe local defaults.
+- Exposes LAB_MODE as an explicit feature flag.
 
-### `auth.schemas.js`
+### db/client.js
 
-- Require username and password to be strings.
-- Reject unknown keys.
-- Enforce length limits.
-- Reject objects, arrays, null values and operators.
+- Owns the MongoDB client lifecycle.
+- Exposes connect, db, ping and close operations.
+- Uses a short server-selection timeout so startup failures are visible.
 
-### `auth.service.js`
+### auth.service.js
 
-- Load a user by username.
-- Verify the password hash.
-- Decide success or failure.
-- Avoid leaking whether a username exists.
+- Secure path: fixed username lookup and hash verification.
+- Lab path: isolated query-shape observation.
+- Returns only public user fields to routes.
 
-### `auth.repository.js`
+### validation.js
 
-- Expose explicit functions such as `findUserByUsername`.
-- Keep database filters authored by the application.
-- Never accept a complete query object from the browser.
+- Requires a plain JSON body.
+- Requires exactly username and password keys.
+- Normalizes the username.
+- Requires a string password in secure mode.
+- Allows a small structured password value only in lab mode.
 
-## 5. Request flows
+### lab-guard.js
 
-### Secure login
+- Requires LAB_MODE=true.
+- Refuses production mode.
+- Accepts loopback host or loopback socket requests only.
 
-```mermaid
+## 5. Secure flow
+
+~~~mermaid
 sequenceDiagram
-  participant C as Client
-  participant R as Route
+  participant B as Browser
+  participant R as Secure route
   participant V as Validator
   participant S as Auth service
-  participant D as Database
-  C->>R: POST login
-  R->>V: Validate strict body
-  V-->>R: Typed input
-  R->>S: Authenticate username/password
-  S->>D: Find by username only
-  D-->>S: User and password hash
-  S-->>R: Verify hash and result
-  R-->>C: Success or generic failure
-```
+  participant M as MongoDB
+  B->>R: JSON strings
+  R->>V: Validate scalar fields
+  V-->>R: Typed credentials
+  R->>S: Authenticate
+  S->>M: Find by username and active
+  M-->>S: User with password hash
+  S-->>R: Verify hash
+  R-->>B: Generic success or failure
+~~~
 
-### Lab observation path
+The password is not part of the secure MongoDB predicate.
 
-The lab path may intentionally show the unsafe query shape, but it must be isolated, clearly named and unavailable when the application runs in secure mode. It must use synthetic data and a local database only.
+## 6. Lab flow
 
-## 6. Runtime modes
+The lab route receives a local JSON request and intentionally constructs a query using the password value. With a string, this behaves like ordinary equality. With an object, MongoDB may interpret the nested value as a predicate. The result must be recorded with the exact driver and database versions.
 
-- `secure`: default mode; exposes only corrected behavior.
-- `lab`: explicitly enabled for local demonstration; exposes the isolated observation route.
-- `test`: uses a separate database name and deterministic seed data.
+The lab route is educational only. It is not a session system, authorization layer or production design.
 
-The lab route should fail closed when `NODE_ENV=production` or when the host is not local.
+## 7. Runtime modes
 
-## 7. Error handling
+- Secure-only: default when LAB_MODE=false.
+- Local lab: enabled only when LAB_MODE=true and NODE_ENV is not production.
+- Test: use a separate database name for integration tests.
 
-Use a consistent error shape:
+## 8. Docker boundary
 
-```json
-{
-  "ok": false,
-  "error": {
-    "code": "INVALID_INPUT",
-    "message": "Invalid request"
-  },
-  "requestId": "..."
-}
-```
+Docker Compose runs:
 
-Do not return stack traces, database error details or password-related information to the browser.
+- One MongoDB 7.0.16 container.
+- One Node.js 20 application container.
+- A named local MongoDB volume.
+- Loopback-only host port bindings for 27017 and 3000.
 
-## 8. Deployment boundary
-
-The supported deployment is local Docker Compose. No public reverse proxy, public DNS name or Internet-accessible MongoDB should be part of this project.
+The lab override file changes only the application LAB_MODE value.
