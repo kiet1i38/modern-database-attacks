@@ -1,334 +1,558 @@
 # Project Status & Delivery SOP
 
-> The single operating guide for planning, implementing, testing and documenting this repository.
+> The single operating guide for the required MongoDB login demonstration in this repository.
 
 **Document owner:** Project team
 
 **Last updated:** 2026-09-12
 
-**Current lifecycle phase:** Phase 0 — Discovery, architecture and documentation
+**Current focus:** Phase 1 — Runtime and MongoDB bootstrap
 
-**Current overall status:** `[IN PROGRESS]`
+**Overall status:** [IN PROGRESS]
 
-## 1. Purpose of this document
+## 1. Purpose and source of truth
 
-This file combines two complementary things:
+This file is the project control center. It combines:
 
-- **SDLC (Software Development Life Cycle):** the complete lifecycle used to move from an agreed idea to a tested and documented application.
-- **SOP (Standard Operating Procedure):** the exact repeatable steps, outputs and checks used inside every lifecycle phase.
+- SDLC: the lifecycle used to move from an agreed requirement to a working, verified and documented application.
+- SOP: the repeatable steps, outputs and checks used in every phase.
+- Status tracking: the exact repository state, next action, blocker and evidence.
 
-Use this file as the project control center. Before starting work, read the current phase and the next recommended work item. After every work session, update the status, evidence, blockers and next action.
+The assignment brief is the source of truth for the core scope:
 
-This guide is intentionally detailed so that another teammate can continue the project without relying on undocumented memory.
+- Category 4 — Web & Authentication
+- Topic 12 — Modern Database Attacks
+- Required demonstration: create a MongoDB-backed login form and demonstrate authentication bypass with a greater-than-empty style payload such as {"gt": ""}, logging in without the correct password.
 
-## 2. How to use the guide
+The project must remain a controlled local laboratory. It must use synthetic data and must never target a real account, real credential or an externally owned system.
 
-### Before starting a work session
+This document intentionally separates required work from recommended security improvements. Recommended improvements are valuable, but they must not obscure or replace the required demonstration.
 
-1. Read the **Current snapshot** near the bottom of this file.
-2. Select one work item from **Next recommended work item**.
-3. Read that phase SOP and confirm its entry criteria.
-4. Inspect the existing files before making changes.
-5. Check that the change does not violate the project guardrails.
+## 2. How to use this guide
+
+### Before a work session
+
+1. Read the Current snapshot near the bottom.
+2. Select one work item from Next recommended work item.
+3. Read the SOP for that phase.
+4. Inspect the existing repository files before editing.
+5. Confirm that the change remains local, synthetic and within the assignment scope.
+6. Check for an existing blocker before starting.
 
 ### During the work session
 
-1. Work only on the selected scope.
-2. Keep source, configuration, tests and documentation consistent.
-3. Record assumptions when a decision is not obvious.
-4. Run the smallest relevant test after each meaningful change.
-5. Stop and record a blocker instead of silently bypassing a quality gate.
+1. Work only on the selected slice.
+2. Keep source code, API behavior, tests and documentation synchronized.
+3. Record assumptions when behavior depends on a driver, database or runtime version.
+4. Run the smallest relevant check after each meaningful change.
+5. Stop at a failed quality gate and record the blocker.
 
 ### At the end of the work session
 
-1. Run the phase-specific verification commands.
-2. Review changed files for secrets, accidental scope expansion and unclear names.
+1. Run the phase-specific verification.
+2. Review the diff for secrets, accidental files and scope expansion.
 3. Update this file with completed work, evidence and the next action.
-4. Update the related document under `docs/` if behavior or contracts changed.
+4. Update the related document under docs/ when a contract or design changes.
 5. Commit one coherent unit of work.
 
-## 3. Status system
+## 3. Status labels
 
 | Label | Meaning | Required action |
 | --- | --- | --- |
-| `[DONE]` | Work is complete and verified. | Link evidence or test output. |
-| `[IN PROGRESS]` | Work has started but the exit criteria are not met. | State the remaining work. |
-| `[NEXT]` | The recommended next action. | Start only after entry criteria pass. |
-| `[TODO]` | Planned but not started. | Do not describe it as implemented. |
-| `[BLOCKED]` | Progress cannot continue safely. | Record cause, owner and unblock action. |
-| `[REVIEW]` | Implementation exists and needs review. | Check code, tests and documentation. |
-| `[REJECTED]` | The approach was intentionally discarded. | Record the decision and replacement. |
+| [DONE] | Complete and verified. | Link the evidence or command result. |
+| [IN PROGRESS] | Started but exit criteria are not complete. | State what remains. |
+| [NEXT] | The next recommended action. | Start after entry criteria pass. |
+| [TODO] | Planned but not started. | Do not describe it as implemented. |
+| [BLOCKED] | Safe progress cannot continue. | Record cause, impact and unblock action. |
+| [RECOMMENDED] | Useful extension, not required for the core demonstration. | Track separately from required gates. |
+| [REVIEW] | Exists but needs review or verification. | Review code, tests and documentation. |
+| [REJECTED] | Intentionally discarded. | Record the reason and replacement. |
 
-A status label must describe the current repository state, not an intention.
+A status label describes the current repository state, not an intention.
 
-## 4. Project guardrails
+## 4. Scope classification
+
+### 4.1 Required for the core demonstration
+
+These items are mandatory:
+
+1. A local Node.js web application.
+2. A reachable local MongoDB instance.
+3. A MongoDB-backed login form served by the application.
+4. A repeatable seed for one synthetic user.
+5. A normal login with the correct password that succeeds.
+6. A normal login with a wrong password that fails.
+7. A payload mode that sends a JSON object as the password value, not only a browser password string.
+8. A test of the exact assignment-shaped object:
+
+~~~json
+{"gt": ""}
+~~~
+
+9. A test of the MongoDB operator form when the selected driver and database require it:
+
+~~~json
+{"$gt": ""}
+~~~
+
+10. A controlled lab result showing the payload that actually works in the selected stack can reach an authenticated success path without the correct password.
+11. Evidence of the request, result, environment and synthetic data setup.
+12. A README section explaining how a teammate can run the demonstration locally.
+
+### 4.2 Recommended but not a blocker for the core demonstration
+
+These items improve quality and security:
+
+- A separate secure login route.
+- Strict schema validation that rejects objects and operator keys.
+- Password hashing with bcrypt or Argon2.
+- Separate secure and lab collections.
+- Automated unit, integration and security regression tests.
+- Docker Compose with a pinned MongoDB version.
+- Rate limiting, session handling and generic authentication errors.
+- CI checks for linting, tests and dependency review.
+- A short screen recording in addition to written evidence.
+
+If a recommended item is not implemented, mark it [RECOMMENDED] or [TODO]. Do not claim the core demonstration is incomplete solely because a recommended item is missing.
+
+### 4.3 Explicitly out of scope
+
+Do not add or require these items for this assignment slice:
+
+- Real users or real credentials.
+- Public deployment or a publicly reachable database.
+- Production authorization, roles or account recovery.
+- A complete commercial authentication system.
+- Unrelated application features.
+- Testing systems that the team does not own.
+- Silent changes to the required payload or acceptance criteria.
+
+## 5. Definition of done
+
+The core path is complete only when every required item below is true:
+
+- [ ] The application starts from documented commands.
+- [ ] MongoDB connectivity is verified by the application.
+- [ ] The login page loads in a browser.
+- [ ] A synthetic user can be seeded repeatedly without duplicate setup failures.
+- [ ] Correct credentials succeed through the normal path.
+- [ ] Wrong credentials fail through the normal path.
+- [ ] The browser or an equivalent client can send a nested JSON object as password.
+- [ ] The exact object from the brief, {"gt": ""}, has been tested and its result recorded.
+- [ ] The MongoDB operator form, {"$gt": ""}, has been tested if required by the selected stack.
+- [ ] The working lab payload, if different from the brief spelling, is documented with the reason.
+- [ ] The working lab path demonstrates an authenticated result without the correct password.
+- [ ] The secure path, if included, rejects the same object and is clearly separated from the lab path.
+- [ ] Evidence contains no real secrets or personal data.
+- [ ] The README and this file match the actual behavior.
+
+A payload that is merely displayed in the UI is not evidence. The request must be sent, processed and observed.
+
+## 6. Payload compatibility SOP
+
+### 6.1 Why two forms are recorded
+
+The assignment brief shows an object shaped like:
+
+~~~json
+{"gt": ""}
+~~~
+
+MongoDB query operators conventionally use a dollar-prefixed key. The documented form is:
+
+~~~json
+{"$gt": ""}
+~~~
+
+The official MongoDB syntax for a greater-than predicate uses a field with a $gt operator: [MongoDB $gt query operator documentation](https://www.mongodb.com/docs/manual/reference/operator/query/gt/).
+
+The project must test the brief-shaped object first, then test the operator-shaped object when needed. Do not silently replace one with the other and report the result as if they were identical.
+
+### 6.2 Required request shape
+
+The payload is nested inside the password field of a JSON request:
+
+~~~json
+{
+  "username": "alice",
+  "password": {
+    "$gt": ""
+  }
+}
+~~~
+
+The exact assignment-shaped variant is:
+
+~~~json
+{
+  "username": "alice",
+  "password": {
+    "gt": ""
+  }
+}
+~~~
+
+The object must be a JSON object after parsing. This escaped value is not equivalent:
+
+~~~json
+{
+  "username": "alice",
+  "password": "{\"$gt\":\"\"}"
+}
+~~~
+
+The escaped version is a string. A normal HTML password input also produces a string, so the page needs a clearly labelled payload mode, JSON editor, preset button or equivalent controlled mechanism.
+
+### 6.3 Test and record order
+
+1. Send normal credentials with a string password.
+2. Send the exact brief-shaped object.
+3. Send the dollar-prefixed operator object if the first object is treated as an ordinary field.
+4. Record the HTTP status, response marker, database/driver versions and route used.
+5. If a payload works, capture sanitized evidence of the request and response.
+6. If neither object works, mark the work item [BLOCKED] instead of weakening the acceptance criterion. Check the request type, query construction, driver version, MongoDB version and seed data before changing code.
+
+## 7. Safety guardrails
 
 These rules apply to every phase:
 
-- Use a small modular monolith unless a documented decision changes that choice.
-- Keep the secure runtime behavior as the default.
-- Keep lab-only behavior isolated, synthetic and local.
-- Never test against a system, account, API or database that the team does not own.
+- Run the lab only on localhost or another explicitly private development network.
+- Use a dedicated local database name such as modern_database_attacks_lab.
+- Use synthetic usernames and passwords only.
+- Keep the lab route disabled unless an explicit LAB_MODE flag is enabled.
+- Refuse to run the lab route when NODE_ENV indicates production.
+- Never expose MongoDB directly to the Internet.
 - Never commit real credentials, tokens, connection strings or personal data.
-- Never pass the complete client request body directly into a database query.
-- Do not expose MongoDB or a lab route to the public Internet.
-- Keep implementation, tests and documentation synchronized.
-- Prefer a small verified change over a large unverified change.
+- Never use a real login form or a third-party service as the target.
+- Keep the intentionally unsafe behavior isolated in a lab module.
+- Keep a secure route separate from the lab route when it is implemented.
+- Do not log password values, session tokens or connection strings.
+- Do not add a generic client-controlled filter to the secure route.
+- Treat the lab implementation as an educational observation, not a deployable design.
 - Do not mark a phase complete when its exit criteria are only planned.
 
-## 5. Lifecycle map
+## 8. Target architecture
 
-| Phase | Name | Primary outcome | Gate | Status |
+### 8.1 Minimal technology choice
+
+- Runtime: Node.js with Express.
+- Database: local MongoDB using the official Node.js driver.
+- Client: plain HTML, CSS and browser JavaScript.
+- Configuration: environment variables loaded from a local .env file.
+- Testing: Node test runner or the test framework selected in package.json.
+- Runtime packaging: Docker Compose is recommended for reproducibility.
+
+Keep the first implementation as a small modular monolith. Avoid adding a frontend framework or unrelated service until the required path works.
+
+### 8.2 Runtime flow
+
+~~~mermaid
+flowchart TD
+    Browser["Login form"] --> API["Express API"]
+    API --> Lab["Lab login route"]
+    Lab --> Mongo["Local MongoDB"]
+    Mongo --> Lab
+    Lab --> API
+    API --> Browser
+~~~
+
+The lab route is the only route allowed to demonstrate the intentionally unsafe query shape. It must be visibly labelled and locally guarded.
+
+### 8.3 Target folder layout
+
+This is the intended implementation tree. The current repository contains the documentation and placeholder skeleton; application files are still to be implemented.
+
+~~~text
+.
+├── README.md
+├── PROJECT_STATUS.md
+├── package.json
+├── package-lock.json
+├── .env.example
+├── .gitignore
+├── docker-compose.yml
+├── docs/
+│   ├── PROJECT_OVERVIEW.md
+│   ├── ARCHITECTURE.md
+│   ├── DATABASE.md
+│   ├── API.md
+│   ├── SECURITY.md
+│   ├── TESTING.md
+│   ├── DEVELOPMENT.md
+│   └── DEMO_GUIDE.md
+├── src/
+│   ├── app.js
+│   ├── server.js
+│   ├── config/
+│   │   └── env.js
+│   ├── db/
+│   │   ├── client.js
+│   │   ├── collections.js
+│   │   └── indexes.js
+│   ├── middleware/
+│   │   ├── error-handler.js
+│   │   └── lab-guard.js
+│   ├── modules/
+│   │   ├── health/
+│   │   │   └── health.routes.js
+│   │   └── auth/
+│   │       ├── auth.service.js
+│   │       ├── lab.routes.js
+│   │       ├── secure.routes.js
+│   │       └── validation.js
+│   ├── public/
+│   │   ├── index.html
+│   │   ├── app.js
+│   │   └── styles.css
+│   └── shared/
+│       ├── errors.js
+│       └── response.js
+├── scripts/
+│   ├── seed-lab-user.js
+│   └── reset-lab-db.js
+└── tests/
+    ├── unit/
+    ├── integration/
+    └── security/
+~~~
+
+### 8.4 Responsibility boundaries
+
+| Area | Responsibility | Must not do |
+| --- | --- | --- |
+| config | Validate environment and safe mode flags. | Print secrets. |
+| db | Own MongoDB connection and collection access. | Accept arbitrary collections from the client. |
+| auth lab | Demonstrate the controlled query-shape behavior. | Run against a production database. |
+| auth secure | Validate scalar input and verify passwords safely. | Accept client-created operators. |
+| public | Render the login form and show safe results. | Persist passwords or tokens. |
+| scripts | Seed and reset synthetic local data. | Reset an unapproved database. |
+| tests | Prove expected behavior and boundaries. | Use real accounts or public systems. |
+
+## 9. Data and API contract
+
+### 9.1 Synthetic lab data
+
+Use a dedicated collection such as lab_users and a synthetic document similar to:
+
+~~~json
+{
+  "username": "alice",
+  "password": "lab-only-demo-password",
+  "active": true
+}
+~~~
+
+The password is intentionally simple synthetic test data for a local lab. It is not a production credential and must never be reused.
+
+The seed script must be idempotent:
+
+- Running it once creates the synthetic user.
+- Running it again updates or preserves the same test user without uncontrolled duplicates.
+- It verifies the active database name before writing.
+- It never writes to a production database.
+
+### 9.2 Required endpoints
+
+| Method | Route | Priority | Purpose |
+| --- | --- | --- | --- |
+| GET | /api/health | Required | Report process and MongoDB readiness. |
+| POST | /api/lab/login-observation | Required | Local, guarded lab path for the controlled payload experiment. |
+| POST | /api/auth/login | Recommended | Secure comparison path with strict scalar validation. |
+
+The exact route names may be changed only if README, docs/API.md, the browser client and tests are updated together.
+
+The lab response should expose only a safe demonstration result, for example:
+
+~~~json
+{
+  "authenticated": true,
+  "mode": "lab",
+  "reason": "controlled local observation"
+}
+~~~
+
+Do not return the user document, password, password hash, query internals or database connection details.
+
+The secure route should reject object, array, null and numeric password values before database authentication. It should return a generic failure response for invalid credentials.
+
+### 9.3 UI modes
+
+The page must make the request type understandable:
+
+| UI mode | Input type | Purpose |
+| --- | --- | --- |
+| Normal login | Username and password strings | Prove correct and wrong password behavior. |
+| Payload test | Username plus structured JSON password | Send the two object variants without turning them into escaped strings. |
+| Secure comparison | Normal scalar credentials | Show that strict validation rejects the object. |
+
+The payload mode must display a local-lab warning and must not be available when the lab guard is disabled.
+
+## 10. Lifecycle map
+
+The core delivery path is G0 through G4. G5 and G6 are recommended extensions.
+
+| Phase | Name | Priority | Gate | Status |
 | --- | --- | --- | --- | --- |
-| 0 | Discovery and architecture | Agreed scope, architecture and documentation | G0 | `[IN PROGRESS]` |
-| 1 | Runtime bootstrap | Node process, configuration, MongoDB and health check | G1 | `[TODO]` |
-| 2 | Data foundation | Collections, indexes and repeatable seed data | G2 | `[TODO]` |
-| 3 | Secure authentication | Validated login service and secure API | G3 | `[TODO]` |
-| 4 | Local lab isolation | Clearly separated local observation path | G4 | `[TODO]` |
-| 5 | Browser client | Small user interface connected to the API | G5 | `[TODO]` |
-| 6 | Verification and evidence | Automated tests, manual checks and recorded evidence | G6 | `[TODO]` |
-| 7 | Handoff and maintenance | Synchronized docs, clean repository and continuation plan | G7 | `[TODO]` |
+| 0 | Requirement alignment and architecture | Required | G0 | [DONE] |
+| 1 | Runtime and MongoDB bootstrap | Required | G1 | [NEXT] |
+| 2 | Seed data, login API and form | Required | G2 | [TODO] |
+| 3 | Guarded payload observation | Required | G3 | [TODO] |
+| 4 | Verification, evidence and handoff | Required | G4 | [TODO] |
+| 5 | Secure remediation path | Recommended | G5 | [RECOMMENDED] [TODO] |
+| 6 | Extended tests, CI and cleanup | Recommended | G6 | [RECOMMENDED] [TODO] |
 
-A phase may contain many commits, but it cannot pass its gate until all required outputs and checks are complete.
+A phase cannot pass its gate until the required outputs and checks are complete.
 
-## 6. Quality gates
+## 11. Quality gates
 
-### Gate G0 — Scope and architecture
+### Gate G0 — Requirement and architecture
 
 Pass when:
 
-- Project scope and non-goals are written.
-- The planned source tree is accepted.
-- API and database contracts are written.
-- Secure and lab responsibilities are separated.
-- Environment variable names are fixed.
-- No unresolved decision would force a major rewrite.
+- The assignment requirement is written in this file.
+- Required, recommended and out-of-scope work are separated.
+- The two payload spellings and test order are documented.
+- The local-only and synthetic-data boundary is documented.
+- The target tree and route contract are defined.
+- The next implementation slice is small enough to verify.
 
-### Gate G1 — Runtime
+Status: [DONE] after this document update.
+
+### Gate G1 — Runtime and MongoDB
 
 Pass when a clean checkout can:
 
 - Install dependencies using the lockfile.
 - Start the pinned local MongoDB service.
-- Load configuration from `.env`.
+- Load configuration from .env.
 - Connect to MongoDB.
-- Return a healthy response from `GET /api/health`.
+- Return a healthy result from GET /api/health.
 - Shut down without hanging processes.
+- Refuse unsafe production configuration for lab mode.
 
-### Gate G2 — Data foundation
-
-Pass when:
-
-- Secure and lab collections are explicitly separated.
-- Required indexes are created.
-- Seed execution is idempotent.
-- Secure data stores only password hashes.
-- Test data uses a separate database name.
-- Reset operations are protected by an environment check.
-
-### Gate G3 — Secure authentication
+### Gate G2 — Seed, login API and form
 
 Pass when:
 
-- The request schema requires scalar strings.
-- Unknown fields and nested objects are rejected.
-- The repository finds users by an application-controlled username filter.
-- Password verification happens in application code.
-- Invalid credentials return a generic response.
-- Passwords and hashes are absent from responses and logs.
+- The synthetic lab user can be seeded repeatably.
+- The browser login page loads.
+- Correct string credentials succeed.
+- Wrong string credentials fail.
+- Unknown users fail without leaking internals.
+- Normal and payload input modes are visibly distinct.
+- The payload mode sends an object value, not a quoted JSON string.
+- The request and response contract is documented.
 
-### Gate G4 — Lab isolation
-
-Pass when:
-
-- Lab mode is opt-in.
-- Lab mode refuses to run in production.
-- Lab data is synthetic.
-- The lab route is visibly labeled.
-- The secure route does not depend on lab data.
-- The local-only restriction is tested.
-
-### Gate G5 — Browser client
+### Gate G3 — Payload observation
 
 Pass when:
 
-- The browser can submit valid credentials.
-- Success and failure states are understandable.
-- Invalid input is shown without leaking internals.
-- Lab mode is clearly distinguished from secure mode.
-- The browser does not persist passwords.
-- The UI works from the documented start command.
+- LAB_MODE is explicitly enabled.
+- The lab route refuses production mode.
+- The exact brief-shaped object has been sent.
+- The dollar-prefixed operator object has been sent when required.
+- The result of each variant is recorded.
+- A working variant demonstrates the required authentication bypass in the local lab.
+- The response contains no password, hash or query internals.
+- The secure route, if present, rejects the same object.
 
-### Gate G6 — Verification and evidence
+If no variant produces the required controlled result, the gate is [BLOCKED]. Do not mark it [DONE] based only on source code inspection.
 
-Pass when:
-
-- Unit tests pass.
-- Integration tests pass against a disposable database.
-- Security regression tests pass.
-- Manual browser checks pass.
-- Database and dependency versions are recorded.
-- Evidence contains no secrets or personal data.
-- The same setup works from a clean checkout.
-
-### Gate G7 — Handoff
+### Gate G4 — Evidence and handoff
 
 Pass when:
 
-- README commands match the actual project.
-- `PROJECT_STATUS.md` reflects the real state.
-- All changed behavior has related documentation.
-- No generated secrets, logs or local volumes are committed.
-- A teammate can identify the next task without asking for hidden context.
+- The normal success and failure cases are captured.
+- The working payload request and response are captured.
+- The exact payload variant is written down.
+- Node.js, MongoDB and driver versions are recorded.
+- The setup works from the README.
+- The evidence is sanitized.
+- PROJECT_STATUS.md and docs match the implementation.
+- A teammate can repeat the demonstration locally.
 
-## 7. Universal SOP for every work item
+### Gate G5 — Secure remediation
 
-Use this procedure for every feature, fix, test or documentation change.
+Recommended gate. Pass when:
 
-### Step 1 — Define the work item
+- The secure route rejects nested objects and operator keys.
+- Password verification uses a password hash.
+- The repository owns the filter shape.
+- Invalid credentials are generic.
+- Security regression tests prove the payload does not bypass the secure route.
 
-Write one sentence using an action verb:
+This gate improves the project but is not required to show the isolated lab behavior.
 
-- Add MongoDB health check.
-- Create idempotent seed script.
-- Add strict login schema.
-- Add security regression tests.
-- Synchronize API documentation.
+### Gate G6 — Extended quality
 
-A work item should have one owner, one intended outcome and a clear completion check.
+Recommended gate. Pass when:
 
-### Step 2 — Check entry criteria
+- Unit and integration tests are automated.
+- Browser smoke verification is automated or repeatable.
+- CI runs the required checks.
+- Dependency and secret checks are present.
+- Temporary lab artifacts are excluded from commits.
+- The handoff instructions are complete.
 
-Before editing, confirm:
+## 12. Phase SOPs
 
-- The parent phase is active.
-- Required dependencies exist.
-- The target files are known.
-- No blocker is already recorded.
-- The change is allowed by the project guardrails.
+## Phase 0 — Requirement alignment and architecture
 
-### Step 3 — Inspect before editing
-
-Review:
-
-- Existing file tree.
-- Related documentation.
-- Current environment configuration.
-- Existing tests.
-- Recent changes and unresolved decisions.
-
-Do not design against a file that has not been inspected.
-
-### Step 4 — Implement the smallest coherent change
-
-- Keep the change within the selected scope.
-- Reuse existing module boundaries.
-- Avoid unrelated refactors.
-- Keep secure and lab behavior visibly separate.
-- Add or update tests with the behavior.
-
-### Step 5 — Verify locally
-
-Run the smallest relevant checks first, then the phase gate checks. Record the command and result.
-
-### Step 6 — Review the diff
-
-Check for:
-
-- Secrets and personal data.
-- Accidental files.
-- Untracked generated files.
-- Inconsistent names.
-- Missing error handling.
-- Documentation that no longer matches behavior.
-
-### Step 7 — Update project control documents
-
-Update:
-
-- This file if status, phase, blocker or next action changed.
-- The relevant `docs/*.md` file if a contract or design changed.
-- The README if setup commands changed.
-
-### Step 8 — Commit the work
-
-Use one focused commit message. Examples:
-
-- `build: add local runtime`
-- `feat: add secure authentication`
-- `test: add object-type regression cases`
-- `docs: synchronize database contract`
-
-### Step 9 — Record the handoff
-
-Write what is complete, what was verified, what remains and what the next person should do first.
-
-## 8. Phase SOPs
-
-## Phase 0 — Discovery and architecture
-
-**Objective:** create a stable design before application logic is written.
-
-### Entry criteria
-
-- Repository is accessible.
-- Project topic and local-only boundary are understood.
-- No source implementation is required for this phase.
+**Objective:** convert the brief into testable requirements and a small implementation plan.
 
 ### Procedure
 
-1. Read `README.md`.
-2. Read `docs/PROJECT_OVERVIEW.md`.
-3. Read `docs/ARCHITECTURE.md`.
-4. Read `docs/DATABASE.md`.
-5. Read `docs/API.md`.
-6. Read `docs/SECURITY.md`.
-7. Read `docs/TESTING.md`.
-8. Confirm the modular monolith structure.
-9. Confirm the `users` and `lab_users` separation.
-10. Confirm the environment variable names.
-11. Record unresolved decisions in this file.
+1. Read the assignment brief.
+2. Write the required demonstration in plain language.
+3. Separate required and recommended work.
+4. Define normal login behavior.
+5. Define wrong-password behavior.
+6. Define the exact object variant and the MongoDB operator variant.
+7. Define the object-versus-string UI requirement.
+8. Define the local lab boundary.
+9. Confirm the target folder layout.
+10. Confirm route names and response fields.
+11. Update README and docs when the implementation contract changes.
 
 ### Required outputs
 
-- Architecture documentation.
-- Database contract.
+- This status document.
+- Architecture and database documentation.
 - API contract.
-- Security model.
-- Testing strategy.
-- Application skeleton.
-- Updated progress status.
+- Security boundary.
+- Testing matrix.
+- Empty application skeleton.
 
 ### Exit criteria
 
-- No major implementation decision is hidden in chat or memory.
-- The first implementation slice is limited to runtime and health checking.
-- The team agrees not to add unrelated features.
+- Another teammate can explain the required path without hidden chat context.
+- The first implementation slice is runtime and health only.
+- No major requirement is represented only by a vague note.
 
-## Phase 1 — Runtime bootstrap
+## Phase 1 — Runtime and MongoDB bootstrap
 
-**Objective:** prove that the application process and local database can start reliably.
+**Objective:** prove the process and database can start reliably.
 
 ### Procedure
 
-1. Add `package.json`.
+1. Add package.json.
 2. Add and commit the lockfile.
-3. Add `.gitignore`.
-4. Add `.env.example`.
-5. Add configuration loading with safe defaults.
-6. Add Docker Compose with a pinned MongoDB image.
-7. Add MongoDB connection management.
-8. Add graceful startup and shutdown.
-9. Add `GET /api/health`.
-10. Add a small runtime test.
-11. Run the setup from a clean checkout.
+3. Add .gitignore and .env.example.
+4. Add a pinned local MongoDB service.
+5. Add environment validation.
+6. Add MongoDB connection management.
+7. Add graceful startup and shutdown.
+8. Add GET /api/health.
+9. Add a minimal runtime test.
+10. Run setup from a clean checkout.
+11. Update this file with G1 evidence.
 
 ### Required outputs
 
-- `package.json` and lockfile.
-- `.env.example`.
-- `.gitignore`.
-- `docker-compose.yml`.
+- package.json and lockfile.
+- .env.example.
+- .gitignore.
+- docker-compose.yml or equivalent local setup.
 - Configuration module.
 - Database client module.
 - Health route.
@@ -337,175 +561,285 @@ Write what is complete, what was verified, what remains and what the next person
 ### Exit criteria
 
 - A new machine can run the documented setup.
-- Health reports HTTP and database state.
-- Invalid configuration fails with a clear message.
+- Health reports process and database readiness.
+- Invalid configuration fails clearly.
 - Shutdown closes the MongoDB client.
 - No secret is printed or committed.
 
-## Phase 2 — Data foundation
+## Phase 2 — Seed data, login API and form
 
-**Objective:** create deterministic synthetic data and explicit database boundaries.
-
-### Procedure
-
-1. Define collection constants.
-2. Implement index creation.
-3. Implement secure user schema.
-4. Implement optional lab user schema.
-5. Implement idempotent seed script.
-6. Generate password hashes inside the seed process.
-7. Add a separate test database.
-8. Add a guarded reset script.
-9. Add integration tests for indexes and seed repeatability.
-10. Update `docs/DATABASE.md` if behavior differs from the plan.
-
-### Exit criteria
-
-- Running seed twice does not duplicate users.
-- Secure collection contains hashes, not plaintext passwords.
-- Lab data is synthetic and separate.
-- Indexes exist after setup.
-- Reset cannot target an unexpected database.
-
-## Phase 3 — Secure authentication
-
-**Objective:** implement the secure path as the default behavior.
+**Objective:** create the normal login baseline before testing the object payload.
 
 ### Procedure
 
-1. Define a strict login schema.
-2. Reject unknown request keys.
-3. Reject objects, arrays, null and numbers in scalar fields.
-4. Normalize the username consistently.
-5. Implement `findUserByUsername`.
-6. Implement password-hash verification.
-7. Add generic invalid-credential errors.
-8. Add inactive-user handling.
-9. Add rate limiting suitable for the local app.
-10. Add unit and integration tests.
-11. Inspect responses and logs for secret leakage.
+1. Define the lab database and collection constants.
+2. Implement an idempotent synthetic-user seed.
+3. Add the normal login route.
+4. Add the login service and explicit query construction.
+5. Add the browser page.
+6. Add normal string input mode.
+7. Add payload JSON input mode.
+8. Make the lab warning visible.
+9. Test correct password, wrong password and unknown user.
+10. Update API and demo documentation.
+11. Update this file with G2 evidence.
 
 ### Exit criteria
 
-- Valid credentials work.
-- Invalid credentials fail.
-- Non-string password input is rejected before database authentication.
-- The repository does not accept a client-generated filter.
-- Password hashes never leave the service boundary.
-- Tests cover all required input types.
+- Correct string credentials succeed.
+- Wrong string credentials fail.
+- Unknown users fail safely.
+- The page can send a nested object.
+- The page does not persist password values.
+- Seed can be repeated against the dedicated lab database.
 
-## Phase 4 — Isolated local lab path
+## Phase 3 — Guarded payload observation
 
-**Objective:** make the unsafe query-shape behavior observable without weakening the secure path.
+**Objective:** demonstrate the query-shape behavior in a local, isolated route.
 
 ### Procedure
 
-1. Add an explicit `LAB_MODE` guard.
-2. Require a local host.
-3. Require a non-production environment.
-4. Use the separate `lab_users` collection.
-5. Add visible lab-only labels.
-6. Keep the route out of the default secure route.
-7. Add tests for enabled and disabled modes.
-8. Record driver, database and seed versions.
-9. Document that observed behavior is implementation-dependent.
-10. Check that no real credentials are used.
+1. Add the LAB_MODE guard.
+2. Refuse the lab route in production mode.
+3. Confirm the test database name.
+4. Send the exact brief-shaped object.
+5. Send the dollar-prefixed operator object if required.
+6. Record request body shape, route, status and result.
+7. Record Node.js, driver and MongoDB versions.
+8. Capture sanitized browser or network evidence.
+9. Keep the secure route separate.
+10. Update docs with the observed behavior, including any version dependency.
+11. Update this file with G3 evidence.
 
 ### Exit criteria
 
-- Lab mode is opt-in.
-- The lab route is unavailable in production.
-- Secure authentication does not depend on lab mode.
-- The evidence is reproducible locally.
-- The documentation does not overstate the result.
+- The working variant produces the required local authentication bypass.
+- The bypass does not require a real account or real credential.
+- The browser and API both show which mode is active.
+- The evidence can be repeated.
+- The behavior is not exposed as a public service.
 
-## Phase 5 — Browser client
+## Phase 4 — Verification, evidence and handoff
 
-**Objective:** provide a minimal user interface that makes the request and response behavior understandable.
+**Objective:** make the result reproducible and easy to assess.
 
 ### Procedure
 
-1. Create the static page.
-2. Add username and password fields.
-3. Add loading and error states.
-4. Add secure-mode labels.
-5. Add a clearly separated local lab control only when enabled.
-6. Send JSON to the documented endpoint.
-7. Clear password fields after submission.
-8. Do not store credentials in local storage.
-9. Test keyboard and browser error behavior.
-10. Add a browser smoke check.
+1. Run the complete required test matrix.
+2. Repeat the setup from a clean checkout.
+3. Capture a screenshot of the normal login form.
+4. Capture normal success and wrong-password failure.
+5. Capture the payload request and successful lab response.
+6. Record the exact payload spelling that worked.
+7. Record versions and commands.
+8. Review logs for secrets.
+9. Update README, docs and this file.
+10. Commit the coherent implementation and documentation.
+11. Write the next recommended work item.
 
 ### Exit criteria
 
-- The UI works from the documented command.
-- Success and failure are understandable.
-- The UI does not expose internal errors.
-- Password values are not persisted.
-- Lab and secure paths cannot be confused.
+- All required acceptance criteria are checked.
+- Evidence has no real secrets or personal data.
+- The repository tells a teammate exactly how to reproduce the result.
+- Any environment-specific limitation is documented.
 
-## Phase 6 — Verification and evidence
+## Phase 5 — Secure remediation path
 
-**Objective:** prove that the application and its security boundary work from a clean setup.
+**Priority:** Recommended.
 
 ### Procedure
 
-1. Run lint and formatting checks.
-2. Run unit tests.
-3. Start a disposable database.
-4. Run seed and integration tests.
-5. Run security regression tests.
-6. Run the browser smoke check.
-7. Stop the services and repeat from a clean checkout.
-8. Record versions and commands.
-9. Review logs for secrets.
-10. Capture sanitized evidence.
-11. Compare implementation against every document.
+1. Add a separate secure route.
+2. Validate that username and password are scalar strings.
+3. Reject nested objects, arrays, null and operator keys.
+4. Use password hashes.
+5. Keep the database filter application-controlled.
+6. Return generic invalid-credential responses.
+7. Add a regression test using both payload variants.
+8. Label the secure route as the comparison path.
 
 ### Exit criteria
 
-- All required tests pass.
-- Clean-checkout setup succeeds.
-- Database failure is handled.
-- Unexpected input is rejected.
-- Evidence contains no secrets.
-- Documentation matches actual behavior.
+- The same payload cannot bypass the secure route.
+- The lab route remains isolated and explicitly labelled.
+- Documentation explains the contrast between the two paths.
 
-## Phase 7 — Handoff and maintenance
+## Phase 6 — Extended tests, CI and cleanup
 
-**Objective:** leave the repository understandable and safe for the next work session.
+**Priority:** Recommended.
 
 ### Procedure
 
-1. Update README commands.
-2. Update the relevant architecture and API sections.
-3. Update this status file.
-4. Remove temporary logs and local artifacts.
-5. Check `.gitignore`.
-6. Review the complete tree.
-7. Record known limitations.
-8. Record the next work item.
-9. Commit documentation synchronization.
+1. Add unit tests for validation and response mapping.
+2. Add integration tests against a disposable MongoDB database.
+3. Add a browser smoke test.
+4. Add lint, format and dependency checks.
+5. Add CI only after local commands are stable.
+6. Remove temporary logs and local artifacts.
+7. Verify .gitignore.
+8. Review the tree and README.
 
 ### Exit criteria
 
-- Another teammate can start the project from the README.
-- The current phase and next action are unambiguous.
-- No hidden manual setup is required.
-- Known risks and limitations are written down.
+- Local and CI commands agree.
+- Tests are repeatable.
+- No generated secret or database volume is committed.
+- The project remains small and focused.
 
-## 9. Work item template
+## 13. Required test matrix
 
-Copy this template into an issue or work note before starting a substantial task:
+| Case | Request password value | Expected purpose | Result to record |
+| --- | --- | --- | --- |
+| Health | Not applicable | Prove process and database readiness. | Status and database state. |
+| Correct normal login | String | Prove baseline success. | Success response and screenshot. |
+| Wrong normal login | String | Prove ordinary failure. | Failure status and message. |
+| Unknown user | String | Prove user lookup failure. | Generic failure. |
+| Brief-shaped object | {"gt": ""} | Test the exact brief spelling. | Whether it is treated as an operator or ordinary field. |
+| Operator object | {"$gt": ""} | Test MongoDB operator form. | Whether controlled bypass occurs. |
+| Escaped operator | "{\"$gt\":\"\"}" | Prove object-versus-string distinction. | Type and authentication result. |
+| Missing password | Missing field | Prove request handling. | Validation status. |
+| Array or number | Non-scalar value | Recommended boundary check. | Rejection or lab observation. |
+| Secure route object | Object | Recommended remediation check. | Must reject without bypass. |
 
-```markdown
+The expected result of the two object cases is an observation to record, not an assumption. The core evidence must show which payload and environment produced the working result.
+
+## 14. Evidence checklist
+
+### Required evidence
+
+- [ ] Screenshot or recording of the login form.
+- [ ] Normal correct-password request and success.
+- [ ] Normal wrong-password request and failure.
+- [ ] Exact brief-shaped payload request.
+- [ ] Operator-shaped payload request when required.
+- [ ] Successful local lab response without the correct password.
+- [ ] Seed command and synthetic user identifier.
+- [ ] Node.js, MongoDB and driver versions.
+- [ ] Startup and shutdown commands.
+- [ ] README reproduction steps.
+- [ ] Link to the relevant commit.
+
+### Evidence safety rules
+
+- Hide or replace all real secrets.
+- Do not publish a MongoDB connection string containing credentials.
+- Do not show real user documents.
+- Do not show password hashes from a real account.
+- Do not include session tokens.
+- Prefer a sanitized network payload and safe response marker.
+- Keep screenshots and recordings local unless the team explicitly approves sharing.
+
+## 15. Blocker and decision procedures
+
+### 15.1 Payload mismatch blocker
+
+Use this procedure if the object shown in the brief does not produce the same result as the operator form:
+
+1. Confirm the request has Content-Type application/json.
+2. Confirm password is parsed as an object, not a string.
+3. Confirm the route under test is the guarded lab route.
+4. Confirm the database and collection contain the synthetic user.
+5. Confirm the exact brief-shaped object was tested first.
+6. Test the dollar-prefixed operator form.
+7. Record MongoDB, driver and Node.js versions.
+8. Record both results in the test matrix.
+9. If a working variant exists, document the difference explicitly.
+10. If no working variant exists, mark G3 [BLOCKED] and investigate before changing the acceptance criterion.
+
+### 15.2 General design decision
+
+When a new design choice appears:
+
+1. State the problem.
+2. List the smallest number of viable options.
+3. Compare safety, complexity, reproducibility and teaching value.
+4. Choose one option.
+5. Record the reason and consequence.
+6. Update affected documents.
+
+Decision format:
+
+~~~markdown
+### Decision: <short title>
+
+**Date:** YYYY-MM-DD
+
+**Decision:** <chosen option>
+
+**Reason:** <why>
+
+**Trade-off:** <what becomes easier or harder>
+
+**Documents to update:** <paths>
+~~~
+
+### 15.3 Blocker format
+
+~~~markdown
+### Blocker
+
+**Status:** [BLOCKED]
+
+**Detected in:** Phase <number>, Gate <name>
+
+**Cause:** <exact cause>
+
+**Impact:** <what cannot continue>
+
+**Unblock action:** <specific action>
+
+**Owner:** <person>
+~~~
+
+Do not hide a blocker by weakening the payload test, removing the evidence requirement or silently changing the database target.
+
+## 16. Git and review procedure
+
+Use focused commits. Do not mix runtime setup, payload behavior and unrelated refactoring in one commit.
+
+Recommended sequence:
+
+1. Create a branch for the current phase or work item.
+2. Make the smallest coherent change.
+3. Run the relevant checks.
+4. Review the diff for secrets and scope expansion.
+5. Update status and documentation.
+6. Commit with an action-based message.
+7. Check the commit against the phase gate.
+
+Suggested branch names:
+
+- phase-1/runtime-bootstrap
+- phase-2/login-form
+- phase-3/payload-observation
+- phase-4/evidence
+- phase-5/secure-remediation
+- phase-6/quality
+
+Suggested commit messages:
+
+- build: add local runtime
+- feat: add synthetic lab seed
+- feat: add login form
+- test: record payload behavior
+- docs: update demonstration evidence
+- fix: isolate lab route
+
+## 17. Work item and session templates
+
+### Work item template
+
+~~~markdown
 ## Work item: <action>
 
 **Phase:** Phase <number>
 
+**Priority:** Required or Recommended
+
 **Owner:** <person>
 
-**Status:** `[TODO]`
+**Status:** [TODO]
 
 ### Objective
 
@@ -529,7 +863,7 @@ Copy this template into an issue or work note before starting a substantial task
 
 ### Evidence
 
-- <test output, commit or screenshot>
+- <test output, screenshot or commit>
 
 ### Blockers
 
@@ -540,119 +874,16 @@ Copy this template into an issue or work note before starting a substantial task
 **Completed:** <what changed>
 
 **Next:** <next action>
-```
+~~~
 
-## 10. Blocker procedure
+### Session update template
 
-When work cannot proceed:
-
-1. Stop at the failed quality gate.
-2. Mark the work item `[BLOCKED]`.
-3. Write the exact error or missing decision.
-4. Identify whether the blocker is code, environment, access, design or dependency related.
-5. Propose one unblock action.
-6. Do not hide the blocker by changing the acceptance criteria.
-7. Resume only after the blocker is resolved and recorded.
-
-Blocker format:
-
-```markdown
-### Blocker
-
-**Status:** `[BLOCKED]`
-
-**Detected in:** Phase <number>, Gate <name>
-
-**Cause:** <exact cause>
-
-**Impact:** <what cannot continue>
-
-**Unblock action:** <specific action>
-
-**Owner:** <person>
-```
-
-## 11. Decision procedure
-
-When a new design choice appears:
-
-1. State the problem.
-2. List the smallest number of viable options.
-3. Compare security, complexity, testability and teaching value.
-4. Choose one option.
-5. Record the reason and consequence.
-6. Update affected documents.
-
-Do not silently change the database model, API contract or runtime mode.
-
-Decision format:
-
-```markdown
-### Decision: <short title>
-
-**Date:** YYYY-MM-DD
-
-**Decision:** <chosen option>
-
-**Reason:** <why>
-
-**Trade-off:** <what becomes easier or harder>
-
-**Documents to update:** <paths>
-```
-
-## 12. Testing and evidence rules
-
-Every completed implementation item must have at least one form of evidence:
-
-- Automated test output.
-- Manual command output.
-- Browser screenshot.
-- Reproducible setup transcript.
-- Code review result.
-
-Evidence must be sanitized. Do not include:
-
-- Real passwords.
-- Password hashes from a real account.
-- Connection strings with credentials.
-- Session tokens.
-- Personal data.
-- Public URLs to a local database.
-
-## 13. Git and review procedure
-
-Use focused commits and avoid mixing documentation, runtime setup and authentication behavior in one commit.
-
-Recommended sequence:
-
-1. Create a branch for the phase or work item.
-2. Make the smallest coherent change.
-3. Run the relevant checks.
-4. Review the diff.
-5. Update status and documentation.
-6. Commit with an action-based message.
-7. Review the commit against the phase exit criteria.
-
-Suggested branch names:
-
-- `phase-1/runtime-bootstrap`
-- `phase-2/data-foundation`
-- `phase-3/secure-authentication`
-- `phase-4/lab-isolation`
-- `phase-5/browser-client`
-- `phase-6/verification`
-
-## 14. Session update format
-
-At the end of every session, update the relevant section using this format:
-
-```markdown
+~~~markdown
 ### Session update — YYYY-MM-DD
 
 **Phase:** Phase <number>
 
-**Status:** `[IN PROGRESS]`
+**Status:** [IN PROGRESS]
 
 **Completed:**
 
@@ -660,7 +891,7 @@ At the end of every session, update the relevant section using this format:
 
 **Verified with:**
 
-- `<command>`
+- <command>
 
 **Known issues:**
 
@@ -669,64 +900,67 @@ At the end of every session, update the relevant section using this format:
 **Next action:**
 
 1. <one concrete next step>
-```
+~~~
 
-## 15. Current snapshot
+## 18. Current snapshot
 
 ### Completed
 
-- `[DONE]` Repository is accessible.
-- `[DONE]` Project scope and non-goals are documented.
-- `[DONE]` Application architecture is documented.
-- `[DONE]` Database design is documented.
-- `[DONE]` API contracts are documented.
-- `[DONE]` Security model is documented.
-- `[DONE]` Testing strategy is documented.
-- `[DONE]` Development workflow is documented.
-- `[DONE]` Local demonstration guide is documented.
-- `[DONE]` Application folder skeleton exists.
-- `[DONE]` SDLC and SOP operating procedure is documented.
-
-### In progress
-
-- `[IN PROGRESS]` Review the architecture and agree on the first implementation slice.
+- [DONE] Repository is accessible.
+- [DONE] The required MongoDB login demonstration is written as testable acceptance criteria.
+- [DONE] Required, recommended and out-of-scope work are separated.
+- [DONE] The object-versus-string payload issue is documented.
+- [DONE] Both payload spellings and their test order are documented.
+- [DONE] Local-only and synthetic-data guardrails are documented.
+- [DONE] Target architecture and folder layout are documented.
+- [DONE] Database and API contracts are documented.
+- [DONE] Testing and evidence requirements are documented.
+- [DONE] Application folder skeleton exists.
+- [DONE] SDLC and SOP operating procedure is documented.
 
 ### Not started
 
-- `[TODO]` Node.js package setup.
-- `[TODO]` Environment configuration.
-- `[TODO]` Docker Compose.
-- `[TODO]` MongoDB client.
-- `[TODO]` Health endpoint.
-- `[TODO]` Collections and seed script.
-- `[TODO]` Secure authentication.
-- `[TODO]` Lab isolation.
-- `[TODO]` Browser client.
-- `[TODO]` Automated tests.
-- `[TODO]` CI workflow.
+- [TODO] Node.js package setup and lockfile.
+- [TODO] Environment configuration.
+- [TODO] Local MongoDB service.
+- [TODO] MongoDB client and health endpoint.
+- [TODO] Synthetic lab-user seed.
+- [TODO] Login API.
+- [TODO] Login form and payload mode.
+- [TODO] Guarded lab behavior.
+- [TODO] Required evidence capture.
+- [RECOMMENDED] Secure comparison route.
+- [RECOMMENDED] Automated security regression tests.
+- [RECOMMENDED] CI workflow.
 
-## 16. Next recommended work item
+### Current blocker
 
-**`[NEXT]` Phase 1 — Runtime bootstrap**
+- None recorded.
+- G3 must not be marked complete until a real local request demonstrates the working payload result.
 
-Start with one focused slice:
+## 19. Next recommended work item
 
-1. Add `package.json`.
-2. Add `.gitignore`.
-3. Add `.env.example`.
-4. Add Docker Compose.
+[NEXT] Phase 1 — Runtime and MongoDB bootstrap.
+
+Work on one focused slice:
+
+1. Add package.json and the lockfile.
+2. Add .gitignore and .env.example.
+3. Add a pinned local MongoDB setup.
+4. Add configuration validation.
 5. Add the MongoDB client.
-6. Add `GET /api/health`.
+6. Add GET /api/health.
 7. Add one runtime test.
 8. Run the setup from a clean checkout.
-9. Update this file with Gate G1 evidence.
+9. Record the G1 command and result here.
 
-Do not start authentication, browser polish or lab behavior before Gate G1 passes.
+Do not begin payload behavior until G1 passes. Do not treat source code that merely constructs a query as proof of the required demonstration.
 
-## 17. Change log
+## 20. Change log
 
 | Date | Change |
 | --- | --- |
-| 2026-09-12 | Added architecture documentation and initial source skeleton. |
+| 2026-09-12 | Added architecture documentation and the application skeleton. |
 | 2026-09-12 | Added the project progress flag. |
-| 2026-09-12 | Expanded the progress flag into an SDLC execution guide with phase SOPs, quality gates and handoff procedures. |
+| 2026-09-12 | Expanded the progress flag into an SDLC execution guide with phase SOPs and quality gates. |
+| 2026-09-12 | Re-scoped the control document around the MongoDB login demonstration, explicit acceptance criteria, payload compatibility, evidence and required-versus-recommended work. |
