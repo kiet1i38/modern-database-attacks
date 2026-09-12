@@ -26,7 +26,7 @@ Clone and install:
 ~~~bash
 git clone https://github.com/kiet1i38/modern-database-attacks.git
 cd modern-database-attacks
-npm install
+npm ci
 cp .env.example .env
 ~~~
 
@@ -143,6 +143,8 @@ curl -X POST http://127.0.0.1:3000/api/lab/login-observation \
   -H "Content-Type: application/json" \
   -d '{"username":"alice","password":{"$exists":true}}'
 ~~~
+
+The word "like" in the assignment is illustrative, not a limit to `$gt` alone. This project uses a bounded catalog of six operator-shaped values. MongoDB operator syntax uses the `$` prefix, so `{ "gt": "" }` is not the same as `{ "$gt": "" }` and is intentionally rejected by the lab validator.
 
 These payloads are intentionally available only in the local lab route. The route is not a secure authentication implementation.
 

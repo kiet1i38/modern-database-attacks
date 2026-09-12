@@ -131,6 +131,17 @@ test("secure route rejects object passwords before database lookup", async (t) =
 
   assert.equal(response.status, 400);
   assert.equal(body.error.code, "INVALID_INPUT");
+
+  const unprefixedResponse = await fetch(running.url + "/api/auth/login", {
+    method: "POST",
+    headers: { "content-type": "application/json" },
+    body: JSON.stringify({
+      username: "alice",
+      password: { gt: "" }
+    })
+  });
+
+  assert.equal(unprefixedResponse.status, 400);
   assert.equal(running.fake.calls.length, 0);
 });
 

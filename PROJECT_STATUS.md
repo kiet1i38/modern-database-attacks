@@ -6,9 +6,9 @@
 
 **Last updated:** 2026-09-12
 
-**Current focus:** Phase 1 — Runtime and MongoDB bootstrap
+**Current focus:** Phase 6 — Evidence closeout and handoff
 
-**Overall status:** [IN PROGRESS]
+**Overall status:** [DONE] Core local demonstration verified; recommended hardening remains
 
 ## 1. Purpose and source of truth
 
@@ -22,7 +22,7 @@ The assignment brief is the source of truth for the core scope:
 
 - Category 4 — Web & Authentication
 - Topic 12 — Modern Database Attacks
-- Required demonstration: create a MongoDB-backed login form and demonstrate authentication bypass with MongoDB's dollar-prefixed greater-than-empty operator `{ "$gt": "" }`, plus related operator variants, logging in without the correct password.
+- Required demonstration: create a MongoDB-backed login form and demonstrate authentication bypass with a MongoDB operator payload such as `{ "$gt": "" }` (greater than empty), logging in without the correct password. The word "like" is illustrative: it permits related operator variants, not only `$gt`. Because MongoDB operator syntax uses `$`, the unprefixed `{ "gt": "" }` shape is a different plain object and is rejected by the lab validator.
 
 The project must remain a controlled local laboratory. It must use synthetic data and must never target a real account, real credential or an externally owned system.
 
@@ -123,19 +123,20 @@ Do not add or require these items for this assignment slice:
 
 The core path is complete only when every required item below is true:
 
-- [ ] The application starts from documented commands.
-- [ ] MongoDB connectivity is verified by the application.
-- [ ] The login page loads in a browser.
-- [ ] A synthetic user can be seeded repeatedly without duplicate setup failures.
-- [ ] Correct credentials succeed through the normal path.
-- [ ] Wrong credentials fail through the normal path.
-- [ ] The browser or an equivalent client can send a nested JSON object as password.
-- [ ] The greater-than-empty operator, `{ "$gt": "" }`, has been tested and its result recorded.
-- [ ] The related allowlisted operator payloads have been tested and their results recorded.
-- [ ] The working lab path demonstrates an authenticated result without the correct password.
-- [ ] The secure path, if included, rejects the same object and is clearly separated from the lab path.
-- [ ] Evidence contains no real secrets or personal data.
-- [ ] The README and this file match the actual behavior.
+- [x] The application starts from documented commands.
+- [x] MongoDB connectivity is verified by the application.
+- [x] The login page loads in a browser.
+- [x] A synthetic user can be seeded repeatedly without duplicate setup failures.
+- [x] Correct credentials succeed through the normal path.
+- [x] Wrong credentials fail through the normal path.
+- [x] The browser or an equivalent client can send a nested JSON object as password.
+- [x] The greater-than-empty operator, `{ "$gt": "" }`, has been tested and its result recorded.
+- [x] The related allowlisted operator payloads have been tested and their results recorded.
+- [x] The working lab path demonstrates an authenticated result without the correct password.
+- [x] The secure path, if included, rejects the same object and is clearly separated from the lab path.
+- [x] Evidence contains no real secrets or personal data.
+- [x] The README and this file match the actual behavior.
+- [x] The unprefixed assignment-shaped object `{ "gt": "" }` is documented as a non-operator and rejected.
 
 A payload that is merely displayed in the UI is not evidence. The request must be sent, processed and observed.
 
@@ -238,7 +239,7 @@ The lab route is the only route allowed to demonstrate the intentionally unsafe 
 
 ### 8.3 Target folder layout
 
-This is the intended implementation tree. The current repository contains the documentation and placeholder skeleton; application files are still to be implemented.
+This is the implementation tree. The repository now contains the runnable application, tests, Docker configuration, browser client and supporting documentation; use the tree below as the ownership map.
 
 ~~~text
 .
@@ -286,8 +287,8 @@ This is the intended implementation tree. The current repository contains the do
 │       ├── errors.js
 │       └── response.js
 ├── scripts/
-│   ├── seed-lab-user.js
-│   └── reset-lab-db.js
+│   ├── seed.js
+│   └── reset-db.js
 └── tests/
     ├── unit/
     ├── integration/
@@ -372,14 +373,14 @@ The core delivery path is G0 through G4. G5 and G6 are recommended extensions.
 | Phase | Name | Priority | Gate | Status |
 | --- | --- | --- | --- | --- |
 | 0 | Requirement alignment and architecture | Required | G0 | [DONE] |
-| 1 | Runtime and MongoDB bootstrap | Required | G1 | [REVIEW] |
-| 2 | Seed data, login API and form | Required | G2 | [REVIEW] |
-| 3 | Guarded payload observation | Required | G3 | [REVIEW] |
-| 4 | Verification, evidence and handoff | Required | G4 | [NEXT] |
-| 5 | Secure remediation path | Recommended | G5 | [REVIEW] |
-| 6 | Extended tests, CI and cleanup | Recommended | G6 | [REVIEW] |
+| 1 | Runtime and MongoDB bootstrap | Required | G1 | [DONE] |
+| 2 | Seed data, login API and form | Required | G2 | [DONE] |
+| 3 | Guarded payload observation | Required | G3 | [DONE] |
+| 4 | Verification, evidence and handoff | Required | G4 | [DONE] |
+| 5 | Secure remediation path | Recommended | G5 | [DONE] |
+| 6 | Extended tests, CI and cleanup | Recommended | G6 | [IN PROGRESS] |
 
-The implementation for phases 1 through 3 and the recommended secure path now exists in the repository. It is not marked complete until the relevant local or CI evidence is recorded.
+The implementation for phases 1 through 5 exists and the required runtime, MongoDB, API, browser and CI evidence is recorded. Phases 0 through 5 pass their gates. Phase 6 remains an optional quality track because dependency-audit and production-hardening findings are documented but not fully resolved.
 
 A phase cannot pass its gate until the required outputs and checks are complete.
 
@@ -410,6 +411,8 @@ Pass when a clean checkout can:
 - Shut down without hanging processes.
 - Refuse unsafe production configuration for lab mode.
 
+Status: [DONE] — Docker/MongoDB runtime, health, seed and production guard are recorded in the local evidence set.
+
 ### Gate G2 — Seed, login API and form
 
 Pass when:
@@ -422,6 +425,8 @@ Pass when:
 - Normal and payload input modes are visibly distinct.
 - The payload mode sends an object value, not a quoted JSON string.
 - The request and response contract is documented.
+
+Status: [DONE] — secure and lab routes, browser modes and six operator presets are implemented and documented.
 
 ### Gate G3 — Payload observation
 
@@ -437,6 +442,8 @@ Pass when:
 
 If no variant produces the required controlled result, the gate is [BLOCKED]. Do not mark it [DONE] based only on source code inspection.
 
+Status: [DONE] — all six documented operator variants were observed against the local Docker/MongoDB stack, with negative and validation cases recorded.
+
 ### Gate G4 — Evidence and handoff
 
 Pass when:
@@ -450,6 +457,8 @@ Pass when:
 - PROJECT_STATUS.md and docs match the implementation.
 - A teammate can repeat the demonstration locally.
 
+Status: [DONE] — Docker/API/browser evidence, versions, recovery checks and reproduction commands are recorded.
+
 ### Gate G5 — Secure remediation
 
 Recommended gate. Pass when:
@@ -461,6 +470,8 @@ Recommended gate. Pass when:
 - Security regression tests prove the payload does not bypass the secure route.
 
 This gate improves the project but is not required to show the isolated lab behavior.
+
+Status: [DONE] — the secure route uses scalar validation, application-controlled lookup and hashed-password verification.
 
 ### Gate G6 — Extended quality
 
@@ -679,6 +690,7 @@ Recommended gate. Pass when:
 | `$regex` object | {"$regex": ".*"} | Test broad regex matching. | Whether controlled bypass occurs. |
 | `$nin` object | {"$nin": ["not-the-password"]} | Test list exclusion semantics. | Whether controlled bypass occurs. |
 | `$exists` object | {"$exists": true} | Test field-existence semantics. | Whether controlled bypass occurs. |
+| Unprefixed `gt` object | {"gt": ""} | Prove the assignment-shaped plain object is not the `$gt` operator. | `400` in the lab validator. |
 | Escaped operator | "{\"$gt\":\"\"}" | Prove object-versus-string distinction. | Type and authentication result. |
 | Missing password | Missing field | Prove request handling. | Validation status. |
 | Array or number | Non-scalar value | Recommended boundary check. | Rejection or lab observation. |
@@ -889,72 +901,55 @@ Suggested commit messages:
 
 ### Completed
 
-- [DONE] Repository is accessible.
-- [DONE] Required scope, safety boundary and acceptance criteria are documented.
-- [DONE] Required, recommended and out-of-scope work are separated.
-- [DONE] Payload object-versus-string behavior is documented.
-- [DONE] Target architecture and folder layout are documented.
-- [DONE] Node.js/Express application entrypoint exists.
-- [DONE] Environment parsing and database-name validation exist.
-- [DONE] MongoDB client, indexes and graceful shutdown exist.
-- [DONE] Secure login route with scrypt password verification exists.
-- [DONE] Guarded local lab route exists.
-- [DONE] Synthetic seed and guarded reset scripts exist.
-- [DONE] Browser login form supports secure and structured-payload modes.
-- [DONE] Docker Compose supports MongoDB-only and app-plus-MongoDB runs.
-- [DONE] Unit and security-boundary tests exist.
-- [DONE] Real MongoDB integration test exists.
-- [DONE] GitHub Actions workflow exists for automated checks.
-- [DONE] GitHub Actions passed unit tests, security tests, MongoDB integration and Docker/Compose validation: https://github.com/kiet1i38/modern-database-attacks/actions/runs/34699376973.
-- [DONE] README and supporting docs contain clone, run and test instructions.
+- [DONE] Repository is accessible and the required local-only, synthetic-data boundary is documented.
+- [DONE] Architecture, folder ownership, API contracts and SOP/SDLC gates are documented.
+- [DONE] Node.js/Express application, environment validation and graceful MongoDB lifecycle exist.
+- [DONE] Secure login route uses scalar validation and scrypt password verification.
+- [DONE] Guarded local lab route accepts only six bounded operator variants: `$gt`, `$gte`, `$ne`, `$regex`, `$nin` and `$exists`.
+- [DONE] The exact `$gt` example and the related operator families were verified against real MongoDB.
+- [DONE] The unprefixed assignment-shaped object `{ "gt": "" }` is treated as invalid input, not as `$gt`.
+- [DONE] Synthetic seed/reset scripts, browser modes, Docker Compose and locked dependencies exist.
+- [DONE] Unit, security-boundary and real-MongoDB integration tests pass.
+- [DONE] Docker/API/browser evidence, database checks, recovery checks and version records are captured.
+- [DONE] Latest GitHub Actions run passed: https://github.com/kiet1i38/modern-database-attacks/actions/runs/34705014876.
 
-### In progress
+### Remaining / recommended
 
-- [IN PROGRESS] Run the implementation against Docker and record real MongoDB results.
-- [IN PROGRESS] Capture sanitized browser/API evidence for the required demonstration.
-- [IN PROGRESS] Confirm the exact payload result with the selected MongoDB and driver versions.
-
-### Not started
-
-- [DONE] package-lock.json is committed and Docker uses npm ci.
-- [TODO] Add screenshots or a short local recording to the evidence set.
-- [RECOMMENDED] Add rate limiting and additional production hardening.
-- [RECOMMENDED] Add a browser automation test.
+- [RECOMMENDED] Resolve or consciously accept the two moderate transitive `qs` audit findings.
+- [RECOMMENDED] Run the Docker image as a non-root user.
+- [RECOMMENDED] Add automated browser smoke coverage.
+- [RECOMMENDED] Add rate limiting if the secure route is extended beyond this local exercise.
 
 ### Current blocker
 
-- None recorded.
-- The core project must not be marked complete until a real local request and the real MongoDB integration test have been run successfully.
-- If an operator behavior differs from the documented expectation, follow the operator compatibility procedure and record each variant.
+- None for the required local demonstration.
+- G0 through G5 are complete; G6 remains open only for optional hardening and automation.
+- Keep lab mode local and disabled in the default Compose profile.
 
 ## 19. Next recommended work item
 
-[NEXT] Run the first end-to-end verification from a clean checkout.
+[NEXT] Rehearse handoff and choose optional hardening work.
 
-### Host workflow
+The required path is verified. Do not expand the operator catalog or expose the lab route publicly as part of the next step.
 
-1. Clone the repository and run npm install.
-2. Copy .env.example to .env.
-3. Run docker compose up -d mongodb.
-4. Run npm run seed -- --lab.
-5. Set LAB_MODE=true in .env.
-6. Run npm start.
-7. Check GET /api/health.
-8. Test secure correct and wrong string credentials.
-9. Test all six lab operator variants through the browser and API.
-10. Run npm test and npm run test:integration.
-11. Record commands, versions, responses and screenshots here.
+### Handoff checklist
 
-### All-in-one Docker workflow
+1. Start from a clean checkout and run `npm ci`.
+2. Start the default Compose stack and seed the secure synthetic user.
+3. Run `npm test` and `npm run test:integration`.
+4. Start the lab override only when demonstrating the six operator variants.
+5. Confirm the browser/API result and keep the request as a real JSON object.
+6. Review the evidence for secrets, tokens, real data and accidental database exposure.
+7. Stop the containers with `docker compose down` after the demonstration.
 
-1. Run docker compose up --build -d for secure-only mode.
-2. Run docker compose down.
-3. Run docker compose -f docker-compose.yml -f docker-compose.lab.yml up --build -d.
-4. Seed with the same Compose files and the --lab argument.
-5. Repeat the health, normal login and object-payload checks.
-6. Stop the containers after evidence capture.
+### Optional hardening queue
 
-Do not mark G1, G2 or G3 as complete from source inspection alone. The next status update must contain actual runtime evidence.
+1. Review the transitive `qs` audit findings and upgrade dependencies if compatible.
+2. Add a non-root Docker user and rerun the container checks.
+3. Add browser smoke automation if repeated UI verification is needed.
+4. Add rate limiting and session design only if the secure comparison path is extended.
+
+The core gates should remain marked complete unless a reproducibility rerun exposes a regression.
 
 ## 20. Change log
 
@@ -969,3 +964,4 @@ Do not mark G1, G2 or G3 as complete from source inspection alone. The next stat
 | 2026-09-12 | Added package-lock.json and switched Docker to npm ci. |
 | 2026-09-12 | Added Docker/Compose validation to CI and recorded a successful run. |
 | 2026-09-12 | Switched CI dependency installation to npm ci and recorded a successful run. |
+| 2026-09-12 | Expanded the bounded operator catalog beyond `$gt`, recorded local Docker/MongoDB evidence and closed the required gates. |

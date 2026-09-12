@@ -43,6 +43,13 @@ test("real MongoDB evaluates the documented operator payloads", async () => {
 
     assert.equal(normal?.username, username);
 
+    const unprefixedAssignmentShape = await collection.findOne({
+      username,
+      password: { gt: "" }
+    });
+
+    assert.equal(unprefixedAssignmentShape, null);
+
     for (const passwordQuery of operatorPayloads) {
       const operatorMatch = await collection.findOne({
         username,

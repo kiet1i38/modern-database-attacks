@@ -21,7 +21,7 @@ This is reproducible local QA evidence, not a claim that a production deployment
 
 ## Assignment result
 
-The final demo now uses real MongoDB dollar-prefixed operator shapes in the intentionally vulnerable, loopback-only lab route:
+The final demo now uses real MongoDB dollar-prefixed operator shapes in the intentionally vulnerable, loopback-only lab route. The word "like" in the assignment is illustrative, so the catalog is broader than `$gt` while remaining bounded to six documented variants. The unprefixed `{ "gt": "" }` shape is not the MongoDB `$gt` operator and is rejected as invalid input.
 
 | Operator | Demonstration payload | Observed result |
 | --- | --- | --- |

@@ -65,6 +65,14 @@ test("lab validation rejects unsupported operator keys", () => {
     }),
     { code: "INVALID_INPUT", statusCode: 400 }
   );
+
+  assert.throws(
+    () => validateLabLoginBody({
+      username: "alice",
+      password: { gt: "" }
+    }),
+    { code: "INVALID_INPUT", statusCode: 400 }
+  );
 });
 
 test("lab validation rejects arrays as password values", () => {
