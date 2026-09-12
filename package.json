@@ -15,8 +15,8 @@
     "db:down": "docker compose down",
     "db:logs": "docker compose logs -f mongodb",
     "db:reset": "node scripts/reset-db.js",
-    "test": "node --test tests/unit tests/security",
-    "test:integration": "node --test tests/integration",
+    "test": "node --test tests/unit/validation.test.js tests/unit/password.test.js tests/security/routes.test.js",
+    "test:integration": "node --test tests/integration/mongodb.test.js",
     "test:all": "npm test && npm run test:integration"
   },
   "dependencies": {
