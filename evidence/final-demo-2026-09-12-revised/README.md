@@ -91,6 +91,7 @@ Open `http://127.0.0.1:3000`, choose `Local lab observation`, and submit each of
 - `21-npm-audit.txt` — dependency audit output.
 - `22-docs-html-check.txt` — all nine Markdown pages have valid HTML siblings.
 - `23-final-console.txt` — final browser console snapshot.
+- `27-final-cleanup.txt` — project containers/network stopped and native MongoDB port verified untouched.
 - `run-api-matrix.ps1`, `run-production-guard.mjs` — reproducible evidence runners.
 - `REPORT.html` — standalone report with the screenshot gallery.
 
