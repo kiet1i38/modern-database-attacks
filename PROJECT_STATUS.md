@@ -934,7 +934,7 @@ Suggested commit messages:
 
 ### Not started
 
-- [TODO] Generate and commit package-lock.json after the dependency versions are confirmed.
+- [DONE] package-lock.json is committed and Docker uses npm ci.
 - [TODO] Add screenshots or a short local recording to the evidence set.
 - [RECOMMENDED] Add rate limiting and additional production hardening.
 - [RECOMMENDED] Add a browser automation test.
@@ -984,3 +984,4 @@ Do not mark G1, G2 or G3 as complete from source inspection alone. The next stat
 | 2026-09-12 | Re-scoped the control document around the MongoDB login demonstration, explicit acceptance criteria, payload compatibility, evidence and required-versus-recommended work. |
 | 2026-09-12 | Added runnable Node.js application, Docker Compose, seed scripts, browser client, guarded lab route, secure route and tests. |
 | 2026-09-12 | Added GitHub Actions checks for unit, security and MongoDB integration tests. |
+| 2026-09-12 | Added package-lock.json and switched Docker to npm ci. |
