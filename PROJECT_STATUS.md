@@ -394,12 +394,14 @@ The core delivery path is G0 through G4. G5 and G6 are recommended extensions.
 | Phase | Name | Priority | Gate | Status |
 | --- | --- | --- | --- | --- |
 | 0 | Requirement alignment and architecture | Required | G0 | [DONE] |
-| 1 | Runtime and MongoDB bootstrap | Required | G1 | [NEXT] |
-| 2 | Seed data, login API and form | Required | G2 | [TODO] |
-| 3 | Guarded payload observation | Required | G3 | [TODO] |
-| 4 | Verification, evidence and handoff | Required | G4 | [TODO] |
-| 5 | Secure remediation path | Recommended | G5 | [RECOMMENDED] [TODO] |
-| 6 | Extended tests, CI and cleanup | Recommended | G6 | [RECOMMENDED] [TODO] |
+| 1 | Runtime and MongoDB bootstrap | Required | G1 | [REVIEW] |
+| 2 | Seed data, login API and form | Required | G2 | [REVIEW] |
+| 3 | Guarded payload observation | Required | G3 | [REVIEW] |
+| 4 | Verification, evidence and handoff | Required | G4 | [NEXT] |
+| 5 | Secure remediation path | Recommended | G5 | [REVIEW] |
+| 6 | Extended tests, CI and cleanup | Recommended | G6 | [REVIEW] |
+
+The implementation for phases 1 through 3 and the recommended secure path now exists in the repository. It is not marked complete until the relevant local or CI evidence is recorded.
 
 A phase cannot pass its gate until the required outputs and checks are complete.
 
@@ -907,54 +909,70 @@ Suggested commit messages:
 ### Completed
 
 - [DONE] Repository is accessible.
-- [DONE] The required MongoDB login demonstration is written as testable acceptance criteria.
+- [DONE] Required scope, safety boundary and acceptance criteria are documented.
 - [DONE] Required, recommended and out-of-scope work are separated.
-- [DONE] The object-versus-string payload issue is documented.
-- [DONE] Both payload spellings and their test order are documented.
-- [DONE] Local-only and synthetic-data guardrails are documented.
+- [DONE] Payload object-versus-string behavior is documented.
 - [DONE] Target architecture and folder layout are documented.
-- [DONE] Database and API contracts are documented.
-- [DONE] Testing and evidence requirements are documented.
-- [DONE] Application folder skeleton exists.
-- [DONE] SDLC and SOP operating procedure is documented.
+- [DONE] Node.js/Express application entrypoint exists.
+- [DONE] Environment parsing and database-name validation exist.
+- [DONE] MongoDB client, indexes and graceful shutdown exist.
+- [DONE] Secure login route with scrypt password verification exists.
+- [DONE] Guarded local lab route exists.
+- [DONE] Synthetic seed and guarded reset scripts exist.
+- [DONE] Browser login form supports secure and structured-payload modes.
+- [DONE] Docker Compose supports MongoDB-only and app-plus-MongoDB runs.
+- [DONE] Unit and security-boundary tests exist.
+- [DONE] Real MongoDB integration test exists.
+- [DONE] GitHub Actions workflow exists for automated checks.
+- [DONE] README and supporting docs contain clone, run and test instructions.
+
+### In progress
+
+- [IN PROGRESS] Run the implementation against Docker and record real MongoDB results.
+- [IN PROGRESS] Capture sanitized browser/API evidence for the required demonstration.
+- [IN PROGRESS] Confirm the exact payload result with the selected MongoDB and driver versions.
 
 ### Not started
 
-- [TODO] Node.js package setup and lockfile.
-- [TODO] Environment configuration.
-- [TODO] Local MongoDB service.
-- [TODO] MongoDB client and health endpoint.
-- [TODO] Synthetic lab-user seed.
-- [TODO] Login API.
-- [TODO] Login form and payload mode.
-- [TODO] Guarded lab behavior.
-- [TODO] Required evidence capture.
-- [RECOMMENDED] Secure comparison route.
-- [RECOMMENDED] Automated security regression tests.
-- [RECOMMENDED] CI workflow.
+- [TODO] Generate and commit package-lock.json after the dependency versions are confirmed.
+- [TODO] Add screenshots or a short local recording to the evidence set.
+- [RECOMMENDED] Add rate limiting and additional production hardening.
+- [RECOMMENDED] Add a browser automation test.
 
 ### Current blocker
 
 - None recorded.
-- G3 must not be marked complete until a real local request demonstrates the working payload result.
+- The core project must not be marked complete until a real local request and the real MongoDB integration test have been run successfully.
+- If the object behavior differs from the documented expectation, follow the payload mismatch procedure and record both variants.
 
 ## 19. Next recommended work item
 
-[NEXT] Phase 1 — Runtime and MongoDB bootstrap.
+[NEXT] Run the first end-to-end verification from a clean checkout.
 
-Work on one focused slice:
+### Host workflow
 
-1. Add package.json and the lockfile.
-2. Add .gitignore and .env.example.
-3. Add a pinned local MongoDB setup.
-4. Add configuration validation.
-5. Add the MongoDB client.
-6. Add GET /api/health.
-7. Add one runtime test.
-8. Run the setup from a clean checkout.
-9. Record the G1 command and result here.
+1. Clone the repository and run npm install.
+2. Copy .env.example to .env.
+3. Run docker compose up -d mongodb.
+4. Run npm run seed -- --lab.
+5. Set LAB_MODE=true in .env.
+6. Run npm start.
+7. Check GET /api/health.
+8. Test secure correct and wrong string credentials.
+9. Test both lab object variants through the browser and API.
+10. Run npm test and npm run test:integration.
+11. Record commands, versions, responses and screenshots here.
 
-Do not begin payload behavior until G1 passes. Do not treat source code that merely constructs a query as proof of the required demonstration.
+### All-in-one Docker workflow
+
+1. Run docker compose up --build -d for secure-only mode.
+2. Run docker compose down.
+3. Run docker compose -f docker-compose.yml -f docker-compose.lab.yml up --build -d.
+4. Seed with the same Compose files and the --lab argument.
+5. Repeat the health, normal login and object-payload checks.
+6. Stop the containers after evidence capture.
+
+Do not mark G1, G2 or G3 as complete from source inspection alone. The next status update must contain actual runtime evidence.
 
 ## 20. Change log
 
@@ -964,3 +982,5 @@ Do not begin payload behavior until G1 passes. Do not treat source code that mer
 | 2026-09-12 | Added the project progress flag. |
 | 2026-09-12 | Expanded the progress flag into an SDLC execution guide with phase SOPs and quality gates. |
 | 2026-09-12 | Re-scoped the control document around the MongoDB login demonstration, explicit acceptance criteria, payload compatibility, evidence and required-versus-recommended work. |
+| 2026-09-12 | Added runnable Node.js application, Docker Compose, seed scripts, browser client, guarded lab route, secure route and tests. |
+| 2026-09-12 | Added GitHub Actions checks for unit, security and MongoDB integration tests. |
