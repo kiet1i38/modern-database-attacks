@@ -22,7 +22,7 @@ The assignment brief is the source of truth for the core scope:
 
 - Category 4 — Web & Authentication
 - Topic 12 — Modern Database Attacks
-- Required demonstration: create a MongoDB-backed login form and demonstrate authentication bypass with a greater-than-empty style payload such as {"gt": ""}, logging in without the correct password.
+- Required demonstration: create a MongoDB-backed login form and demonstrate authentication bypass with MongoDB's dollar-prefixed greater-than-empty operator `{ "$gt": "" }`, plus related operator variants, logging in without the correct password.
 
 The project must remain a controlled local laboratory. It must use synthetic data and must never target a real account, real credential or an externally owned system.
 
@@ -83,19 +83,11 @@ These items are mandatory:
 5. A normal login with the correct password that succeeds.
 6. A normal login with a wrong password that fails.
 7. A payload mode that sends a JSON object as the password value, not only a browser password string.
-8. A test of the exact assignment-shaped object:
-
-~~~json
-{"gt": ""}
-~~~
-
-9. A test of the MongoDB operator form when the selected driver and database require it:
-
-~~~json
-{"$gt": ""}
-~~~
-
-10. A controlled lab result showing the payload that actually works in the selected stack can reach an authenticated success path without the correct password.
+8. A payload mode that sends allowlisted MongoDB operator objects as the password value.
+9. A test of the greater-than-empty operator and related comparison, regex,
+   list and existence operators.
+10. A controlled lab result showing the payloads that work in the selected
+    stack can reach an authenticated success path without the correct password.
 11. Evidence of the request, result, environment and synthetic data setup.
 12. A README section explaining how a teammate can run the demonstration locally.
 
@@ -138,9 +130,8 @@ The core path is complete only when every required item below is true:
 - [ ] Correct credentials succeed through the normal path.
 - [ ] Wrong credentials fail through the normal path.
 - [ ] The browser or an equivalent client can send a nested JSON object as password.
-- [ ] The exact object from the brief, {"gt": ""}, has been tested and its result recorded.
-- [ ] The MongoDB operator form, {"$gt": ""}, has been tested if required by the selected stack.
-- [ ] The working lab payload, if different from the brief spelling, is documented with the reason.
+- [ ] The greater-than-empty operator, `{ "$gt": "" }`, has been tested and its result recorded.
+- [ ] The related allowlisted operator payloads have been tested and their results recorded.
 - [ ] The working lab path demonstrates an authenticated result without the correct password.
 - [ ] The secure path, if included, rejects the same object and is clearly separated from the lab path.
 - [ ] Evidence contains no real secrets or personal data.
@@ -150,23 +141,22 @@ A payload that is merely displayed in the UI is not evidence. The request must b
 
 ## 6. Payload compatibility SOP
 
-### 6.1 Why two forms are recorded
+### 6.1 Operator payload catalog
 
-The assignment brief shows an object shaped like:
-
-~~~json
-{"gt": ""}
-~~~
-
-MongoDB query operators conventionally use a dollar-prefixed key. The documented form is:
+MongoDB query operators conventionally use a dollar-prefixed key. The primary
+teaching payload is:
 
 ~~~json
 {"$gt": ""}
 ~~~
 
-The official MongoDB syntax for a greater-than predicate uses a field with a $gt operator: [MongoDB $gt query operator documentation](https://www.mongodb.com/docs/manual/reference/operator/query/gt/).
+The local catalog also covers `$gte`, `$ne`, `$regex`, `$nin` and `$exists` so
+the demonstration shows more than one way an unsafe equality query can be
+broadened. The official MongoDB syntax for a greater-than predicate uses a
+field with a `$gt` operator: [MongoDB $gt query operator documentation](https://www.mongodb.com/docs/manual/reference/operator/query/gt/).
 
-The project must test the brief-shaped object first, then test the operator-shaped object when needed. Do not silently replace one with the other and report the result as if they were identical.
+Only this fixed, bounded catalog is accepted by the local lab validator. The
+secure route remains scalar-only and rejects every object payload.
 
 ### 6.2 Required request shape
 
@@ -177,17 +167,6 @@ The payload is nested inside the password field of a JSON request:
   "username": "alice",
   "password": {
     "$gt": ""
-  }
-}
-~~~
-
-The exact assignment-shaped variant is:
-
-~~~json
-{
-  "username": "alice",
-  "password": {
-    "gt": ""
   }
 }
 ~~~
@@ -206,11 +185,10 @@ The escaped version is a string. A normal HTML password input also produces a st
 ### 6.3 Test and record order
 
 1. Send normal credentials with a string password.
-2. Send the exact brief-shaped object.
-3. Send the dollar-prefixed operator object if the first object is treated as an ordinary field.
-4. Record the HTTP status, response marker, database/driver versions and route used.
-5. If a payload works, capture sanitized evidence of the request and response.
-6. If neither object works, mark the work item [BLOCKED] instead of weakening the acceptance criterion. Check the request type, query construction, driver version, MongoDB version and seed data before changing code.
+2. Send each allowlisted dollar-prefixed operator object.
+3. Record the HTTP status, response marker, database/driver versions and route used.
+4. If a payload works, capture sanitized evidence of the request and response.
+5. If no operator works, mark the work item [BLOCKED] instead of weakening the acceptance criterion. Check the request type, query construction, driver version, MongoDB version and seed data before changing code.
 
 ## 7. Safety guardrails
 
@@ -382,7 +360,7 @@ The page must make the request type understandable:
 | UI mode | Input type | Purpose |
 | --- | --- | --- |
 | Normal login | Username and password strings | Prove correct and wrong password behavior. |
-| Payload test | Username plus structured JSON password | Send the two object variants without turning them into escaped strings. |
+| Payload test | Username plus structured JSON password | Send six allowlisted operator variants without turning them into escaped strings. |
 | Secure comparison | Normal scalar credentials | Show that strict validation rejects the object. |
 
 The payload mode must display a local-lab warning and must not be available when the lab guard is disabled.
@@ -451,9 +429,8 @@ Pass when:
 
 - LAB_MODE is explicitly enabled.
 - The lab route refuses production mode.
-- The exact brief-shaped object has been sent.
-- The dollar-prefixed operator object has been sent when required.
-- The result of each variant is recorded.
+- The six allowlisted operator payloads have been sent.
+- The result of each operator variant is recorded.
 - A working variant demonstrates the required authentication bypass in the local lab.
 - The response contains no password, hash or query internals.
 - The secure route, if present, rejects the same object.
@@ -604,11 +581,10 @@ Recommended gate. Pass when:
 1. Add the LAB_MODE guard.
 2. Refuse the lab route in production mode.
 3. Confirm the test database name.
-4. Send the exact brief-shaped object.
-5. Send the dollar-prefixed operator object if required.
-6. Record request body shape, route, status and result.
-7. Record Node.js, driver and MongoDB versions.
-8. Capture sanitized browser or network evidence.
+4. Send each allowlisted dollar-prefixed operator object.
+5. Record request body shape, route, status and result.
+6. Record Node.js, driver and MongoDB versions.
+7. Capture sanitized browser or network evidence.
 9. Keep the secure route separate.
 10. Update docs with the observed behavior, including any version dependency.
 11. Update this file with G3 evidence.
@@ -658,7 +634,7 @@ Recommended gate. Pass when:
 4. Use password hashes.
 5. Keep the database filter application-controlled.
 6. Return generic invalid-credential responses.
-7. Add a regression test using both payload variants.
+7. Add regression tests for all allowlisted payload variants.
 8. Label the secure route as the comparison path.
 
 ### Exit criteria
@@ -697,14 +673,20 @@ Recommended gate. Pass when:
 | Correct normal login | String | Prove baseline success. | Success response and screenshot. |
 | Wrong normal login | String | Prove ordinary failure. | Failure status and message. |
 | Unknown user | String | Prove user lookup failure. | Generic failure. |
-| Brief-shaped object | {"gt": ""} | Test the exact brief spelling. | Whether it is treated as an operator or ordinary field. |
-| Operator object | {"$gt": ""} | Test MongoDB operator form. | Whether controlled bypass occurs. |
+| `$gt` object | {"$gt": ""} | Test greater-than-empty semantics. | Whether controlled bypass occurs. |
+| `$gte` object | {"$gte": ""} | Test greater-than-or-equal semantics. | Whether controlled bypass occurs. |
+| `$ne` object | {"$ne": "not-the-password"} | Test inequality semantics. | Whether controlled bypass occurs. |
+| `$regex` object | {"$regex": ".*"} | Test broad regex matching. | Whether controlled bypass occurs. |
+| `$nin` object | {"$nin": ["not-the-password"]} | Test list exclusion semantics. | Whether controlled bypass occurs. |
+| `$exists` object | {"$exists": true} | Test field-existence semantics. | Whether controlled bypass occurs. |
 | Escaped operator | "{\"$gt\":\"\"}" | Prove object-versus-string distinction. | Type and authentication result. |
 | Missing password | Missing field | Prove request handling. | Validation status. |
 | Array or number | Non-scalar value | Recommended boundary check. | Rejection or lab observation. |
 | Secure route object | Object | Recommended remediation check. | Must reject without bypass. |
 
-The expected result of the two object cases is an observation to record, not an assumption. The core evidence must show which payload and environment produced the working result.
+The expected result of the six operator cases is an observation to record, not
+an assumption. The core evidence must show which payload and environment
+produced each working result.
 
 ## 14. Evidence checklist
 
@@ -713,9 +695,8 @@ The expected result of the two object cases is an observation to record, not an 
 - [ ] Screenshot or recording of the login form.
 - [ ] Normal correct-password request and success.
 - [ ] Normal wrong-password request and failure.
-- [ ] Exact brief-shaped payload request.
-- [ ] Operator-shaped payload request when required.
-- [ ] Successful local lab response without the correct password.
+- [ ] All six operator-shaped payload requests.
+- [ ] Successful local lab response for each operator family without the correct password.
 - [ ] Seed command and synthetic user identifier.
 - [ ] Node.js, MongoDB and driver versions.
 - [ ] Startup and shutdown commands.
@@ -734,19 +715,19 @@ The expected result of the two object cases is an observation to record, not an 
 
 ## 15. Blocker and decision procedures
 
-### 15.1 Payload mismatch blocker
+### 15.1 Operator compatibility blocker
 
-Use this procedure if the object shown in the brief does not produce the same result as the operator form:
+Use this procedure if an operator payload does not produce the expected result:
 
 1. Confirm the request has Content-Type application/json.
 2. Confirm password is parsed as an object, not a string.
 3. Confirm the route under test is the guarded lab route.
 4. Confirm the database and collection contain the synthetic user.
-5. Confirm the exact brief-shaped object was tested first.
-6. Test the dollar-prefixed operator form.
+5. Confirm the payload is one of the six allowlisted operators.
+6. Test each operator independently against the seeded synthetic document.
 7. Record MongoDB, driver and Node.js versions.
-8. Record both results in the test matrix.
-9. If a working variant exists, document the difference explicitly.
+8. Record every result in the test matrix.
+9. If a working variant exists, document the exact operator and response.
 10. If no working variant exists, mark G3 [BLOCKED] and investigate before changing the acceptance criterion.
 
 ### 15.2 General design decision
@@ -944,7 +925,7 @@ Suggested commit messages:
 
 - None recorded.
 - The core project must not be marked complete until a real local request and the real MongoDB integration test have been run successfully.
-- If the object behavior differs from the documented expectation, follow the payload mismatch procedure and record both variants.
+- If an operator behavior differs from the documented expectation, follow the operator compatibility procedure and record each variant.
 
 ## 19. Next recommended work item
 
@@ -960,7 +941,7 @@ Suggested commit messages:
 6. Run npm start.
 7. Check GET /api/health.
 8. Test secure correct and wrong string credentials.
-9. Test both lab object variants through the browser and API.
+9. Test all six lab operator variants through the browser and API.
 10. Run npm test and npm run test:integration.
 11. Record commands, versions, responses and screenshots here.
 

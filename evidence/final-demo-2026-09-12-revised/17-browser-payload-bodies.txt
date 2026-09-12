@@ -1,0 +1,23 @@
+=== request body 7 ===
+{"username":"alice","password":{"$gt":""}}
+=== response body 7 ===
+
+=== request body 8 ===
+{"username":"alice","password":{"$gte":""}}
+=== response body 8 ===
+
+=== request body 9 ===
+{"username":"alice","password":{"$ne":"not-the-password"}}
+=== response body 9 ===
+
+=== request body 10 ===
+{"username":"alice","password":{"$regex":".*"}}
+=== response body 10 ===
+
+=== request body 11 ===
+{"username":"alice","password":{"$nin":["not-the-password"]}}
+=== response body 11 ===
+
+=== request body 12 ===
+{"username":"alice","password":{"$exists":true}}
+=== response body 12 ===

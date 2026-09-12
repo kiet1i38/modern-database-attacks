@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="color-scheme" content="light">
-  <title>Testing Strategy · Modern Database Attacks</title>
+  <title>Documentation · Modern Database Attacks</title>
   <style>
 :root {
   color-scheme: light;
@@ -136,7 +136,7 @@ img { max-width: 100%; height: auto; }
 <p>Located in tests/unit/:</p>
 <ul>
 <li>Scalar credential validation.</li>
-<li>Structured lab payload validation.</li>
+<li>Allowlisted MongoDB operator payload validation.</li>
 <li>Unknown-field rejection.</li>
 <li>Password hashing and verification.</li>
 <li>Malformed hash failure behavior.</li>
@@ -146,7 +146,7 @@ img { max-width: 100%; height: auto; }
 <ul>
 <li>Secure route rejects an object password before user lookup.</li>
 <li>Secure route accepts the correct synthetic scalar password.</li>
-<li>Lab route can expose the object-shaped behavior in an isolated test double.</li>
+<li>Lab route can expose the documented operator behavior in an isolated test double.</li>
 <li>Lab route returns 404 when LAB_MODE is disabled.</li>
 </ul>
 <p>These tests do not require MongoDB.</p>
@@ -155,8 +155,8 @@ img { max-width: 100%; height: auto; }
 <p>The test connects to MONGODB_TEST_DATABASE and inserts only a synthetic temporary document. It verifies:</p>
 <ul>
 <li>String equality finds the document.</li>
-<li>The brief-shaped object does not match the string field.</li>
-<li>The dollar-prefixed greater-than object matches the non-empty string field.</li>
+<li><code>$gt</code>, <code>$gte</code>, <code>$ne</code>, <code>$regex</code>, <code>$nin</code> and <code>$exists</code> operator payloads match the
+  synthetic string field according to MongoDB semantics.</li>
 <li>Temporary test data is removed in a finally block.</li>
 </ul>
 <p>Start MongoDB before running this test.</p>
@@ -196,16 +196,40 @@ img { max-width: 100%; height: auto; }
 <td>HTTP 401.</td>
 </tr>
 <tr>
-<td>Brief object</td>
+<td><code>$gt</code> object</td>
 <td>POST /api/lab/login-observation</td>
-<td _="&quot;&quot;" _gt_:="&quot;gt&quot;:">password:</td>
-<td>Record actual result.</td>
+<td>password: {"$gt": ""}</td>
+<td>HTTP 200 in local lab.</td>
 </tr>
 <tr>
-<td>Operator object</td>
+<td><code>$gte</code> object</td>
 <td>POST /api/lab/login-observation</td>
-<td _="&quot;&quot;" _gt_:="&quot;$gt&quot;:">password:</td>
-<td>Record actual result.</td>
+<td>password: {"$gte": ""}</td>
+<td>HTTP 200 in local lab.</td>
+</tr>
+<tr>
+<td><code>$ne</code> object</td>
+<td>POST /api/lab/login-observation</td>
+<td>password: {"$ne": "not-the-password"}</td>
+<td>HTTP 200 in local lab.</td>
+</tr>
+<tr>
+<td><code>$regex</code> object</td>
+<td>POST /api/lab/login-observation</td>
+<td>password: {"$regex": ".*"}</td>
+<td>HTTP 200 in local lab.</td>
+</tr>
+<tr>
+<td><code>$nin</code> object</td>
+<td>POST /api/lab/login-observation</td>
+<td>password: {"$nin": ["not-the-password"]}</td>
+<td>HTTP 200 in local lab.</td>
+</tr>
+<tr>
+<td><code>$exists</code> object</td>
+<td>POST /api/lab/login-observation</td>
+<td>password: {"$exists": true}</td>
+<td>HTTP 200 in local lab.</td>
 </tr>
 <tr>
 <td>Escaped object text</td>
@@ -234,8 +258,8 @@ img { max-width: 100%; height: auto; }
 <li>[ ] Seed command recorded.</li>
 <li>[ ] Health response captured.</li>
 <li>[ ] Correct and wrong string results captured.</li>
-<li>[ ] Both object variants captured.</li>
-<li>[ ] Working lab response captured if available.</li>
+<li>[ ] All six allowlisted operator payloads captured.</li>
+<li>[ ] Successful lab response captured for each payload family.</li>
 <li>[ ] Secure object rejection captured.</li>
 <li>[ ] No real secret, hash, token or personal data is visible.</li>
 <li>[ ] README and PROJECT_STATUS.md match the run.</li>
@@ -267,10 +291,15 @@ img { max-width: 100%; height: auto; }
 }
 </code></pre>
 <p>It must not contain an escaped JSON string.</p>
+<h3 id="operator-payload-is-rejected">Operator payload is rejected</h3>
+<p>The local validator intentionally allows only the six documented operators:
+<code>$gt</code>, <code>$gte</code>, <code>$ne</code>, <code>$regex</code>, <code>$nin</code> and <code>$exists</code>. An unsupported operator,
+an extra body field, an array at the top-level password value or an invalid
+operator value should return <code>400 INVALID_INPUT</code>.</p>
 <h2 id="6-evidence-safety">6. Evidence safety</h2>
 <p>Do not store real credentials, production data, password hashes from real users, session tokens or public database connection strings.</p>
     </main>
-    <p class="footer">Generated from TESTING.md. Keep the Markdown source for edits.</p>
+    <p class="footer">Generated from Markdown. Keep the Markdown source for edits.</p>
   </div>
 </body>
 </html>

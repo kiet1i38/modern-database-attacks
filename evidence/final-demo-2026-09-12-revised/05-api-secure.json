@@ -1,0 +1,793 @@
+{
+    "generatedAt":  "2026-09-12T23:15:25.5439970+07:00",
+    "baseUrl":  "http://127.0.0.1:3000",
+    "mode":  "secure",
+    "total":  28,
+    "passed":  28,
+    "failed":  0,
+    "cases":  [
+                  {
+                      "name":  "secure correct scalar",
+                      "method":  "POST",
+                      "path":  "/api/auth/login",
+                      "request":  {
+                                      "username":  "alice",
+                                      "password":  "synthetic-demo-password"
+                                  },
+                      "expected":  {
+                                       "status":  200,
+                                       "code":  null,
+                                       "authenticated":  null,
+                                       "payloadVariant":  null,
+                                       "enabled":  null
+                                   },
+                      "observed":  {
+                                       "status":  200,
+                                       "body":  {
+                                                    "ok":  true,
+                                                    "user":  {
+                                                                 "username":  "alice",
+                                                                 "role":  "student"
+                                                             }
+                                                },
+                                       "raw":  "{\"ok\":true,\"user\":{\"username\":\"alice\",\"role\":\"student\"}}"
+                                   },
+                      "pass":  true
+                  },
+                  {
+                      "name":  "secure wrong scalar",
+                      "method":  "POST",
+                      "path":  "/api/auth/login",
+                      "request":  {
+                                      "username":  "alice",
+                                      "password":  "wrong-password"
+                                  },
+                      "expected":  {
+                                       "status":  401,
+                                       "code":  "INVALID_CREDENTIALS",
+                                       "authenticated":  null,
+                                       "payloadVariant":  null,
+                                       "enabled":  null
+                                   },
+                      "observed":  {
+                                       "status":  401,
+                                       "body":  {
+                                                    "ok":  false,
+                                                    "error":  {
+                                                                  "code":  "INVALID_CREDENTIALS",
+                                                                  "message":  "Invalid credentials"
+                                                              }
+                                                },
+                                       "raw":  "{\"ok\":false,\"error\":{\"code\":\"INVALID_CREDENTIALS\",\"message\":\"Invalid credentials\"}}"
+                                   },
+                      "pass":  true
+                  },
+                  {
+                      "name":  "secure unknown username",
+                      "method":  "POST",
+                      "path":  "/api/auth/login",
+                      "request":  {
+                                      "username":  "unknown-user",
+                                      "password":  "synthetic-demo-password"
+                                  },
+                      "expected":  {
+                                       "status":  401,
+                                       "code":  "INVALID_CREDENTIALS",
+                                       "authenticated":  null,
+                                       "payloadVariant":  null,
+                                       "enabled":  null
+                                   },
+                      "observed":  {
+                                       "status":  401,
+                                       "body":  {
+                                                    "ok":  false,
+                                                    "error":  {
+                                                                  "code":  "INVALID_CREDENTIALS",
+                                                                  "message":  "Invalid credentials"
+                                                              }
+                                                },
+                                       "raw":  "{\"ok\":false,\"error\":{\"code\":\"INVALID_CREDENTIALS\",\"message\":\"Invalid credentials\"}}"
+                                   },
+                      "pass":  true
+                  },
+                  {
+                      "name":  "secure empty username",
+                      "method":  "POST",
+                      "path":  "/api/auth/login",
+                      "request":  {
+                                      "username":  "",
+                                      "password":  "synthetic-demo-password"
+                                  },
+                      "expected":  {
+                                       "status":  400,
+                                       "code":  "INVALID_INPUT",
+                                       "authenticated":  null,
+                                       "payloadVariant":  null,
+                                       "enabled":  null
+                                   },
+                      "observed":  {
+                                       "status":  400,
+                                       "body":  {
+                                                    "ok":  false,
+                                                    "error":  {
+                                                                  "code":  "INVALID_INPUT",
+                                                                  "message":  "Invalid request"
+                                                              }
+                                                },
+                                       "raw":  "{\"ok\":false,\"error\":{\"code\":\"INVALID_INPUT\",\"message\":\"Invalid request\"}}"
+                                   },
+                      "pass":  true
+                  },
+                  {
+                      "name":  "secure overlong username",
+                      "method":  "POST",
+                      "path":  "/api/auth/login",
+                      "request":  {
+                                      "username":  "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+                                      "password":  "synthetic-demo-password"
+                                  },
+                      "expected":  {
+                                       "status":  400,
+                                       "code":  "INVALID_INPUT",
+                                       "authenticated":  null,
+                                       "payloadVariant":  null,
+                                       "enabled":  null
+                                   },
+                      "observed":  {
+                                       "status":  400,
+                                       "body":  {
+                                                    "ok":  false,
+                                                    "error":  {
+                                                                  "code":  "INVALID_INPUT",
+                                                                  "message":  "Invalid request"
+                                                              }
+                                                },
+                                       "raw":  "{\"ok\":false,\"error\":{\"code\":\"INVALID_INPUT\",\"message\":\"Invalid request\"}}"
+                                   },
+                      "pass":  true
+                  },
+                  {
+                      "name":  "secure empty password",
+                      "method":  "POST",
+                      "path":  "/api/auth/login",
+                      "request":  {
+                                      "username":  "alice",
+                                      "password":  ""
+                                  },
+                      "expected":  {
+                                       "status":  400,
+                                       "code":  "INVALID_INPUT",
+                                       "authenticated":  null,
+                                       "payloadVariant":  null,
+                                       "enabled":  null
+                                   },
+                      "observed":  {
+                                       "status":  400,
+                                       "body":  {
+                                                    "ok":  false,
+                                                    "error":  {
+                                                                  "code":  "INVALID_INPUT",
+                                                                  "message":  "Invalid request"
+                                                              }
+                                                },
+                                       "raw":  "{\"ok\":false,\"error\":{\"code\":\"INVALID_INPUT\",\"message\":\"Invalid request\"}}"
+                                   },
+                      "pass":  true
+                  },
+                  {
+                      "name":  "secure overlong password",
+                      "method":  "POST",
+                      "path":  "/api/auth/login",
+                      "request":  {
+                                      "username":  "alice",
+                                      "password":  "ppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppp"
+                                  },
+                      "expected":  {
+                                       "status":  400,
+                                       "code":  "INVALID_INPUT",
+                                       "authenticated":  null,
+                                       "payloadVariant":  null,
+                                       "enabled":  null
+                                   },
+                      "observed":  {
+                                       "status":  400,
+                                       "body":  {
+                                                    "ok":  false,
+                                                    "error":  {
+                                                                  "code":  "INVALID_INPUT",
+                                                                  "message":  "Invalid request"
+                                                              }
+                                                },
+                                       "raw":  "{\"ok\":false,\"error\":{\"code\":\"INVALID_INPUT\",\"message\":\"Invalid request\"}}"
+                                   },
+                      "pass":  true
+                  },
+                  {
+                      "name":  "secure missing username",
+                      "method":  "POST",
+                      "path":  "/api/auth/login",
+                      "request":  {
+                                      "password":  "synthetic-demo-password"
+                                  },
+                      "expected":  {
+                                       "status":  400,
+                                       "code":  "INVALID_INPUT",
+                                       "authenticated":  null,
+                                       "payloadVariant":  null,
+                                       "enabled":  null
+                                   },
+                      "observed":  {
+                                       "status":  400,
+                                       "body":  {
+                                                    "ok":  false,
+                                                    "error":  {
+                                                                  "code":  "INVALID_INPUT",
+                                                                  "message":  "Invalid request"
+                                                              }
+                                                },
+                                       "raw":  "{\"ok\":false,\"error\":{\"code\":\"INVALID_INPUT\",\"message\":\"Invalid request\"}}"
+                                   },
+                      "pass":  true
+                  },
+                  {
+                      "name":  "secure missing password",
+                      "method":  "POST",
+                      "path":  "/api/auth/login",
+                      "request":  {
+                                      "username":  "alice"
+                                  },
+                      "expected":  {
+                                       "status":  400,
+                                       "code":  "INVALID_INPUT",
+                                       "authenticated":  null,
+                                       "payloadVariant":  null,
+                                       "enabled":  null
+                                   },
+                      "observed":  {
+                                       "status":  400,
+                                       "body":  {
+                                                    "ok":  false,
+                                                    "error":  {
+                                                                  "code":  "INVALID_INPUT",
+                                                                  "message":  "Invalid request"
+                                                              }
+                                                },
+                                       "raw":  "{\"ok\":false,\"error\":{\"code\":\"INVALID_INPUT\",\"message\":\"Invalid request\"}}"
+                                   },
+                      "pass":  true
+                  },
+                  {
+                      "name":  "secure rejects gt operator",
+                      "method":  "POST",
+                      "path":  "/api/auth/login",
+                      "request":  {
+                                      "username":  "alice",
+                                      "password":  {
+                                                       "$gt":  ""
+                                                   }
+                                  },
+                      "expected":  {
+                                       "status":  400,
+                                       "code":  "INVALID_INPUT",
+                                       "authenticated":  null,
+                                       "payloadVariant":  null,
+                                       "enabled":  null
+                                   },
+                      "observed":  {
+                                       "status":  400,
+                                       "body":  {
+                                                    "ok":  false,
+                                                    "error":  {
+                                                                  "code":  "INVALID_INPUT",
+                                                                  "message":  "Invalid request"
+                                                              }
+                                                },
+                                       "raw":  "{\"ok\":false,\"error\":{\"code\":\"INVALID_INPUT\",\"message\":\"Invalid request\"}}"
+                                   },
+                      "pass":  true
+                  },
+                  {
+                      "name":  "secure rejects gte operator",
+                      "method":  "POST",
+                      "path":  "/api/auth/login",
+                      "request":  {
+                                      "username":  "alice",
+                                      "password":  {
+                                                       "$gte":  ""
+                                                   }
+                                  },
+                      "expected":  {
+                                       "status":  400,
+                                       "code":  "INVALID_INPUT",
+                                       "authenticated":  null,
+                                       "payloadVariant":  null,
+                                       "enabled":  null
+                                   },
+                      "observed":  {
+                                       "status":  400,
+                                       "body":  {
+                                                    "ok":  false,
+                                                    "error":  {
+                                                                  "code":  "INVALID_INPUT",
+                                                                  "message":  "Invalid request"
+                                                              }
+                                                },
+                                       "raw":  "{\"ok\":false,\"error\":{\"code\":\"INVALID_INPUT\",\"message\":\"Invalid request\"}}"
+                                   },
+                      "pass":  true
+                  },
+                  {
+                      "name":  "secure rejects ne operator",
+                      "method":  "POST",
+                      "path":  "/api/auth/login",
+                      "request":  {
+                                      "username":  "alice",
+                                      "password":  {
+                                                       "$ne":  "not-the-password"
+                                                   }
+                                  },
+                      "expected":  {
+                                       "status":  400,
+                                       "code":  "INVALID_INPUT",
+                                       "authenticated":  null,
+                                       "payloadVariant":  null,
+                                       "enabled":  null
+                                   },
+                      "observed":  {
+                                       "status":  400,
+                                       "body":  {
+                                                    "ok":  false,
+                                                    "error":  {
+                                                                  "code":  "INVALID_INPUT",
+                                                                  "message":  "Invalid request"
+                                                              }
+                                                },
+                                       "raw":  "{\"ok\":false,\"error\":{\"code\":\"INVALID_INPUT\",\"message\":\"Invalid request\"}}"
+                                   },
+                      "pass":  true
+                  },
+                  {
+                      "name":  "secure rejects regex operator",
+                      "method":  "POST",
+                      "path":  "/api/auth/login",
+                      "request":  {
+                                      "username":  "alice",
+                                      "password":  {
+                                                       "$regex":  ".*"
+                                                   }
+                                  },
+                      "expected":  {
+                                       "status":  400,
+                                       "code":  "INVALID_INPUT",
+                                       "authenticated":  null,
+                                       "payloadVariant":  null,
+                                       "enabled":  null
+                                   },
+                      "observed":  {
+                                       "status":  400,
+                                       "body":  {
+                                                    "ok":  false,
+                                                    "error":  {
+                                                                  "code":  "INVALID_INPUT",
+                                                                  "message":  "Invalid request"
+                                                              }
+                                                },
+                                       "raw":  "{\"ok\":false,\"error\":{\"code\":\"INVALID_INPUT\",\"message\":\"Invalid request\"}}"
+                                   },
+                      "pass":  true
+                  },
+                  {
+                      "name":  "secure rejects nin operator",
+                      "method":  "POST",
+                      "path":  "/api/auth/login",
+                      "request":  {
+                                      "username":  "alice",
+                                      "password":  {
+                                                       "$nin":  [
+                                                                    "not-the-password"
+                                                                ]
+                                                   }
+                                  },
+                      "expected":  {
+                                       "status":  400,
+                                       "code":  "INVALID_INPUT",
+                                       "authenticated":  null,
+                                       "payloadVariant":  null,
+                                       "enabled":  null
+                                   },
+                      "observed":  {
+                                       "status":  400,
+                                       "body":  {
+                                                    "ok":  false,
+                                                    "error":  {
+                                                                  "code":  "INVALID_INPUT",
+                                                                  "message":  "Invalid request"
+                                                              }
+                                                },
+                                       "raw":  "{\"ok\":false,\"error\":{\"code\":\"INVALID_INPUT\",\"message\":\"Invalid request\"}}"
+                                   },
+                      "pass":  true
+                  },
+                  {
+                      "name":  "secure rejects exists operator",
+                      "method":  "POST",
+                      "path":  "/api/auth/login",
+                      "request":  {
+                                      "username":  "alice",
+                                      "password":  {
+                                                       "$exists":  true
+                                                   }
+                                  },
+                      "expected":  {
+                                       "status":  400,
+                                       "code":  "INVALID_INPUT",
+                                       "authenticated":  null,
+                                       "payloadVariant":  null,
+                                       "enabled":  null
+                                   },
+                      "observed":  {
+                                       "status":  400,
+                                       "body":  {
+                                                    "ok":  false,
+                                                    "error":  {
+                                                                  "code":  "INVALID_INPUT",
+                                                                  "message":  "Invalid request"
+                                                              }
+                                                },
+                                       "raw":  "{\"ok\":false,\"error\":{\"code\":\"INVALID_INPUT\",\"message\":\"Invalid request\"}}"
+                                   },
+                      "pass":  true
+                  },
+                  {
+                      "name":  "secure rejects password array",
+                      "method":  "POST",
+                      "path":  "/api/auth/login",
+                      "request":  {
+                                      "username":  "alice",
+                                      "password":  [
+                                                       "x"
+                                                   ]
+                                  },
+                      "expected":  {
+                                       "status":  400,
+                                       "code":  "INVALID_INPUT",
+                                       "authenticated":  null,
+                                       "payloadVariant":  null,
+                                       "enabled":  null
+                                   },
+                      "observed":  {
+                                       "status":  400,
+                                       "body":  {
+                                                    "ok":  false,
+                                                    "error":  {
+                                                                  "code":  "INVALID_INPUT",
+                                                                  "message":  "Invalid request"
+                                                              }
+                                                },
+                                       "raw":  "{\"ok\":false,\"error\":{\"code\":\"INVALID_INPUT\",\"message\":\"Invalid request\"}}"
+                                   },
+                      "pass":  true
+                  },
+                  {
+                      "name":  "secure rejects password boolean",
+                      "method":  "POST",
+                      "path":  "/api/auth/login",
+                      "request":  {
+                                      "username":  "alice",
+                                      "password":  true
+                                  },
+                      "expected":  {
+                                       "status":  400,
+                                       "code":  "INVALID_INPUT",
+                                       "authenticated":  null,
+                                       "payloadVariant":  null,
+                                       "enabled":  null
+                                   },
+                      "observed":  {
+                                       "status":  400,
+                                       "body":  {
+                                                    "ok":  false,
+                                                    "error":  {
+                                                                  "code":  "INVALID_INPUT",
+                                                                  "message":  "Invalid request"
+                                                              }
+                                                },
+                                       "raw":  "{\"ok\":false,\"error\":{\"code\":\"INVALID_INPUT\",\"message\":\"Invalid request\"}}"
+                                   },
+                      "pass":  true
+                  },
+                  {
+                      "name":  "secure rejects password null",
+                      "method":  "POST",
+                      "path":  "/api/auth/login",
+                      "request":  {
+                                      "username":  "alice",
+                                      "password":  null
+                                  },
+                      "expected":  {
+                                       "status":  400,
+                                       "code":  "INVALID_INPUT",
+                                       "authenticated":  null,
+                                       "payloadVariant":  null,
+                                       "enabled":  null
+                                   },
+                      "observed":  {
+                                       "status":  400,
+                                       "body":  {
+                                                    "ok":  false,
+                                                    "error":  {
+                                                                  "code":  "INVALID_INPUT",
+                                                                  "message":  "Invalid request"
+                                                              }
+                                                },
+                                       "raw":  "{\"ok\":false,\"error\":{\"code\":\"INVALID_INPUT\",\"message\":\"Invalid request\"}}"
+                                   },
+                      "pass":  true
+                  },
+                  {
+                      "name":  "secure rejects top-level array",
+                      "method":  "POST",
+                      "path":  "/api/auth/login",
+                      "request":  {
+                                      "value":  [
+                                                    {
+                                                        "username":  "alice",
+                                                        "password":  "synthetic-demo-password"
+                                                    }
+                                                ],
+                                      "Count":  1
+                                  },
+                      "expected":  {
+                                       "status":  400,
+                                       "code":  "INVALID_INPUT",
+                                       "authenticated":  null,
+                                       "payloadVariant":  null,
+                                       "enabled":  null
+                                   },
+                      "observed":  {
+                                       "status":  400,
+                                       "body":  {
+                                                    "ok":  false,
+                                                    "error":  {
+                                                                  "code":  "INVALID_INPUT",
+                                                                  "message":  "Invalid request"
+                                                              }
+                                                },
+                                       "raw":  "{\"ok\":false,\"error\":{\"code\":\"INVALID_INPUT\",\"message\":\"Invalid request\"}}"
+                                   },
+                      "pass":  true
+                  },
+                  {
+                      "name":  "secure rejects top-level null",
+                      "method":  "POST",
+                      "path":  "/api/auth/login",
+                      "request":  null,
+                      "expected":  {
+                                       "status":  400,
+                                       "code":  "INVALID_JSON",
+                                       "authenticated":  null,
+                                       "payloadVariant":  null,
+                                       "enabled":  null
+                                   },
+                      "observed":  {
+                                       "status":  400,
+                                       "body":  {
+                                                    "ok":  false,
+                                                    "error":  {
+                                                                  "code":  "INVALID_JSON",
+                                                                  "message":  "Request body must be valid JSON"
+                                                              }
+                                                },
+                                       "raw":  "{\"ok\":false,\"error\":{\"code\":\"INVALID_JSON\",\"message\":\"Request body must be valid JSON\"}}"
+                                   },
+                      "pass":  true
+                  },
+                  {
+                      "name":  "secure rejects top-level string",
+                      "method":  "POST",
+                      "path":  "/api/auth/login",
+                      "request":  "not-an-object",
+                      "expected":  {
+                                       "status":  400,
+                                       "code":  "INVALID_JSON",
+                                       "authenticated":  null,
+                                       "payloadVariant":  null,
+                                       "enabled":  null
+                                   },
+                      "observed":  {
+                                       "status":  400,
+                                       "body":  {
+                                                    "ok":  false,
+                                                    "error":  {
+                                                                  "code":  "INVALID_JSON",
+                                                                  "message":  "Request body must be valid JSON"
+                                                              }
+                                                },
+                                       "raw":  "{\"ok\":false,\"error\":{\"code\":\"INVALID_JSON\",\"message\":\"Request body must be valid JSON\"}}"
+                                   },
+                      "pass":  true
+                  },
+                  {
+                      "name":  "secure rejects unknown body field",
+                      "method":  "POST",
+                      "path":  "/api/auth/login",
+                      "request":  {
+                                      "username":  "alice",
+                                      "password":  "synthetic-demo-password",
+                                      "remember":  true
+                                  },
+                      "expected":  {
+                                       "status":  400,
+                                       "code":  "INVALID_INPUT",
+                                       "authenticated":  null,
+                                       "payloadVariant":  null,
+                                       "enabled":  null
+                                   },
+                      "observed":  {
+                                       "status":  400,
+                                       "body":  {
+                                                    "ok":  false,
+                                                    "error":  {
+                                                                  "code":  "INVALID_INPUT",
+                                                                  "message":  "Invalid request"
+                                                              }
+                                                },
+                                       "raw":  "{\"ok\":false,\"error\":{\"code\":\"INVALID_INPUT\",\"message\":\"Invalid request\"}}"
+                                   },
+                      "pass":  true
+                  },
+                  {
+                      "name":  "secure rejects empty object",
+                      "method":  "POST",
+                      "path":  "/api/auth/login",
+                      "request":  {
+
+                                  },
+                      "expected":  {
+                                       "status":  400,
+                                       "code":  "INVALID_INPUT",
+                                       "authenticated":  null,
+                                       "payloadVariant":  null,
+                                       "enabled":  null
+                                   },
+                      "observed":  {
+                                       "status":  400,
+                                       "body":  {
+                                                    "ok":  false,
+                                                    "error":  {
+                                                                  "code":  "INVALID_INPUT",
+                                                                  "message":  "Invalid request"
+                                                              }
+                                                },
+                                       "raw":  "{\"ok\":false,\"error\":{\"code\":\"INVALID_INPUT\",\"message\":\"Invalid request\"}}"
+                                   },
+                      "pass":  true
+                  },
+                  {
+                      "name":  "secure rejects malformed JSON",
+                      "method":  "POST",
+                      "path":  "/api/auth/login",
+                      "request":  "{\"username\":\"alice\",\"password\":",
+                      "expected":  {
+                                       "status":  400,
+                                       "code":  "INVALID_JSON",
+                                       "authenticated":  null,
+                                       "payloadVariant":  null,
+                                       "enabled":  null
+                                   },
+                      "observed":  {
+                                       "status":  400,
+                                       "body":  {
+                                                    "ok":  false,
+                                                    "error":  {
+                                                                  "code":  "INVALID_JSON",
+                                                                  "message":  "Request body must be valid JSON"
+                                                              }
+                                                },
+                                       "raw":  "{\"ok\":false,\"error\":{\"code\":\"INVALID_JSON\",\"message\":\"Request body must be valid JSON\"}}"
+                                   },
+                      "pass":  true
+                  },
+                  {
+                      "name":  "secure GET rejected",
+                      "method":  "GET",
+                      "path":  "/api/auth/login",
+                      "request":  null,
+                      "expected":  {
+                                       "status":  404,
+                                       "code":  "NOT_FOUND",
+                                       "authenticated":  null,
+                                       "payloadVariant":  null,
+                                       "enabled":  null
+                                   },
+                      "observed":  {
+                                       "status":  404,
+                                       "body":  {
+                                                    "ok":  false,
+                                                    "error":  {
+                                                                  "code":  "NOT_FOUND",
+                                                                  "message":  "Route not found"
+                                                              }
+                                                },
+                                       "raw":  "{\"ok\":false,\"error\":{\"code\":\"NOT_FOUND\",\"message\":\"Route not found\"}}"
+                                   },
+                      "pass":  true
+                  },
+                  {
+                      "name":  "secure unknown route",
+                      "method":  "POST",
+                      "path":  "/api/auth/not-a-route",
+                      "request":  {
+                                      "username":  "alice",
+                                      "password":  "synthetic-demo-password"
+                                  },
+                      "expected":  {
+                                       "status":  404,
+                                       "code":  "NOT_FOUND",
+                                       "authenticated":  null,
+                                       "payloadVariant":  null,
+                                       "enabled":  null
+                                   },
+                      "observed":  {
+                                       "status":  404,
+                                       "body":  {
+                                                    "ok":  false,
+                                                    "error":  {
+                                                                  "code":  "NOT_FOUND",
+                                                                  "message":  "Route not found"
+                                                              }
+                                                },
+                                       "raw":  "{\"ok\":false,\"error\":{\"code\":\"NOT_FOUND\",\"message\":\"Route not found\"}}"
+                                   },
+                      "pass":  true
+                  },
+                  {
+                      "name":  "logout endpoint",
+                      "method":  "POST",
+                      "path":  "/api/auth/logout",
+                      "request":  {
+
+                                  },
+                      "expected":  {
+                                       "status":  200,
+                                       "code":  null,
+                                       "authenticated":  null,
+                                       "payloadVariant":  null,
+                                       "enabled":  null
+                                   },
+                      "observed":  {
+                                       "status":  200,
+                                       "body":  {
+                                                    "ok":  true
+                                                },
+                                       "raw":  "{\"ok\":true}"
+                                   },
+                      "pass":  true
+                  },
+                  {
+                      "name":  "unknown root route",
+                      "method":  "GET",
+                      "path":  "/not-a-route",
+                      "request":  null,
+                      "expected":  {
+                                       "status":  404,
+                                       "code":  "NOT_FOUND",
+                                       "authenticated":  null,
+                                       "payloadVariant":  null,
+                                       "enabled":  null
+                                   },
+                      "observed":  {
+                                       "status":  404,
+                                       "body":  {
+                                                    "ok":  false,
+                                                    "error":  {
+                                                                  "code":  "NOT_FOUND",
+                                                                  "message":  "Route not found"
+                                                              }
+                                                },
+                                       "raw":  "{\"ok\":false,\"error\":{\"code\":\"NOT_FOUND\",\"message\":\"Route not found\"}}"
+                                   },
+                      "pass":  true
+                  }
+              ]
+}

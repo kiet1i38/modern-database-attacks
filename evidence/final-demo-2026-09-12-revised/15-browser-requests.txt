@@ -1,0 +1,14 @@
+### Result
+4. [GET] http://127.0.0.1:3000/api/health => [200] OK
+5. [POST] http://127.0.0.1:3000/api/auth/login => [200] OK
+6. [POST] http://127.0.0.1:3000/api/auth/login => [401] Unauthorized
+7. [POST] http://127.0.0.1:3000/api/lab/login-observation => [200] OK
+8. [POST] http://127.0.0.1:3000/api/lab/login-observation => [200] OK
+9. [POST] http://127.0.0.1:3000/api/lab/login-observation => [200] OK
+10. [POST] http://127.0.0.1:3000/api/lab/login-observation => [200] OK
+11. [POST] http://127.0.0.1:3000/api/lab/login-observation => [200] OK
+12. [POST] http://127.0.0.1:3000/api/lab/login-observation => [200] OK
+16. [GET] http://127.0.0.1:3000/api/health => [503] Service Unavailable
+20. [GET] http://127.0.0.1:3000/api/health => [200] OK
+
+Note: 9 static requests not shown, run with --static option to see them.

@@ -58,35 +58,23 @@ Show HTTP 200 and the public username/role only.
 
 Keep the username and enter a wrong string. Show HTTP 401 and the generic invalid-credentials response.
 
-### Step C: exact brief-shaped object
+### Step C: MongoDB operator payloads
 
-Select Local lab observation and choose the assignment-shaped object. The browser sends:
+Select Local lab observation and choose each operator variant. The browser sends
+the password as a real JSON object, not an escaped string:
 
-~~~json
-{
-  "username": "alice",
-  "password": {
-    "gt": ""
-  }
-}
-~~~
+| Variant | Payload | Teaching point |
+| --- | --- | --- |
+| `$gt` | `{ "$gt": "" }` | Greater than empty. |
+| `$gte` | `{ "$gte": "" }` | Greater than or equal to empty. |
+| `$ne` | `{ "$ne": "not-the-password" }` | Not equal to a different value. |
+| `$regex` | `{ "$regex": ".*" }` | Matches any string. |
+| `$nin` | `{ "$nin": ["not-the-password"] }` | Stored value is not in the list. |
+| `$exists` | `{ "$exists": true }` | The password field exists. |
 
-Record the status and response. This spelling must not be silently replaced.
-
-### Step D: MongoDB operator object
-
-Choose the operator variant. The browser sends:
-
-~~~json
-{
-  "username": "alice",
-  "password": {
-    "$gt": ""
-  }
-}
-~~~
-
-Record the status, input type, payload variant and authenticated marker. The result is valid evidence only for the documented local environment.
+Record the status, input type, payload variant and authenticated marker for
+each row. The result is valid evidence only for the documented local
+environment.
 
 ### Step E: secure comparison
 
@@ -106,9 +94,8 @@ Send an object password to POST /api/auth/login. The secure route should return 
 - Health response.
 - Correct credential success.
 - Wrong credential failure.
-- Exact brief-shaped request.
-- Operator-shaped request.
-- Successful lab response if produced.
+- Each allowlisted operator request.
+- At least one successful lab response for every operator family.
 - Secure-route object rejection.
 - Node.js, MongoDB and driver versions.
 - Relevant commit and README commands.

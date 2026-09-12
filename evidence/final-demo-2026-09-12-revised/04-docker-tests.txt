@@ -1,0 +1,99 @@
+ Container modern-database-attacks-mongodb  Running
+
+> modern-database-attacks@1.0.0 test:all
+> npm test && npm run test:integration
+
+
+> modern-database-attacks@1.0.0 test
+> node --test tests/unit/validation.test.js tests/unit/password.test.js tests/security/routes.test.js
+
+TAP version 13
+# [POST /api/auth/login] Invalid request
+# Subtest: secure route rejects object passwords before database lookup
+ok 1 - secure route rejects object passwords before database lookup
+  ---
+  duration_ms: 93.092495
+  ...
+# Subtest: secure route accepts correct scalar credentials
+ok 2 - secure route accepts correct scalar credentials
+  ---
+  duration_ms: 81.369437
+  ...
+# Subtest: lab route demonstrates the documented operator payloads in the isolated test double
+ok 3 - lab route demonstrates the documented operator payloads in the isolated test double
+  ---
+  duration_ms: 49.795053
+  ...
+# Subtest: lab route is unavailable when LAB_MODE is disabled
+ok 4 - lab route is unavailable when LAB_MODE is disabled
+  ---
+  duration_ms: 35.458592
+  ...
+# Subtest: password hash verifies only the original value
+ok 5 - password hash verifies only the original value
+  ---
+  duration_ms: 139.721682
+  ...
+# Subtest: malformed password hashes fail closed
+ok 6 - malformed password hashes fail closed
+  ---
+  duration_ms: 0.19113
+  ...
+# Subtest: secure validation accepts scalar credentials
+ok 7 - secure validation accepts scalar credentials
+  ---
+  duration_ms: 2.394951
+  ...
+# Subtest: secure validation rejects operator objects
+ok 8 - secure validation rejects operator objects
+  ---
+  duration_ms: 0.758718
+  ...
+# Subtest: secure validation rejects unknown body fields
+ok 9 - secure validation rejects unknown body fields
+  ---
+  duration_ms: 0.364264
+  ...
+# Subtest: lab validation accepts the allowlisted operator payloads
+ok 10 - lab validation accepts the allowlisted operator payloads
+  ---
+  duration_ms: 0.581982
+  ...
+# Subtest: lab validation rejects unsupported operator keys
+ok 11 - lab validation rejects unsupported operator keys
+  ---
+  duration_ms: 0.778891
+  ...
+# Subtest: lab validation rejects arrays as password values
+ok 12 - lab validation rejects arrays as password values
+  ---
+  duration_ms: 0.580242
+  ...
+1..12
+# tests 12
+# suites 0
+# pass 12
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 502.548
+
+> modern-database-attacks@1.0.0 test:integration
+> node --test tests/integration/mongodb.test.js
+
+TAP version 13
+# Subtest: real MongoDB evaluates the documented operator payloads
+ok 1 - real MongoDB evaluates the documented operator payloads
+  ---
+  duration_ms: 58.012715
+  ...
+1..1
+# tests 1
+# suites 0
+# pass 1
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 284.763047

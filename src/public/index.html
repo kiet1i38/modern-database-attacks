@@ -42,8 +42,12 @@
           <div id="payload-group" class="hidden">
             <label for="payload-variant">Payload variant</label>
             <select id="payload-variant" name="payload-variant">
-              <option value="brief">{"gt": ""} · assignment-shaped object</option>
-              <option value="operator">{"$gt": ""} · MongoDB operator object</option>
+              <option value="gt">{"$gt": ""} · Greater than empty</option>
+              <option value="gte">{"$gte": ""} · Greater/equal empty</option>
+              <option value="ne">{"$ne": "not-the-password"} · Not equal</option>
+              <option value="regex">{"$regex": ".*"} · Regex match</option>
+              <option value="nin">{"$nin": ["not-the-password"]} · Not in list</option>
+              <option value="exists">{"$exists": true} · Field exists</option>
             </select>
             <p class="help">
               This sends password as a JSON object, not as an escaped string.
@@ -61,7 +65,7 @@
         <ol>
           <li>Seed the synthetic user.</li>
           <li>Test correct and incorrect string credentials.</li>
-          <li>Enable local lab mode and test both object variants.</li>
+          <li>Enable local lab mode and test the six operator variants.</li>
           <li>Record the request, response and environment versions.</li>
         </ol>
       </section>

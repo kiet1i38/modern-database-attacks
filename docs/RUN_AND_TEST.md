@@ -75,10 +75,18 @@ docker compose -f docker-compose.yml -f docker-compose.lab.yml run --rm app node
 
 Sau đó mở lại `http://127.0.0.1:3000`, chọn `Local lab observation`.
 
-Hai payload trên giao diện:
+Các payload operator trên giao diện:
 
-- Assignment-shaped: `{"gt":""}` — thường trả `401`.
-- MongoDB operator: `{"$gt":""}` — trong MongoDB lab hiện tại trả `200` và `authenticated: true`.
+- `{"$gt":""}` — Greater than empty.
+- `{"$gte":""}` — Greater than or equal to empty.
+- `{"$ne":"not-the-password"}` — Not equal.
+- `{"$regex":".*"}` — Regex match bất kỳ chuỗi nào.
+- `{"$nin":["not-the-password"]}` — Giá trị không nằm trong danh sách.
+- `{"$exists":true}` — Field password tồn tại.
+
+Trong lab local, sáu payload trên đều trả `200` và `authenticated: true` dù
+không nhập password dạng string. Secure route phải chặn tất cả object này với
+`400 INVALID_INPUT`.
 
 Đây chỉ là kết quả của database local hiện tại, không phải kết luận cho mọi hệ thống MongoDB.
 
@@ -100,9 +108,9 @@ docker compose -f docker-compose.yml -f docker-compose.lab.yml run --rm -v "${re
 
 Kết quả baseline đã xác nhận:
 
-- Unit + security-boundary: `11/11 pass`.
+- Unit + security-boundary: `12/12 pass`.
 - MongoDB integration: `1/1 pass`.
-- Tổng cộng: `12/12 pass`.
+- Tổng cộng: `13/13 pass`.
 
 Kiểm tra dependency:
 
@@ -138,6 +146,23 @@ curl.exe -i -X POST http://127.0.0.1:3000/api/lab/login-observation `
   -H "Content-Type: application/json" `
   -d '{"username":"alice","password":{"$gt":""}}'
 
+# Các operator lab khác: mỗi request thường trả 200
+curl.exe -i -X POST http://127.0.0.1:3000/api/lab/login-observation `
+  -H "Content-Type: application/json" `
+  -d '{"username":"alice","password":{"$gte":""}}'
+curl.exe -i -X POST http://127.0.0.1:3000/api/lab/login-observation `
+  -H "Content-Type: application/json" `
+  -d '{"username":"alice","password":{"$ne":"not-the-password"}}'
+curl.exe -i -X POST http://127.0.0.1:3000/api/lab/login-observation `
+  -H "Content-Type: application/json" `
+  -d '{"username":"alice","password":{"$regex":".*"}}'
+curl.exe -i -X POST http://127.0.0.1:3000/api/lab/login-observation `
+  -H "Content-Type: application/json" `
+  -d '{"username":"alice","password":{"$nin":["not-the-password"]}}'
+curl.exe -i -X POST http://127.0.0.1:3000/api/lab/login-observation `
+  -H "Content-Type: application/json" `
+  -d '{"username":"alice","password":{"$exists":true}}'
+
 # JSON hỏng: 400 INVALID_JSON
 curl.exe -i -X POST http://127.0.0.1:3000/api/auth/login `
   -H "Content-Type: application/json" `
@@ -164,7 +189,8 @@ Ma trận kết quả quan trọng:
 3. Chọn `Secure comparison`, dùng `alice` và password secure, bấm Submit; kết quả phải là HTTP `200`.
 4. Nhập sai password; kết quả phải là HTTP `401`.
 5. Chuyển sang `Local lab observation`; password input được thay bằng dropdown payload.
-6. Gửi variant `{"gt":""}` rồi `{"$gt":""}`; kiểm tra request hiển thị là object, không phải escaped string.
+6. Gửi lần lượt sáu operator variant; kiểm tra mỗi request hiển thị là object,
+   không phải escaped string, và kết quả lab là `authenticated: true`.
 7. Sau mỗi lần submit, password field phải được xóa.
 8. Thu nhỏ cửa sổ khoảng `375x812` để kiểm tra layout mobile.
 

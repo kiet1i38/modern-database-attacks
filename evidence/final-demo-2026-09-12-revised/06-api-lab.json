@@ -1,0 +1,1029 @@
+{
+    "generatedAt":  "2026-09-12T23:15:25.5670698+07:00",
+    "baseUrl":  "http://127.0.0.1:3000",
+    "mode":  "lab",
+    "total":  32,
+    "passed":  32,
+    "failed":  0,
+    "cases":  [
+                  {
+                      "name":  "lab status enabled",
+                      "method":  "GET",
+                      "path":  "/api/lab/status",
+                      "request":  null,
+                      "expected":  {
+                                       "status":  200,
+                                       "code":  null,
+                                       "authenticated":  null,
+                                       "payloadVariant":  null,
+                                       "enabled":  true
+                                   },
+                      "observed":  {
+                                       "status":  200,
+                                       "body":  {
+                                                    "ok":  true,
+                                                    "enabled":  true,
+                                                    "mode":  "lab"
+                                                },
+                                       "raw":  "{\"ok\":true,\"enabled\":true,\"mode\":\"lab\"}"
+                                   },
+                      "pass":  true
+                  },
+                  {
+                      "name":  "lab gt success",
+                      "method":  "POST",
+                      "path":  "/api/lab/login-observation",
+                      "request":  {
+                                      "username":  "alice",
+                                      "password":  {
+                                                       "$gt":  ""
+                                                   }
+                                  },
+                      "expected":  {
+                                       "status":  200,
+                                       "code":  null,
+                                       "authenticated":  true,
+                                       "payloadVariant":  "$gt",
+                                       "enabled":  null
+                                   },
+                      "observed":  {
+                                       "status":  200,
+                                       "body":  {
+                                                    "ok":  true,
+                                                    "authenticated":  true,
+                                                    "mode":  "lab",
+                                                    "inputType":  "object",
+                                                    "payloadVariant":  "$gt",
+                                                    "user":  {
+                                                                 "username":  "alice",
+                                                                 "role":  "student"
+                                                             },
+                                                    "note":  "Controlled local lab result; do not reuse this route in production"
+                                                },
+                                       "raw":  "{\"ok\":true,\"authenticated\":true,\"mode\":\"lab\",\"inputType\":\"object\",\"payloadVariant\":\"$gt\",\"user\":{\"username\":\"alice\",\"role\":\"student\"},\"note\":\"Controlled local lab result; do not reuse this route in production\"}"
+                                   },
+                      "pass":  true
+                  },
+                  {
+                      "name":  "lab gte success",
+                      "method":  "POST",
+                      "path":  "/api/lab/login-observation",
+                      "request":  {
+                                      "username":  "alice",
+                                      "password":  {
+                                                       "$gte":  ""
+                                                   }
+                                  },
+                      "expected":  {
+                                       "status":  200,
+                                       "code":  null,
+                                       "authenticated":  true,
+                                       "payloadVariant":  "$gte",
+                                       "enabled":  null
+                                   },
+                      "observed":  {
+                                       "status":  200,
+                                       "body":  {
+                                                    "ok":  true,
+                                                    "authenticated":  true,
+                                                    "mode":  "lab",
+                                                    "inputType":  "object",
+                                                    "payloadVariant":  "$gte",
+                                                    "user":  {
+                                                                 "username":  "alice",
+                                                                 "role":  "student"
+                                                             },
+                                                    "note":  "Controlled local lab result; do not reuse this route in production"
+                                                },
+                                       "raw":  "{\"ok\":true,\"authenticated\":true,\"mode\":\"lab\",\"inputType\":\"object\",\"payloadVariant\":\"$gte\",\"user\":{\"username\":\"alice\",\"role\":\"student\"},\"note\":\"Controlled local lab result; do not reuse this route in production\"}"
+                                   },
+                      "pass":  true
+                  },
+                  {
+                      "name":  "lab ne success",
+                      "method":  "POST",
+                      "path":  "/api/lab/login-observation",
+                      "request":  {
+                                      "username":  "alice",
+                                      "password":  {
+                                                       "$ne":  "not-the-password"
+                                                   }
+                                  },
+                      "expected":  {
+                                       "status":  200,
+                                       "code":  null,
+                                       "authenticated":  true,
+                                       "payloadVariant":  "$ne",
+                                       "enabled":  null
+                                   },
+                      "observed":  {
+                                       "status":  200,
+                                       "body":  {
+                                                    "ok":  true,
+                                                    "authenticated":  true,
+                                                    "mode":  "lab",
+                                                    "inputType":  "object",
+                                                    "payloadVariant":  "$ne",
+                                                    "user":  {
+                                                                 "username":  "alice",
+                                                                 "role":  "student"
+                                                             },
+                                                    "note":  "Controlled local lab result; do not reuse this route in production"
+                                                },
+                                       "raw":  "{\"ok\":true,\"authenticated\":true,\"mode\":\"lab\",\"inputType\":\"object\",\"payloadVariant\":\"$ne\",\"user\":{\"username\":\"alice\",\"role\":\"student\"},\"note\":\"Controlled local lab result; do not reuse this route in production\"}"
+                                   },
+                      "pass":  true
+                  },
+                  {
+                      "name":  "lab regex success",
+                      "method":  "POST",
+                      "path":  "/api/lab/login-observation",
+                      "request":  {
+                                      "username":  "alice",
+                                      "password":  {
+                                                       "$regex":  ".*"
+                                                   }
+                                  },
+                      "expected":  {
+                                       "status":  200,
+                                       "code":  null,
+                                       "authenticated":  true,
+                                       "payloadVariant":  "$regex",
+                                       "enabled":  null
+                                   },
+                      "observed":  {
+                                       "status":  200,
+                                       "body":  {
+                                                    "ok":  true,
+                                                    "authenticated":  true,
+                                                    "mode":  "lab",
+                                                    "inputType":  "object",
+                                                    "payloadVariant":  "$regex",
+                                                    "user":  {
+                                                                 "username":  "alice",
+                                                                 "role":  "student"
+                                                             },
+                                                    "note":  "Controlled local lab result; do not reuse this route in production"
+                                                },
+                                       "raw":  "{\"ok\":true,\"authenticated\":true,\"mode\":\"lab\",\"inputType\":\"object\",\"payloadVariant\":\"$regex\",\"user\":{\"username\":\"alice\",\"role\":\"student\"},\"note\":\"Controlled local lab result; do not reuse this route in production\"}"
+                                   },
+                      "pass":  true
+                  },
+                  {
+                      "name":  "lab nin success",
+                      "method":  "POST",
+                      "path":  "/api/lab/login-observation",
+                      "request":  {
+                                      "username":  "alice",
+                                      "password":  {
+                                                       "$nin":  [
+                                                                    "not-the-password"
+                                                                ]
+                                                   }
+                                  },
+                      "expected":  {
+                                       "status":  200,
+                                       "code":  null,
+                                       "authenticated":  true,
+                                       "payloadVariant":  "$nin",
+                                       "enabled":  null
+                                   },
+                      "observed":  {
+                                       "status":  200,
+                                       "body":  {
+                                                    "ok":  true,
+                                                    "authenticated":  true,
+                                                    "mode":  "lab",
+                                                    "inputType":  "object",
+                                                    "payloadVariant":  "$nin",
+                                                    "user":  {
+                                                                 "username":  "alice",
+                                                                 "role":  "student"
+                                                             },
+                                                    "note":  "Controlled local lab result; do not reuse this route in production"
+                                                },
+                                       "raw":  "{\"ok\":true,\"authenticated\":true,\"mode\":\"lab\",\"inputType\":\"object\",\"payloadVariant\":\"$nin\",\"user\":{\"username\":\"alice\",\"role\":\"student\"},\"note\":\"Controlled local lab result; do not reuse this route in production\"}"
+                                   },
+                      "pass":  true
+                  },
+                  {
+                      "name":  "lab exists success",
+                      "method":  "POST",
+                      "path":  "/api/lab/login-observation",
+                      "request":  {
+                                      "username":  "alice",
+                                      "password":  {
+                                                       "$exists":  true
+                                                   }
+                                  },
+                      "expected":  {
+                                       "status":  200,
+                                       "code":  null,
+                                       "authenticated":  true,
+                                       "payloadVariant":  "$exists",
+                                       "enabled":  null
+                                   },
+                      "observed":  {
+                                       "status":  200,
+                                       "body":  {
+                                                    "ok":  true,
+                                                    "authenticated":  true,
+                                                    "mode":  "lab",
+                                                    "inputType":  "object",
+                                                    "payloadVariant":  "$exists",
+                                                    "user":  {
+                                                                 "username":  "alice",
+                                                                 "role":  "student"
+                                                             },
+                                                    "note":  "Controlled local lab result; do not reuse this route in production"
+                                                },
+                                       "raw":  "{\"ok\":true,\"authenticated\":true,\"mode\":\"lab\",\"inputType\":\"object\",\"payloadVariant\":\"$exists\",\"user\":{\"username\":\"alice\",\"role\":\"student\"},\"note\":\"Controlled local lab result; do not reuse this route in production\"}"
+                                   },
+                      "pass":  true
+                  },
+                  {
+                      "name":  "lab correct scalar",
+                      "method":  "POST",
+                      "path":  "/api/lab/login-observation",
+                      "request":  {
+                                      "username":  "alice",
+                                      "password":  "lab-only-demo-password"
+                                  },
+                      "expected":  {
+                                       "status":  200,
+                                       "code":  null,
+                                       "authenticated":  true,
+                                       "payloadVariant":  "string",
+                                       "enabled":  null
+                                   },
+                      "observed":  {
+                                       "status":  200,
+                                       "body":  {
+                                                    "ok":  true,
+                                                    "authenticated":  true,
+                                                    "mode":  "lab",
+                                                    "inputType":  "string",
+                                                    "payloadVariant":  "string",
+                                                    "user":  {
+                                                                 "username":  "alice",
+                                                                 "role":  "student"
+                                                             },
+                                                    "note":  "Controlled local lab result; do not reuse this route in production"
+                                                },
+                                       "raw":  "{\"ok\":true,\"authenticated\":true,\"mode\":\"lab\",\"inputType\":\"string\",\"payloadVariant\":\"string\",\"user\":{\"username\":\"alice\",\"role\":\"student\"},\"note\":\"Controlled local lab result; do not reuse this route in production\"}"
+                                   },
+                      "pass":  true
+                  },
+                  {
+                      "name":  "lab wrong scalar",
+                      "method":  "POST",
+                      "path":  "/api/lab/login-observation",
+                      "request":  {
+                                      "username":  "alice",
+                                      "password":  "wrong-password"
+                                  },
+                      "expected":  {
+                                       "status":  401,
+                                       "code":  "INVALID_CREDENTIALS",
+                                       "authenticated":  null,
+                                       "payloadVariant":  "string",
+                                       "enabled":  null
+                                   },
+                      "observed":  {
+                                       "status":  401,
+                                       "body":  {
+                                                    "ok":  false,
+                                                    "error":  {
+                                                                  "code":  "INVALID_CREDENTIALS",
+                                                                  "message":  "Lab login did not authenticate"
+                                                              },
+                                                    "mode":  "lab",
+                                                    "inputType":  "string",
+                                                    "payloadVariant":  "string"
+                                                },
+                                       "raw":  "{\"ok\":false,\"error\":{\"code\":\"INVALID_CREDENTIALS\",\"message\":\"Lab login did not authenticate\"},\"mode\":\"lab\",\"inputType\":\"string\",\"payloadVariant\":\"string\"}"
+                                   },
+                      "pass":  true
+                  },
+                  {
+                      "name":  "lab gt no match",
+                      "method":  "POST",
+                      "path":  "/api/lab/login-observation",
+                      "request":  {
+                                      "username":  "alice",
+                                      "password":  {
+                                                       "$gt":  "zzzz"
+                                                   }
+                                  },
+                      "expected":  {
+                                       "status":  401,
+                                       "code":  "INVALID_CREDENTIALS",
+                                       "authenticated":  null,
+                                       "payloadVariant":  "$gt",
+                                       "enabled":  null
+                                   },
+                      "observed":  {
+                                       "status":  401,
+                                       "body":  {
+                                                    "ok":  false,
+                                                    "error":  {
+                                                                  "code":  "INVALID_CREDENTIALS",
+                                                                  "message":  "Lab login did not authenticate"
+                                                              },
+                                                    "mode":  "lab",
+                                                    "inputType":  "object",
+                                                    "payloadVariant":  "$gt"
+                                                },
+                                       "raw":  "{\"ok\":false,\"error\":{\"code\":\"INVALID_CREDENTIALS\",\"message\":\"Lab login did not authenticate\"},\"mode\":\"lab\",\"inputType\":\"object\",\"payloadVariant\":\"$gt\"}"
+                                   },
+                      "pass":  true
+                  },
+                  {
+                      "name":  "lab gte no match",
+                      "method":  "POST",
+                      "path":  "/api/lab/login-observation",
+                      "request":  {
+                                      "username":  "alice",
+                                      "password":  {
+                                                       "$gte":  "zzzz"
+                                                   }
+                                  },
+                      "expected":  {
+                                       "status":  401,
+                                       "code":  "INVALID_CREDENTIALS",
+                                       "authenticated":  null,
+                                       "payloadVariant":  "$gte",
+                                       "enabled":  null
+                                   },
+                      "observed":  {
+                                       "status":  401,
+                                       "body":  {
+                                                    "ok":  false,
+                                                    "error":  {
+                                                                  "code":  "INVALID_CREDENTIALS",
+                                                                  "message":  "Lab login did not authenticate"
+                                                              },
+                                                    "mode":  "lab",
+                                                    "inputType":  "object",
+                                                    "payloadVariant":  "$gte"
+                                                },
+                                       "raw":  "{\"ok\":false,\"error\":{\"code\":\"INVALID_CREDENTIALS\",\"message\":\"Lab login did not authenticate\"},\"mode\":\"lab\",\"inputType\":\"object\",\"payloadVariant\":\"$gte\"}"
+                                   },
+                      "pass":  true
+                  },
+                  {
+                      "name":  "lab ne no match",
+                      "method":  "POST",
+                      "path":  "/api/lab/login-observation",
+                      "request":  {
+                                      "username":  "alice",
+                                      "password":  {
+                                                       "$ne":  "lab-only-demo-password"
+                                                   }
+                                  },
+                      "expected":  {
+                                       "status":  401,
+                                       "code":  "INVALID_CREDENTIALS",
+                                       "authenticated":  null,
+                                       "payloadVariant":  "$ne",
+                                       "enabled":  null
+                                   },
+                      "observed":  {
+                                       "status":  401,
+                                       "body":  {
+                                                    "ok":  false,
+                                                    "error":  {
+                                                                  "code":  "INVALID_CREDENTIALS",
+                                                                  "message":  "Lab login did not authenticate"
+                                                              },
+                                                    "mode":  "lab",
+                                                    "inputType":  "object",
+                                                    "payloadVariant":  "$ne"
+                                                },
+                                       "raw":  "{\"ok\":false,\"error\":{\"code\":\"INVALID_CREDENTIALS\",\"message\":\"Lab login did not authenticate\"},\"mode\":\"lab\",\"inputType\":\"object\",\"payloadVariant\":\"$ne\"}"
+                                   },
+                      "pass":  true
+                  },
+                  {
+                      "name":  "lab regex no match",
+                      "method":  "POST",
+                      "path":  "/api/lab/login-observation",
+                      "request":  {
+                                      "username":  "alice",
+                                      "password":  {
+                                                       "$regex":  "^no-match$"
+                                                   }
+                                  },
+                      "expected":  {
+                                       "status":  401,
+                                       "code":  "INVALID_CREDENTIALS",
+                                       "authenticated":  null,
+                                       "payloadVariant":  "$regex",
+                                       "enabled":  null
+                                   },
+                      "observed":  {
+                                       "status":  401,
+                                       "body":  {
+                                                    "ok":  false,
+                                                    "error":  {
+                                                                  "code":  "INVALID_CREDENTIALS",
+                                                                  "message":  "Lab login did not authenticate"
+                                                              },
+                                                    "mode":  "lab",
+                                                    "inputType":  "object",
+                                                    "payloadVariant":  "$regex"
+                                                },
+                                       "raw":  "{\"ok\":false,\"error\":{\"code\":\"INVALID_CREDENTIALS\",\"message\":\"Lab login did not authenticate\"},\"mode\":\"lab\",\"inputType\":\"object\",\"payloadVariant\":\"$regex\"}"
+                                   },
+                      "pass":  true
+                  },
+                  {
+                      "name":  "lab nin no match",
+                      "method":  "POST",
+                      "path":  "/api/lab/login-observation",
+                      "request":  {
+                                      "username":  "alice",
+                                      "password":  {
+                                                       "$nin":  [
+                                                                    "lab-only-demo-password"
+                                                                ]
+                                                   }
+                                  },
+                      "expected":  {
+                                       "status":  401,
+                                       "code":  "INVALID_CREDENTIALS",
+                                       "authenticated":  null,
+                                       "payloadVariant":  "$nin",
+                                       "enabled":  null
+                                   },
+                      "observed":  {
+                                       "status":  401,
+                                       "body":  {
+                                                    "ok":  false,
+                                                    "error":  {
+                                                                  "code":  "INVALID_CREDENTIALS",
+                                                                  "message":  "Lab login did not authenticate"
+                                                              },
+                                                    "mode":  "lab",
+                                                    "inputType":  "object",
+                                                    "payloadVariant":  "$nin"
+                                                },
+                                       "raw":  "{\"ok\":false,\"error\":{\"code\":\"INVALID_CREDENTIALS\",\"message\":\"Lab login did not authenticate\"},\"mode\":\"lab\",\"inputType\":\"object\",\"payloadVariant\":\"$nin\"}"
+                                   },
+                      "pass":  true
+                  },
+                  {
+                      "name":  "lab exists false no match",
+                      "method":  "POST",
+                      "path":  "/api/lab/login-observation",
+                      "request":  {
+                                      "username":  "alice",
+                                      "password":  {
+                                                       "$exists":  false
+                                                   }
+                                  },
+                      "expected":  {
+                                       "status":  401,
+                                       "code":  "INVALID_CREDENTIALS",
+                                       "authenticated":  null,
+                                       "payloadVariant":  "$exists",
+                                       "enabled":  null
+                                   },
+                      "observed":  {
+                                       "status":  401,
+                                       "body":  {
+                                                    "ok":  false,
+                                                    "error":  {
+                                                                  "code":  "INVALID_CREDENTIALS",
+                                                                  "message":  "Lab login did not authenticate"
+                                                              },
+                                                    "mode":  "lab",
+                                                    "inputType":  "object",
+                                                    "payloadVariant":  "$exists"
+                                                },
+                                       "raw":  "{\"ok\":false,\"error\":{\"code\":\"INVALID_CREDENTIALS\",\"message\":\"Lab login did not authenticate\"},\"mode\":\"lab\",\"inputType\":\"object\",\"payloadVariant\":\"$exists\"}"
+                                   },
+                      "pass":  true
+                  },
+                  {
+                      "name":  "lab rejects where operator",
+                      "method":  "POST",
+                      "path":  "/api/lab/login-observation",
+                      "request":  {
+                                      "username":  "alice",
+                                      "password":  {
+                                                       "$where":  "this.password"
+                                                   }
+                                  },
+                      "expected":  {
+                                       "status":  400,
+                                       "code":  "INVALID_INPUT",
+                                       "authenticated":  null,
+                                       "payloadVariant":  null,
+                                       "enabled":  null
+                                   },
+                      "observed":  {
+                                       "status":  400,
+                                       "body":  {
+                                                    "ok":  false,
+                                                    "error":  {
+                                                                  "code":  "INVALID_INPUT",
+                                                                  "message":  "Invalid request"
+                                                              }
+                                                },
+                                       "raw":  "{\"ok\":false,\"error\":{\"code\":\"INVALID_INPUT\",\"message\":\"Invalid request\"}}"
+                                   },
+                      "pass":  true
+                  },
+                  {
+                      "name":  "lab rejects multiple operators",
+                      "method":  "POST",
+                      "path":  "/api/lab/login-observation",
+                      "request":  {
+                                      "username":  "alice",
+                                      "password":  {
+                                                       "$gt":  "",
+                                                       "$ne":  "x"
+                                                   }
+                                  },
+                      "expected":  {
+                                       "status":  400,
+                                       "code":  "INVALID_INPUT",
+                                       "authenticated":  null,
+                                       "payloadVariant":  null,
+                                       "enabled":  null
+                                   },
+                      "observed":  {
+                                       "status":  400,
+                                       "body":  {
+                                                    "ok":  false,
+                                                    "error":  {
+                                                                  "code":  "INVALID_INPUT",
+                                                                  "message":  "Invalid request"
+                                                              }
+                                                },
+                                       "raw":  "{\"ok\":false,\"error\":{\"code\":\"INVALID_INPUT\",\"message\":\"Invalid request\"}}"
+                                   },
+                      "pass":  true
+                  },
+                  {
+                      "name":  "lab rejects numeric gt",
+                      "method":  "POST",
+                      "path":  "/api/lab/login-observation",
+                      "request":  {
+                                      "username":  "alice",
+                                      "password":  {
+                                                       "$gt":  1
+                                                   }
+                                  },
+                      "expected":  {
+                                       "status":  400,
+                                       "code":  "INVALID_INPUT",
+                                       "authenticated":  null,
+                                       "payloadVariant":  null,
+                                       "enabled":  null
+                                   },
+                      "observed":  {
+                                       "status":  400,
+                                       "body":  {
+                                                    "ok":  false,
+                                                    "error":  {
+                                                                  "code":  "INVALID_INPUT",
+                                                                  "message":  "Invalid request"
+                                                              }
+                                                },
+                                       "raw":  "{\"ok\":false,\"error\":{\"code\":\"INVALID_INPUT\",\"message\":\"Invalid request\"}}"
+                                   },
+                      "pass":  true
+                  },
+                  {
+                      "name":  "lab rejects array gt",
+                      "method":  "POST",
+                      "path":  "/api/lab/login-observation",
+                      "request":  {
+                                      "username":  "alice",
+                                      "password":  {
+                                                       "$gt":  [
+                                                                   ""
+                                                               ]
+                                                   }
+                                  },
+                      "expected":  {
+                                       "status":  400,
+                                       "code":  "INVALID_INPUT",
+                                       "authenticated":  null,
+                                       "payloadVariant":  null,
+                                       "enabled":  null
+                                   },
+                      "observed":  {
+                                       "status":  400,
+                                       "body":  {
+                                                    "ok":  false,
+                                                    "error":  {
+                                                                  "code":  "INVALID_INPUT",
+                                                                  "message":  "Invalid request"
+                                                              }
+                                                },
+                                       "raw":  "{\"ok\":false,\"error\":{\"code\":\"INVALID_INPUT\",\"message\":\"Invalid request\"}}"
+                                   },
+                      "pass":  true
+                  },
+                  {
+                      "name":  "lab rejects nonboolean exists",
+                      "method":  "POST",
+                      "path":  "/api/lab/login-observation",
+                      "request":  {
+                                      "username":  "alice",
+                                      "password":  {
+                                                       "$exists":  "true"
+                                                   }
+                                  },
+                      "expected":  {
+                                       "status":  400,
+                                       "code":  "INVALID_INPUT",
+                                       "authenticated":  null,
+                                       "payloadVariant":  null,
+                                       "enabled":  null
+                                   },
+                      "observed":  {
+                                       "status":  400,
+                                       "body":  {
+                                                    "ok":  false,
+                                                    "error":  {
+                                                                  "code":  "INVALID_INPUT",
+                                                                  "message":  "Invalid request"
+                                                              }
+                                                },
+                                       "raw":  "{\"ok\":false,\"error\":{\"code\":\"INVALID_INPUT\",\"message\":\"Invalid request\"}}"
+                                   },
+                      "pass":  true
+                  },
+                  {
+                      "name":  "lab rejects empty nin",
+                      "method":  "POST",
+                      "path":  "/api/lab/login-observation",
+                      "request":  {
+                                      "username":  "alice",
+                                      "password":  {
+                                                       "$nin":  [
+
+                                                                ]
+                                                   }
+                                  },
+                      "expected":  {
+                                       "status":  400,
+                                       "code":  "INVALID_INPUT",
+                                       "authenticated":  null,
+                                       "payloadVariant":  null,
+                                       "enabled":  null
+                                   },
+                      "observed":  {
+                                       "status":  400,
+                                       "body":  {
+                                                    "ok":  false,
+                                                    "error":  {
+                                                                  "code":  "INVALID_INPUT",
+                                                                  "message":  "Invalid request"
+                                                              }
+                                                },
+                                       "raw":  "{\"ok\":false,\"error\":{\"code\":\"INVALID_INPUT\",\"message\":\"Invalid request\"}}"
+                                   },
+                      "pass":  true
+                  },
+                  {
+                      "name":  "lab rejects oversized nin",
+                      "method":  "POST",
+                      "path":  "/api/lab/login-observation",
+                      "request":  {
+                                      "username":  "alice",
+                                      "password":  {
+                                                       "$nin":  [
+                                                                    "1",
+                                                                    "2",
+                                                                    "3",
+                                                                    "4",
+                                                                    "5",
+                                                                    "6"
+                                                                ]
+                                                   }
+                                  },
+                      "expected":  {
+                                       "status":  400,
+                                       "code":  "INVALID_INPUT",
+                                       "authenticated":  null,
+                                       "payloadVariant":  null,
+                                       "enabled":  null
+                                   },
+                      "observed":  {
+                                       "status":  400,
+                                       "body":  {
+                                                    "ok":  false,
+                                                    "error":  {
+                                                                  "code":  "INVALID_INPUT",
+                                                                  "message":  "Invalid request"
+                                                              }
+                                                },
+                                       "raw":  "{\"ok\":false,\"error\":{\"code\":\"INVALID_INPUT\",\"message\":\"Invalid request\"}}"
+                                   },
+                      "pass":  true
+                  },
+                  {
+                      "name":  "lab rejects unknown object key",
+                      "method":  "POST",
+                      "path":  "/api/lab/login-observation",
+                      "request":  {
+                                      "username":  "alice",
+                                      "password":  {
+                                                       "foo":  "bar"
+                                                   }
+                                  },
+                      "expected":  {
+                                       "status":  400,
+                                       "code":  "INVALID_INPUT",
+                                       "authenticated":  null,
+                                       "payloadVariant":  null,
+                                       "enabled":  null
+                                   },
+                      "observed":  {
+                                       "status":  400,
+                                       "body":  {
+                                                    "ok":  false,
+                                                    "error":  {
+                                                                  "code":  "INVALID_INPUT",
+                                                                  "message":  "Invalid request"
+                                                              }
+                                                },
+                                       "raw":  "{\"ok\":false,\"error\":{\"code\":\"INVALID_INPUT\",\"message\":\"Invalid request\"}}"
+                                   },
+                      "pass":  true
+                  },
+                  {
+                      "name":  "lab rejects password array",
+                      "method":  "POST",
+                      "path":  "/api/lab/login-observation",
+                      "request":  {
+                                      "username":  "alice",
+                                      "password":  [
+                                                       "x"
+                                                   ]
+                                  },
+                      "expected":  {
+                                       "status":  400,
+                                       "code":  "INVALID_INPUT",
+                                       "authenticated":  null,
+                                       "payloadVariant":  null,
+                                       "enabled":  null
+                                   },
+                      "observed":  {
+                                       "status":  400,
+                                       "body":  {
+                                                    "ok":  false,
+                                                    "error":  {
+                                                                  "code":  "INVALID_INPUT",
+                                                                  "message":  "Invalid request"
+                                                              }
+                                                },
+                                       "raw":  "{\"ok\":false,\"error\":{\"code\":\"INVALID_INPUT\",\"message\":\"Invalid request\"}}"
+                                   },
+                      "pass":  true
+                  },
+                  {
+                      "name":  "lab rejects null password",
+                      "method":  "POST",
+                      "path":  "/api/lab/login-observation",
+                      "request":  {
+                                      "username":  "alice",
+                                      "password":  null
+                                  },
+                      "expected":  {
+                                       "status":  400,
+                                       "code":  "INVALID_INPUT",
+                                       "authenticated":  null,
+                                       "payloadVariant":  null,
+                                       "enabled":  null
+                                   },
+                      "observed":  {
+                                       "status":  400,
+                                       "body":  {
+                                                    "ok":  false,
+                                                    "error":  {
+                                                                  "code":  "INVALID_INPUT",
+                                                                  "message":  "Invalid request"
+                                                              }
+                                                },
+                                       "raw":  "{\"ok\":false,\"error\":{\"code\":\"INVALID_INPUT\",\"message\":\"Invalid request\"}}"
+                                   },
+                      "pass":  true
+                  },
+                  {
+                      "name":  "lab rejects missing username",
+                      "method":  "POST",
+                      "path":  "/api/lab/login-observation",
+                      "request":  {
+                                      "password":  {
+                                                       "$gt":  ""
+                                                   }
+                                  },
+                      "expected":  {
+                                       "status":  400,
+                                       "code":  "INVALID_INPUT",
+                                       "authenticated":  null,
+                                       "payloadVariant":  null,
+                                       "enabled":  null
+                                   },
+                      "observed":  {
+                                       "status":  400,
+                                       "body":  {
+                                                    "ok":  false,
+                                                    "error":  {
+                                                                  "code":  "INVALID_INPUT",
+                                                                  "message":  "Invalid request"
+                                                              }
+                                                },
+                                       "raw":  "{\"ok\":false,\"error\":{\"code\":\"INVALID_INPUT\",\"message\":\"Invalid request\"}}"
+                                   },
+                      "pass":  true
+                  },
+                  {
+                      "name":  "lab rejects extra field",
+                      "method":  "POST",
+                      "path":  "/api/lab/login-observation",
+                      "request":  {
+                                      "username":  "alice",
+                                      "password":  {
+                                                       "$gt":  ""
+                                                   },
+                                      "extra":  "x"
+                                  },
+                      "expected":  {
+                                       "status":  400,
+                                       "code":  "INVALID_INPUT",
+                                       "authenticated":  null,
+                                       "payloadVariant":  null,
+                                       "enabled":  null
+                                   },
+                      "observed":  {
+                                       "status":  400,
+                                       "body":  {
+                                                    "ok":  false,
+                                                    "error":  {
+                                                                  "code":  "INVALID_INPUT",
+                                                                  "message":  "Invalid request"
+                                                              }
+                                                },
+                                       "raw":  "{\"ok\":false,\"error\":{\"code\":\"INVALID_INPUT\",\"message\":\"Invalid request\"}}"
+                                   },
+                      "pass":  true
+                  },
+                  {
+                      "name":  "lab rejects malformed JSON",
+                      "method":  "POST",
+                      "path":  "/api/lab/login-observation",
+                      "request":  "{\"username\":\"alice\",\"password\":{\"$gt\":\"\"}",
+                      "expected":  {
+                                       "status":  400,
+                                       "code":  "INVALID_JSON",
+                                       "authenticated":  null,
+                                       "payloadVariant":  null,
+                                       "enabled":  null
+                                   },
+                      "observed":  {
+                                       "status":  400,
+                                       "body":  {
+                                                    "ok":  false,
+                                                    "error":  {
+                                                                  "code":  "INVALID_JSON",
+                                                                  "message":  "Request body must be valid JSON"
+                                                              }
+                                                },
+                                       "raw":  "{\"ok\":false,\"error\":{\"code\":\"INVALID_JSON\",\"message\":\"Request body must be valid JSON\"}}"
+                                   },
+                      "pass":  true
+                  },
+                  {
+                      "name":  "lab rejects top-level array",
+                      "method":  "POST",
+                      "path":  "/api/lab/login-observation",
+                      "request":  {
+                                      "value":  [
+                                                    {
+                                                        "username":  "alice",
+                                                        "password":  {
+                                                                         "$gt":  ""
+                                                                     }
+                                                    }
+                                                ],
+                                      "Count":  1
+                                  },
+                      "expected":  {
+                                       "status":  400,
+                                       "code":  "INVALID_INPUT",
+                                       "authenticated":  null,
+                                       "payloadVariant":  null,
+                                       "enabled":  null
+                                   },
+                      "observed":  {
+                                       "status":  400,
+                                       "body":  {
+                                                    "ok":  false,
+                                                    "error":  {
+                                                                  "code":  "INVALID_INPUT",
+                                                                  "message":  "Invalid request"
+                                                              }
+                                                },
+                                       "raw":  "{\"ok\":false,\"error\":{\"code\":\"INVALID_INPUT\",\"message\":\"Invalid request\"}}"
+                                   },
+                      "pass":  true
+                  },
+                  {
+                      "name":  "lab GET rejected",
+                      "method":  "GET",
+                      "path":  "/api/lab/login-observation",
+                      "request":  null,
+                      "expected":  {
+                                       "status":  404,
+                                       "code":  "NOT_FOUND",
+                                       "authenticated":  null,
+                                       "payloadVariant":  null,
+                                       "enabled":  null
+                                   },
+                      "observed":  {
+                                       "status":  404,
+                                       "body":  {
+                                                    "ok":  false,
+                                                    "error":  {
+                                                                  "code":  "NOT_FOUND",
+                                                                  "message":  "Route not found"
+                                                              }
+                                                },
+                                       "raw":  "{\"ok\":false,\"error\":{\"code\":\"NOT_FOUND\",\"message\":\"Route not found\"}}"
+                                   },
+                      "pass":  true
+                  },
+                  {
+                      "name":  "lab unknown route",
+                      "method":  "POST",
+                      "path":  "/api/lab/no-route",
+                      "request":  {
+                                      "username":  "alice",
+                                      "password":  {
+                                                       "$gt":  ""
+                                                   }
+                                  },
+                      "expected":  {
+                                       "status":  404,
+                                       "code":  "NOT_FOUND",
+                                       "authenticated":  null,
+                                       "payloadVariant":  null,
+                                       "enabled":  null
+                                   },
+                      "observed":  {
+                                       "status":  404,
+                                       "body":  {
+                                                    "ok":  false,
+                                                    "error":  {
+                                                                  "code":  "NOT_FOUND",
+                                                                  "message":  "Route not found"
+                                                              }
+                                                },
+                                       "raw":  "{\"ok\":false,\"error\":{\"code\":\"NOT_FOUND\",\"message\":\"Route not found\"}}"
+                                   },
+                      "pass":  true
+                  },
+                  {
+                      "name":  "lab upper-case username normalized",
+                      "method":  "POST",
+                      "path":  "/api/lab/login-observation",
+                      "request":  {
+                                      "username":  "ALICE",
+                                      "password":  {
+                                                       "$gt":  ""
+                                                   }
+                                  },
+                      "expected":  {
+                                       "status":  200,
+                                       "code":  null,
+                                       "authenticated":  true,
+                                       "payloadVariant":  "$gt",
+                                       "enabled":  null
+                                   },
+                      "observed":  {
+                                       "status":  200,
+                                       "body":  {
+                                                    "ok":  true,
+                                                    "authenticated":  true,
+                                                    "mode":  "lab",
+                                                    "inputType":  "object",
+                                                    "payloadVariant":  "$gt",
+                                                    "user":  {
+                                                                 "username":  "alice",
+                                                                 "role":  "student"
+                                                             },
+                                                    "note":  "Controlled local lab result; do not reuse this route in production"
+                                                },
+                                       "raw":  "{\"ok\":true,\"authenticated\":true,\"mode\":\"lab\",\"inputType\":\"object\",\"payloadVariant\":\"$gt\",\"user\":{\"username\":\"alice\",\"role\":\"student\"},\"note\":\"Controlled local lab result; do not reuse this route in production\"}"
+                                   },
+                      "pass":  true
+                  }
+              ]
+}

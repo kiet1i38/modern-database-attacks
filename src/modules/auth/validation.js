@@ -2,6 +2,15 @@ import { AppError } from "../../shared/errors.js";
 
 const MAX_USERNAME_LENGTH = 80;
 const MAX_PASSWORD_LENGTH = 200;
+const MAX_OPERATOR_LIST_LENGTH = 5;
+const LAB_OPERATOR_KEYS = new Set([
+  "$gt",
+  "$gte",
+  "$ne",
+  "$regex",
+  "$nin",
+  "$exists"
+]);
 
 export function isPlainObject(value) {
   if (value === null || typeof value !== "object") {
@@ -68,14 +77,36 @@ function validateLabPassword(password) {
 
   const keys = Object.keys(password);
 
-  if (keys.length === 0 || keys.length > 3) {
+  if (keys.length !== 1 || !LAB_OPERATOR_KEYS.has(keys[0])) {
     throw invalidInput();
   }
 
-  for (const value of Object.values(password)) {
-    if (typeof value !== "string" || value.length > MAX_PASSWORD_LENGTH) {
+  const [operator] = keys;
+  const value = password[operator];
+
+  if (operator === "$exists") {
+    if (typeof value !== "boolean") {
       throw invalidInput();
     }
+
+    return password;
+  }
+
+  if (operator === "$nin") {
+    if (
+      !Array.isArray(value)
+      || value.length < 1
+      || value.length > MAX_OPERATOR_LIST_LENGTH
+      || value.some((item) => typeof item !== "string" || item.length > MAX_PASSWORD_LENGTH)
+    ) {
+      throw invalidInput();
+    }
+
+    return password;
+  }
+
+  if (typeof value !== "string" || value.length > MAX_PASSWORD_LENGTH) {
+    throw invalidInput();
   }
 
   return password;

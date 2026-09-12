@@ -1,0 +1,1 @@
+{"secureUserCount":1,"labUserCount":1,"securePasswordHashPrefix":"scrypt","securePlaintextPasswordPresent":false,"labPlaintextPasswordPresent":true,"usersIndexes":["_id_","users_username_unique"],"labIndexes":["_id_","lab_users_username_unique"]}

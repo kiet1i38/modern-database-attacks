@@ -5,7 +5,7 @@ import { createDatabaseClient } from "../../src/db/client.js";
 import { ensureIndexes } from "../../src/db/indexes.js";
 import { COLLECTIONS } from "../../src/db/collections.js";
 
-test("real MongoDB evaluates the two documented payload shapes", async () => {
+test("real MongoDB evaluates the documented operator payloads", async () => {
   const dbClient = createDatabaseClient({
     mongoUri: config.mongoUri,
     mongoDatabase: config.mongoTestDatabase
@@ -32,19 +32,25 @@ test("real MongoDB evaluates the two documented payload shapes", async () => {
       password
     });
 
-    const briefShape = await collection.findOne({
-      username,
-      password: { gt: "" }
-    });
-
-    const operatorShape = await collection.findOne({
-      username,
-      password: { $gt: "" }
-    });
+    const operatorPayloads = [
+      { $gt: "" },
+      { $gte: "" },
+      { $ne: "not-the-password" },
+      { $regex: ".*" },
+      { $nin: ["not-the-password"] },
+      { $exists: true }
+    ];
 
     assert.equal(normal?.username, username);
-    assert.equal(briefShape, null);
-    assert.equal(operatorShape?.username, username);
+
+    for (const passwordQuery of operatorPayloads) {
+      const operatorMatch = await collection.findOne({
+        username,
+        password: passwordQuery
+      });
+
+      assert.equal(operatorMatch?.username, username);
+    }
   } finally {
     await collection.deleteMany({ username });
     await dbClient.close();

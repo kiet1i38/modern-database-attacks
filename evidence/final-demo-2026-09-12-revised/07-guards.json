@@ -1,0 +1,28 @@
+{
+  "productionGuard": {
+    "status": 404,
+    "body": {
+      "ok": false,
+      "error": {
+        "code": "LAB_UNAVAILABLE",
+        "message": "The local lab route is unavailable in production mode"
+      }
+    }
+  },
+  "dockerNetworkGuard": {
+    "status": 403,
+    "body": {
+      "ok": false,
+      "error": {
+        "code": "LAB_LOCAL_ONLY",
+        "message": "The local lab route accepts loopback requests only"
+      }
+    }
+  },
+  "expected": {
+    "productionStatus": 404,
+    "productionCode": "LAB_UNAVAILABLE",
+    "dockerNetworkStatus": 403,
+    "dockerNetworkCode": "LAB_LOCAL_ONLY"
+  }
+}

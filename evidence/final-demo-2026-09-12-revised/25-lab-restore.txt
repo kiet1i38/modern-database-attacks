@@ -1,0 +1,7 @@
+ Container modern-database-attacks-mongodb  Running
+ Container modern-database-attacks-app  Recreate
+ Container modern-database-attacks-app  Recreated
+ Container modern-database-attacks-mongodb  Waiting
+ Container modern-database-attacks-mongodb  Healthy
+ Container modern-database-attacks-app  Starting
+ Container modern-database-attacks-app  Started

@@ -39,16 +39,31 @@ test("secure validation rejects unknown body fields", () => {
   );
 });
 
-test("lab validation accepts a structured payload for the local experiment", () => {
-  assert.deepEqual(
-    validateLabLoginBody({
-      username: "Alice",
-      password: { $gt: "" }
-    }),
-    {
+test("lab validation accepts the allowlisted operator payloads", () => {
+  const payloads = [
+    { $gt: "" },
+    { $gte: "" },
+    { $ne: "not-the-password" },
+    { $regex: ".*" },
+    { $nin: ["not-the-password"] },
+    { $exists: true }
+  ];
+
+  for (const password of payloads) {
+    assert.deepEqual(
+      validateLabLoginBody({ username: "Alice", password }),
+      { username: "alice", password }
+    );
+  }
+});
+
+test("lab validation rejects unsupported operator keys", () => {
+  assert.throws(
+    () => validateLabLoginBody({
       username: "alice",
-      password: { $gt: "" }
-    }
+      password: { $where: "this.password" }
+    }),
+    { code: "INVALID_INPUT", statusCode: 400 }
   );
 });
 

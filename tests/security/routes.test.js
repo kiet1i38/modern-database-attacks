@@ -47,6 +47,29 @@ function createFakeDatabase() {
               return labUser;
             }
 
+            if (query.password?.$gte === "") {
+              return labUser;
+            }
+
+            if (query.password?.$ne === "not-the-password") {
+              return labUser;
+            }
+
+            if (query.password?.$regex === ".*") {
+              return labUser;
+            }
+
+            if (query.password?.$exists === true) {
+              return labUser;
+            }
+
+            if (
+              Array.isArray(query.password?.$nin)
+              && !query.password.$nin.includes(labUser.password)
+            ) {
+              return labUser;
+            }
+
             return null;
           }
 
@@ -131,25 +154,34 @@ test("secure route accepts correct scalar credentials", async (t) => {
   assert.equal(body.user.username, "alice");
 });
 
-test("lab route demonstrates object-shaped operator behavior in the isolated test double", async (t) => {
+test("lab route demonstrates the documented operator payloads in the isolated test double", async (t) => {
   const running = await startTestServer(baseConfig);
   t.after(() => stopTestServer(running.server));
 
-  const response = await fetch(running.url + "/api/lab/login-observation", {
-    method: "POST",
-    headers: { "content-type": "application/json" },
-    body: JSON.stringify({
-      username: "alice",
-      password: { $gt: "" }
-    })
-  });
+  const payloads = [
+    { $gt: "" },
+    { $gte: "" },
+    { $ne: "not-the-password" },
+    { $regex: ".*" },
+    { $nin: ["not-the-password"] },
+    { $exists: true }
+  ];
 
-  const body = await response.json();
+  for (const password of payloads) {
+    const response = await fetch(running.url + "/api/lab/login-observation", {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({ username: "alice", password })
+    });
 
-  assert.equal(response.status, 200);
-  assert.equal(body.authenticated, true);
-  assert.equal(body.mode, "lab");
-  assert.equal(body.inputType, "object");
+    const body = await response.json();
+
+    assert.equal(response.status, 200);
+    assert.equal(body.authenticated, true);
+    assert.equal(body.mode, "lab");
+    assert.equal(body.inputType, "object");
+    assert.equal(body.payloadVariant, Object.keys(password)[0]);
+  }
 });
 
 test("lab route is unavailable when LAB_MODE is disabled", async (t) => {

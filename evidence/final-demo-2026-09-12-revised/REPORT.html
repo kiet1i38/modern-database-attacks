@@ -1,0 +1,85 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Final demo QA evidence - revised operator catalog</title>
+  <style>
+    :root { color-scheme: light; font-family: Inter, system-ui, sans-serif; background: #eef2f7; color: #172033; }
+    body { max-width: 1100px; margin: 0 auto; padding: 32px; line-height: 1.55; }
+    main { background: white; border-radius: 16px; padding: 32px; box-shadow: 0 18px 50px #17203318; }
+    h1 { margin-top: 0; }
+    h2 { margin-top: 2em; border-bottom: 1px solid #dbe2ee; padding-bottom: 6px; }
+    table { width: 100%; border-collapse: collapse; margin: 16px 0; }
+    th, td { border: 1px solid #dbe2ee; padding: 8px 10px; text-align: left; vertical-align: top; }
+    th { background: #f4f7fb; }
+    code { background: #eef2f7; border-radius: 4px; padding: 2px 4px; }
+    pre { overflow: auto; background: #111827; color: #e5edf8; padding: 16px; border-radius: 10px; }
+    a { color: #1d4ed8; }
+    .pass { color: #047857; font-weight: 700; }
+    .gallery { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 14px; }
+    figure { margin: 0; }
+    figure img { width: 100%; border: 1px solid #dbe2ee; border-radius: 8px; }
+    figcaption { font-size: .9rem; margin-top: 4px; }
+  </style>
+</head>
+<body>
+<main>
+  <h1>Final demo QA evidence</h1>
+  <p><strong>Modern Database Attacks</strong> · 2026-09-12 · revised MongoDB operator catalog</p>
+
+  <h2>Result</h2>
+  <table>
+    <tr><th>Area</th><th>Observed</th></tr>
+    <tr><td>Docker build, startup, and seed</td><td class="pass">PASS</td></tr>
+    <tr><td>Container automated tests</td><td class="pass">13/13 PASS</td></tr>
+    <tr><td>Secure API matrix</td><td class="pass">28/28 PASS</td></tr>
+    <tr><td>Lab API matrix</td><td class="pass">32/32 PASS</td></tr>
+    <tr><td>Production/locality guards</td><td class="pass">404 / 403 as expected</td></tr>
+    <tr><td>MongoDB recovery and app restart</td><td class="pass">Login restored</td></tr>
+    <tr><td>Documentation conversion</td><td class="pass">9/9 Markdown pages have valid HTML siblings</td></tr>
+  </table>
+
+  <h2>Six operator observations</h2>
+  <p>The loopback-only lab route evaluated six fixed MongoDB query-operator payloads: <code>$gt</code>, <code>$gte</code>, <code>$ne</code>, <code>$regex</code>, <code>$nin</code>, and <code>$exists</code>. Each returned <strong>HTTP 200</strong> with <code>authenticated: true</code> against synthetic data. The secure route rejected object passwords before database lookup.</p>
+  <table>
+    <tr><th>Operator</th><th>Payload</th><th>Result</th></tr>
+    <tr><td><code>$gt</code></td><td><code>{ "$gt": "" }</code></td><td class="pass">200 / authenticated</td></tr>
+    <tr><td><code>$gte</code></td><td><code>{ "$gte": "" }</code></td><td class="pass">200 / authenticated</td></tr>
+    <tr><td><code>$ne</code></td><td><code>{ "$ne": "not-the-password" }</code></td><td class="pass">200 / authenticated</td></tr>
+    <tr><td><code>$regex</code></td><td><code>{ "$regex": ".*" }</code></td><td class="pass">200 / authenticated</td></tr>
+    <tr><td><code>$nin</code></td><td><code>{ "$nin": ["not-the-password"] }</code></td><td class="pass">200 / authenticated</td></tr>
+    <tr><td><code>$exists</code></td><td><code>{ "$exists": true }</code></td><td class="pass">200 / authenticated</td></tr>
+  </table>
+
+  <h2>Evidence files</h2>
+  <p><a href="README.md">README</a> · <a href="05-api-secure.json">secure API</a> · <a href="06-api-lab.json">lab API</a> · <a href="07-guards.json">guards</a> · <a href="04-docker-tests.txt">container tests</a> · <a href="18-database.json">database checks</a> · <a href="21-npm-audit.txt">npm audit</a> · <a href="22-docs-html-check.txt">HTML check</a></p>
+
+  <h2>Browser screenshots</h2>
+  <div class="gallery">
+    <figure><a href="01-secure-initial.png"><img src="01-secure-initial.png" alt="Secure login initial state"></a><figcaption>Secure initial</figcaption></figure>
+    <figure><a href="02-secure-success.png"><img src="02-secure-success.png" alt="Secure login success"></a><figcaption>Secure success</figcaption></figure>
+    <figure><a href="03-secure-wrong-password.png"><img src="03-secure-wrong-password.png" alt="Secure login rejection"></a><figcaption>Secure rejection</figcaption></figure>
+    <figure><a href="04-lab-operator-catalog.png"><img src="04-lab-operator-catalog.png" alt="Lab operator catalog"></a><figcaption>Six-option catalog</figcaption></figure>
+    <figure><a href="05-lab-gt-success.png"><img src="05-lab-gt-success.png" alt="Greater-than operator observation"></a><figcaption>$gt observation</figcaption></figure>
+    <figure><a href="06-lab-gte-success.png"><img src="06-lab-gte-success.png" alt="Greater-than-or-equal operator observation"></a><figcaption>$gte observation</figcaption></figure>
+    <figure><a href="07-lab-ne-success.png"><img src="07-lab-ne-success.png" alt="Not-equal operator observation"></a><figcaption>$ne observation</figcaption></figure>
+    <figure><a href="08-lab-regex-success.png"><img src="08-lab-regex-success.png" alt="Regex operator observation"></a><figcaption>$regex observation</figcaption></figure>
+    <figure><a href="09-lab-nin-success.png"><img src="09-lab-nin-success.png" alt="Not-in operator observation"></a><figcaption>$nin observation</figcaption></figure>
+    <figure><a href="10-lab-exists-success.png"><img src="10-lab-exists-success.png" alt="Exists operator observation"></a><figcaption>$exists observation</figcaption></figure>
+    <figure><a href="11-mobile-layout.png"><img src="11-mobile-layout.png" alt="Mobile layout"></a><figcaption>375x812 mobile</figcaption></figure>
+    <figure><a href="12-mongodb-down.png"><img src="12-mongodb-down.png" alt="MongoDB unavailable"></a><figcaption>MongoDB down</figcaption></figure>
+    <figure><a href="13-mongodb-recovered.png"><img src="13-mongodb-recovered.png" alt="MongoDB recovered"></a><figcaption>MongoDB recovered</figcaption></figure>
+    <figure><a href="14-app-restarted.png"><img src="14-app-restarted.png" alt="Application restarted"></a><figcaption>App restart</figcaption></figure>
+  </div>
+
+  <h2>Known findings</h2>
+  <ol>
+    <li>Native MongoDB occupied host port 27017; this evidence uses 27018.</li>
+    <li><code>npm audit --omit=dev</code> reports two moderate transitive <code>qs</code> advisories.</li>
+    <li>MongoDB-down auth requests return generic 500 responses until recovery.</li>
+    <li>The Docker image defaults to the base image user (root); harden before production.</li>
+  </ol>
+</main>
+</body>
+</html>

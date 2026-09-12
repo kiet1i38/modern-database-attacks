@@ -1,0 +1,9 @@
+timestamp: 2026-09-12T23:07:34.8550534+07:00
+host node: v24.15.0
+host npm: 11.12.1
+docker: Docker version 28.3.3, build 980b856
+compose: Docker Compose version v2.39.2-desktop.1
+app container node: v20.20.2
+app container npm: 10.8.2
+mongo image: mongo:7.0.16
+app image digest: modern-db-attacks-final-app@sha256:5734c40ac2e865c5e115f661b5768a88c9dc70ff9c41238c74519d526718b231

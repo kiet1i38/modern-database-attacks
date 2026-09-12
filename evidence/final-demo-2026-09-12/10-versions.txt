@@ -1,9 +1,0 @@
-Host: 2026-09-12T22:13:46.1112479+07:00
-Node host: v24.15.0
-npm host: 11.12.1
-Docker: Docker version 28.3.3, build 980b856
-Compose: Docker Compose version v2.39.2-desktop.1
-
-Container runtime:
-v20.20.2
-10.8.2

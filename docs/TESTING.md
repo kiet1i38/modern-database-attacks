@@ -33,7 +33,7 @@ npm run test:all
 Located in tests/unit/:
 
 - Scalar credential validation.
-- Structured lab payload validation.
+- Allowlisted MongoDB operator payload validation.
 - Unknown-field rejection.
 - Password hashing and verification.
 - Malformed hash failure behavior.
@@ -44,7 +44,7 @@ Located in tests/security/:
 
 - Secure route rejects an object password before user lookup.
 - Secure route accepts the correct synthetic scalar password.
-- Lab route can expose the object-shaped behavior in an isolated test double.
+- Lab route can expose the documented operator behavior in an isolated test double.
 - Lab route returns 404 when LAB_MODE is disabled.
 
 These tests do not require MongoDB.
@@ -56,8 +56,8 @@ Located in tests/integration/mongodb.test.js.
 The test connects to MONGODB_TEST_DATABASE and inserts only a synthetic temporary document. It verifies:
 
 - String equality finds the document.
-- The brief-shaped object does not match the string field.
-- The dollar-prefixed greater-than object matches the non-empty string field.
+- `$gt`, `$gte`, `$ne`, `$regex`, `$nin` and `$exists` operator payloads match the
+  synthetic string field according to MongoDB semantics.
 - Temporary test data is removed in a finally block.
 
 Start MongoDB before running this test.
@@ -70,8 +70,12 @@ Start MongoDB before running this test.
 | Correct secure login | POST /api/auth/login | Two strings | HTTP 200. |
 | Wrong secure password | POST /api/auth/login | Wrong string | HTTP 401. |
 | Unknown secure user | POST /api/auth/login | Unknown string username | HTTP 401. |
-| Brief object | POST /api/lab/login-observation | password: {"gt": ""} | Record actual result. |
-| Operator object | POST /api/lab/login-observation | password: {"$gt": ""} | Record actual result. |
+| `$gt` object | POST /api/lab/login-observation | password: {"$gt": ""} | HTTP 200 in local lab. |
+| `$gte` object | POST /api/lab/login-observation | password: {"$gte": ""} | HTTP 200 in local lab. |
+| `$ne` object | POST /api/lab/login-observation | password: {"$ne": "not-the-password"} | HTTP 200 in local lab. |
+| `$regex` object | POST /api/lab/login-observation | password: {"$regex": ".*"} | HTTP 200 in local lab. |
+| `$nin` object | POST /api/lab/login-observation | password: {"$nin": ["not-the-password"]} | HTTP 200 in local lab. |
+| `$exists` object | POST /api/lab/login-observation | password: {"$exists": true} | HTTP 200 in local lab. |
 | Escaped object text | Lab or secure route | password: "{\"$gt\":\"\"}" | Treated as a string. |
 | Secure object | POST /api/auth/login | password object | HTTP 400, no user lookup. |
 | Lab disabled | Lab route | Any valid JSON | HTTP 404. |
@@ -83,8 +87,8 @@ Start MongoDB before running this test.
 - [ ] Seed command recorded.
 - [ ] Health response captured.
 - [ ] Correct and wrong string results captured.
-- [ ] Both object variants captured.
-- [ ] Working lab response captured if available.
+- [ ] All six allowlisted operator payloads captured.
+- [ ] Successful lab response captured for each payload family.
 - [ ] Secure object rejection captured.
 - [ ] No real secret, hash, token or personal data is visible.
 - [ ] README and PROJECT_STATUS.md match the run.
@@ -123,6 +127,13 @@ Check the browser result panel or network tab. The request must contain:
 ~~~
 
 It must not contain an escaped JSON string.
+
+### Operator payload is rejected
+
+The local validator intentionally allows only the six documented operators:
+`$gt`, `$gte`, `$ne`, `$regex`, `$nin` and `$exists`. An unsupported operator,
+an extra body field, an array at the top-level password value or an invalid
+operator value should return `400 INVALID_INPUT`.
 
 ## 6. Evidence safety
 

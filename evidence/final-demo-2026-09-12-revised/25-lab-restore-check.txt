@@ -1,0 +1,4 @@
+--- restored lab status ---
+{"ok":true,"enabled":true,"mode":"lab"}
+--- restored health ---
+{"ok":true,"service":"modern-database-attacks","database":"up"}

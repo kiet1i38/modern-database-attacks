@@ -1,0 +1,224 @@
+=== request 5 ===
+### Result
+#5 [POST] http://127.0.0.1:3000/api/auth/login
+
+  General
+    status:    [200] OK
+    duration:  44ms
+    type:      fetch
+    mimeType:  application/json
+
+  Request headers
+    sec-ch-ua-platform: "Windows"
+    referer: http://127.0.0.1:3000/
+    user-agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/152.0.0.0 Safari/537.36
+    sec-ch-ua: "Chromium";v="152", "Not?A_Brand";v="24", "Google Chrome";v="152"
+    content-type: application/json
+    sec-ch-ua-mobile: ?0
+
+  Response headers
+    content-length: 56
+    keep-alive: timeout=5
+    etag: W/"38-KxEfKki5ziYUUyJ5m50L9hWV+EA"
+    date: Sat, 12 Sep 2026 15:59:04 GMT
+    content-type: application/json; charset=utf-8
+    connection: keep-alive
+
+Run `request-body 5` to read the request body.
+Run `response-body 5` to read the response body.
+=== request 6 ===
+### Result
+#6 [POST] http://127.0.0.1:3000/api/auth/login
+
+  General
+    status:    [401] Unauthorized
+    duration:  44ms
+    type:      fetch
+    mimeType:  application/json
+
+  Request headers
+    sec-ch-ua-platform: "Windows"
+    referer: http://127.0.0.1:3000/
+    user-agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/152.0.0.0 Safari/537.36
+    sec-ch-ua: "Chromium";v="152", "Not?A_Brand";v="24", "Google Chrome";v="152"
+    content-type: application/json
+    sec-ch-ua-mobile: ?0
+
+  Response headers
+    content-length: 83
+    keep-alive: timeout=5
+    etag: W/"53-IBIXdsVFpkoWRiZNhksNV9X0hP8"
+    date: Sat, 12 Sep 2026 15:59:23 GMT
+    content-type: application/json; charset=utf-8
+    connection: keep-alive
+
+Run `request-body 6` to read the request body.
+Run `response-body 6` to read the response body.
+=== request 7 ===
+### Result
+#7 [POST] http://127.0.0.1:3000/api/lab/login-observation
+
+  General
+    status:    [200] OK
+    duration:  7ms
+    type:      fetch
+    mimeType:  application/json
+
+  Request headers
+    sec-ch-ua-platform: "Windows"
+    referer: http://127.0.0.1:3000/
+    user-agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/152.0.0.0 Safari/537.36
+    sec-ch-ua: "Chromium";v="152", "Not?A_Brand";v="24", "Google Chrome";v="152"
+    content-type: application/json
+    sec-ch-ua-mobile: ?0
+
+  Response headers
+    content-length: 210
+    keep-alive: timeout=5
+    etag: W/"d2-h3fnxlEwlXFjSnizB6haYJa61Ls"
+    date: Sat, 12 Sep 2026 16:00:04 GMT
+    content-type: application/json; charset=utf-8
+    connection: keep-alive
+
+Run `request-body 7` to read the request body.
+Run `response-body 7` to read the response body.
+=== request 8 ===
+### Result
+#8 [POST] http://127.0.0.1:3000/api/lab/login-observation
+
+  General
+    status:    [200] OK
+    duration:  12ms
+    type:      fetch
+    mimeType:  application/json
+
+  Request headers
+    sec-ch-ua-platform: "Windows"
+    referer: http://127.0.0.1:3000/
+    user-agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/152.0.0.0 Safari/537.36
+    sec-ch-ua: "Chromium";v="152", "Not?A_Brand";v="24", "Google Chrome";v="152"
+    content-type: application/json
+    sec-ch-ua-mobile: ?0
+
+  Response headers
+    content-length: 211
+    keep-alive: timeout=5
+    etag: W/"d3-lAEeTjO/frN/AXLL5mBkZ4EyFBU"
+    date: Sat, 12 Sep 2026 16:00:25 GMT
+    content-type: application/json; charset=utf-8
+    connection: keep-alive
+
+Run `request-body 8` to read the request body.
+Run `response-body 8` to read the response body.
+=== request 9 ===
+### Result
+#9 [POST] http://127.0.0.1:3000/api/lab/login-observation
+
+  General
+    status:    [200] OK
+    duration:  9ms
+    type:      fetch
+    mimeType:  application/json
+
+  Request headers
+    sec-ch-ua-platform: "Windows"
+    referer: http://127.0.0.1:3000/
+    user-agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/152.0.0.0 Safari/537.36
+    sec-ch-ua: "Chromium";v="152", "Not?A_Brand";v="24", "Google Chrome";v="152"
+    content-type: application/json
+    sec-ch-ua-mobile: ?0
+
+  Response headers
+    content-length: 210
+    keep-alive: timeout=5
+    etag: W/"d2-OLu9E1/mE4Zq5TovaUXhf3PLiDM"
+    date: Sat, 12 Sep 2026 16:00:45 GMT
+    content-type: application/json; charset=utf-8
+    connection: keep-alive
+
+Run `request-body 9` to read the request body.
+Run `response-body 9` to read the response body.
+=== request 10 ===
+### Result
+#10 [POST] http://127.0.0.1:3000/api/lab/login-observation
+
+  General
+    status:    [200] OK
+    duration:  9ms
+    type:      fetch
+    mimeType:  application/json
+
+  Request headers
+    sec-ch-ua-platform: "Windows"
+    referer: http://127.0.0.1:3000/
+    user-agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/152.0.0.0 Safari/537.36
+    sec-ch-ua: "Chromium";v="152", "Not?A_Brand";v="24", "Google Chrome";v="152"
+    content-type: application/json
+    sec-ch-ua-mobile: ?0
+
+  Response headers
+    content-length: 213
+    keep-alive: timeout=5
+    etag: W/"d5-eNQ3mphhngQohR8l/YCVo92APkA"
+    date: Sat, 12 Sep 2026 16:01:07 GMT
+    content-type: application/json; charset=utf-8
+    connection: keep-alive
+
+Run `request-body 10` to read the request body.
+Run `response-body 10` to read the response body.
+=== request 11 ===
+### Result
+#11 [POST] http://127.0.0.1:3000/api/lab/login-observation
+
+  General
+    status:    [200] OK
+    duration:  7ms
+    type:      fetch
+    mimeType:  application/json
+
+  Request headers
+    sec-ch-ua-platform: "Windows"
+    referer: http://127.0.0.1:3000/
+    user-agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/152.0.0.0 Safari/537.36
+    sec-ch-ua: "Chromium";v="152", "Not?A_Brand";v="24", "Google Chrome";v="152"
+    content-type: application/json
+    sec-ch-ua-mobile: ?0
+
+  Response headers
+    content-length: 211
+    keep-alive: timeout=5
+    etag: W/"d3-nWV/fMCaKTfEv0EA6zdZEzYliec"
+    date: Sat, 12 Sep 2026 16:01:30 GMT
+    content-type: application/json; charset=utf-8
+    connection: keep-alive
+
+Run `request-body 11` to read the request body.
+Run `response-body 11` to read the response body.
+=== request 12 ===
+### Result
+#12 [POST] http://127.0.0.1:3000/api/lab/login-observation
+
+  General
+    status:    [200] OK
+    duration:  9ms
+    type:      fetch
+    mimeType:  application/json
+
+  Request headers
+    sec-ch-ua-platform: "Windows"
+    referer: http://127.0.0.1:3000/
+    user-agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/152.0.0.0 Safari/537.36
+    sec-ch-ua: "Chromium";v="152", "Not?A_Brand";v="24", "Google Chrome";v="152"
+    content-type: application/json
+    sec-ch-ua-mobile: ?0
+
+  Response headers
+    content-length: 214
+    keep-alive: timeout=5
+    etag: W/"d6-TWlc8JWSly7FPlSSFxnvVJCXWtY"
+    date: Sat, 12 Sep 2026 16:01:49 GMT
+    content-type: application/json; charset=utf-8
+    connection: keep-alive
+
+Run `request-body 12` to read the request body.
+Run `response-body 12` to read the response body.

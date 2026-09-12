@@ -8,6 +8,15 @@ const payloadVariant = document.querySelector("#payload-variant");
 const result = document.querySelector("#result");
 const health = document.querySelector("#health");
 
+const LAB_PAYLOADS = {
+  gt: { $gt: "" },
+  gte: { $gte: "" },
+  ne: { $ne: "not-the-password" },
+  regex: { $regex: ".*" },
+  nin: { $nin: ["not-the-password"] },
+  exists: { $exists: true }
+};
+
 function setModeVisibility() {
   const labMode = mode.value === "lab";
   normalPasswordGroup.classList.toggle("hidden", labMode);
@@ -27,9 +36,7 @@ function buildRequest() {
     };
   }
 
-  body.password = payloadVariant.value === "brief"
-    ? { gt: "" }
-    : { $gt: "" };
+  body.password = LAB_PAYLOADS[payloadVariant.value];
 
   return {
     endpoint: "/api/lab/login-observation",

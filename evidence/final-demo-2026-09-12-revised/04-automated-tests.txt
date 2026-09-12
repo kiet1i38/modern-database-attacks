@@ -1,0 +1,42 @@
+
+> modern-database-attacks@1.0.0 test:all
+> npm test && npm run test:integration
+
+
+> modern-database-attacks@1.0.0 test
+> node --test tests/unit/validation.test.js tests/unit/password.test.js tests/security/routes.test.js
+
+[POST /api/auth/login] Invalid request
+✔ secure route rejects object passwords before database lookup (146.8435ms)
+✔ secure route accepts correct scalar credentials (84.2403ms)
+✔ lab route demonstrates the documented operator payloads in the isolated test double (74.4363ms)
+✔ lab route is unavailable when LAB_MODE is disabled (42.3751ms)
+✔ password hash verifies only the original value (101.6215ms)
+✔ malformed password hashes fail closed (0.2736ms)
+✔ secure validation accepts scalar credentials (2.7843ms)
+✔ secure validation rejects operator objects (0.4985ms)
+✔ secure validation rejects unknown body fields (0.7391ms)
+✔ lab validation accepts the allowlisted operator payloads (0.2938ms)
+✔ lab validation rejects unsupported operator keys (0.1534ms)
+✔ lab validation rejects arrays as password values (0.0996ms)
+ℹ tests 12
+ℹ suites 0
+ℹ pass 12
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 727.1338
+
+> modern-database-attacks@1.0.0 test:integration
+> node --test tests/integration/mongodb.test.js
+
+✔ real MongoDB evaluates the documented operator payloads (90.9345ms)
+ℹ tests 1
+ℹ suites 0
+ℹ pass 1
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 485.6432

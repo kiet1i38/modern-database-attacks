@@ -1,0 +1,3 @@
+NAME                              IMAGE                                                                     COMMAND                  SERVICE   CREATED          STATUS                   PORTS
+modern-database-attacks-app       sha256:c9ee453ca587457f626ce072a4ef72da44cdd44788590ef3e02dfa1c7ca9d176   "docker-entrypoint.s…"   app       18 minutes ago   Up 17 minutes            127.0.0.1:3000->3000/tcp
+modern-database-attacks-mongodb   mongo:7.0.16                                                              "docker-entrypoint.s…"   mongodb   18 minutes ago   Up 3 minutes (healthy)   127.0.0.1:27018->27017/tcp

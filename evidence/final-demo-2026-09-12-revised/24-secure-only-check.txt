@@ -1,0 +1,12 @@
+--- lab status with default compose ---
+{"ok":true,"enabled":false,"mode":"secure-only"}
+--- lab login with default compose ---
+HTTP/1.1 404 Not Found
+Content-Type: application/json; charset=utf-8
+Content-Length: 88
+ETag: W/"58-YH2PgRMvTSfpSCIDO2cHOZaSniU"
+Date: Sat, 12 Sep 2026 16:15:01 GMT
+Connection: keep-alive
+Keep-Alive: timeout=5
+
+{"ok":false,"error":{"code":"LAB_DISABLED","message":"The local lab route is disabled"}}

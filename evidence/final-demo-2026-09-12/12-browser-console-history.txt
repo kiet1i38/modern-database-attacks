@@ -1,7 +1,0 @@
-Final clean console command: playwright-cli console returned 0 messages after the recovery reload.
-
-Historical browser console entries captured during this run (intentional negative-response checks are expected):
-[     171ms] [ERROR] Failed to load resource: the server responded with a status of 404 (Not Found) @ http://127.0.0.1:3000/favicon.ico:0
-[   51185ms] [ERROR] Failed to load resource: the server responded with a status of 401 (Unauthorized) @ http://127.0.0.1:3000/api/auth/login:0
-[   92494ms] [ERROR] Failed to load resource: the server responded with a status of 401 (Unauthorized) @ http://127.0.0.1:3000/api/lab/login-observation:0
-[  220091ms] [ERROR] Failed to load resource: the server responded with a status of 503 (Service Unavailable) @ http://127.0.0.1:3000/api/health:0

