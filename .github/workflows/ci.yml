@@ -32,6 +32,14 @@ jobs:
       - name: Install dependencies
         run: npm install
 
+      - name: Validate Compose files
+        run: |
+          docker compose config
+          docker compose -f docker-compose.yml -f docker-compose.lab.yml config
+
+      - name: Build application image
+        run: docker build -t modern-database-attacks:ci .
+
       - name: Run unit and security tests
         run: npm test
 
