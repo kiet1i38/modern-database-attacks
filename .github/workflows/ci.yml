@@ -1,0 +1,44 @@
+name: Node and MongoDB checks
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    services:
+      mongodb:
+        image: mongo:7.0.16
+        ports:
+          - 27017:27017
+        options: >-
+          --health-cmd "mongosh --quiet --eval 'db.runCommand({ ping: 1 }).ok' | grep 1"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 20
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Run unit and security tests
+        run: npm test
+
+      - name: Run MongoDB integration test
+        run: npm run test:integration
+        env:
+          NODE_ENV: test
+          MONGODB_URI: mongodb://127.0.0.1:27017
+          MONGODB_DATABASE: modern_database_attacks
+          MONGODB_TEST_DATABASE: modern_database_attacks_ci
