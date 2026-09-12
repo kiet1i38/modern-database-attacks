@@ -1,0 +1,46 @@
+services:
+  mongodb:
+    image: mongo:7.0.16
+    container_name: modern-database-attacks-mongodb
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:27017:27017"
+    volumes:
+      - mongodb_data:/data/db
+    command: ["mongod", "--bind_ip_all"]
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "mongosh --quiet --eval \"db.runCommand({ ping: 1 }).ok\" | grep 1"
+        ]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: modern-database-attacks-app
+    restart: unless-stopped
+    depends_on:
+      mongodb:
+        condition: service_healthy
+    ports:
+      - "127.0.0.1:3000:3000"
+    environment:
+      NODE_ENV: development
+      HOST: 0.0.0.0
+      PORT: 3000
+      MONGODB_URI: mongodb://mongodb:27017
+      MONGODB_DATABASE: modern_database_attacks
+      MONGODB_TEST_DATABASE: modern_database_attacks_test
+      LAB_MODE: "false"
+      JSON_BODY_LIMIT: 16kb
+      DEMO_USERNAME: alice
+      SECURE_DEMO_PASSWORD: synthetic-demo-password
+      LAB_DEMO_PASSWORD: lab-only-demo-password
+
+volumes:
+  mongodb_data:

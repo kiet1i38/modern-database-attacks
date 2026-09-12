@@ -1,0 +1,26 @@
+{
+  "name": "modern-database-attacks",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Controlled local MongoDB authentication lab with secure comparison path",
+  "type": "module",
+  "engines": {
+    "node": ">=20.0.0"
+  },
+  "scripts": {
+    "dev": "node --watch src/server.js",
+    "start": "node src/server.js",
+    "seed": "node scripts/seed.js",
+    "db:up": "docker compose up -d mongodb",
+    "db:down": "docker compose down",
+    "db:logs": "docker compose logs -f mongodb",
+    "db:reset": "node scripts/reset-db.js",
+    "test": "node --test tests/unit tests/security",
+    "test:integration": "node --test tests/integration",
+    "test:all": "npm test && npm run test:integration"
+  },
+  "dependencies": {
+    "express": "^4.21.2",
+    "mongodb": "^6.12.0"
+  }
+}

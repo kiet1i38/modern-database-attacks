@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>MongoDB Authentication Lab</title>
+    <link rel="stylesheet" href="/styles.css">
+  </head>
+  <body>
+    <main class="shell">
+      <header class="hero">
+        <p class="eyebrow">Topic 12 · Local security laboratory</p>
+        <h1>MongoDB-backed login</h1>
+        <p>
+          Compare strict scalar authentication with an isolated local
+          query-shape observation.
+        </p>
+        <div id="health" class="health" role="status">Checking local services…</div>
+      </header>
+
+      <section class="card">
+        <div class="warning">
+          Use synthetic data only. The lab route is disabled unless
+          <strong>LAB_MODE=true</strong> and the request is local.
+        </div>
+
+        <form id="login-form">
+          <label for="mode">Mode</label>
+          <select id="mode" name="mode">
+            <option value="secure">Secure comparison</option>
+            <option value="lab">Local lab observation</option>
+          </select>
+
+          <label for="username">Username</label>
+          <input id="username" name="username" value="alice" autocomplete="username" required>
+
+          <div id="normal-password-group">
+            <label for="password">Password</label>
+            <input id="password" name="password" type="password" autocomplete="current-password" value="synthetic-demo-password">
+          </div>
+
+          <div id="payload-group" class="hidden">
+            <label for="payload-variant">Payload variant</label>
+            <select id="payload-variant" name="payload-variant">
+              <option value="brief">{"gt": ""} · assignment-shaped object</option>
+              <option value="operator">{"$gt": ""} · MongoDB operator object</option>
+            </select>
+            <p class="help">
+              This sends password as a JSON object, not as an escaped string.
+            </p>
+          </div>
+
+          <button type="submit">Submit login request</button>
+        </form>
+
+        <pre id="result" class="result" aria-live="polite">No request sent yet.</pre>
+      </section>
+
+      <section class="card notes">
+        <h2>Run order</h2>
+        <ol>
+          <li>Seed the synthetic user.</li>
+          <li>Test correct and incorrect string credentials.</li>
+          <li>Enable local lab mode and test both object variants.</li>
+          <li>Record the request, response and environment versions.</li>
+        </ol>
+      </section>
+    </main>
+    <script type="module" src="/app.js"></script>
+  </body>
+</html>
