@@ -1,0 +1,3 @@
+NAME                              IMAGE                              COMMAND                  SERVICE   CREATED          STATUS                    PORTS
+modern-database-attacks-app       modern-database-attacks-main-app   "docker-entrypoint.s…"   app       16 seconds ago   Up 9 seconds              127.0.0.1:3000->3000/tcp
+modern-database-attacks-mongodb   mongo:7.0.16                       "docker-entrypoint.s…"   mongodb   16 seconds ago   Up 15 seconds (healthy)   127.0.0.1:27018->27017/tcp

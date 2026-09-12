@@ -1,0 +1,17 @@
+### Result
+1. [GET] http://127.0.0.1:3000/ => [200] OK
+2. [GET] http://127.0.0.1:3000/styles.css => [200] OK
+3. [GET] http://127.0.0.1:3000/app.js => [200] OK
+4. [GET] http://127.0.0.1:3000/api/health => [200] OK
+5. [POST] http://127.0.0.1:3000/api/auth/login => [200] OK
+6. [POST] http://127.0.0.1:3000/api/auth/login => [401] Unauthorized
+7. [POST] http://127.0.0.1:3000/api/lab/login-observation => [401] Unauthorized
+8. [POST] http://127.0.0.1:3000/api/lab/login-observation => [200] OK
+9. [GET] http://127.0.0.1:3000/ => [200] OK
+10. [GET] http://127.0.0.1:3000/styles.css => [200] OK
+11. [GET] http://127.0.0.1:3000/app.js => [200] OK
+12. [GET] http://127.0.0.1:3000/api/health => [503] Service Unavailable
+13. [GET] http://127.0.0.1:3000/ => [200] OK
+14. [GET] http://127.0.0.1:3000/styles.css => [304] Not Modified
+15. [GET] http://127.0.0.1:3000/app.js => [304] Not Modified
+16. [GET] http://127.0.0.1:3000/api/health => [200] OK

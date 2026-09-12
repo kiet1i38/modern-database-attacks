@@ -1,0 +1,73 @@
+#1 [internal] load local bake definitions
+#1 reading from stdin 608B done
+#1 DONE 0.0s
+
+#2 [internal] load build definition from Dockerfile
+#2 transferring dockerfile: 335B 0.0s done
+#2 DONE 0.0s
+
+#3 [internal] load metadata for docker.io/library/node:20-bookworm-slim
+#3 DONE 2.9s
+
+#4 [internal] load .dockerignore
+#4 transferring context: 97B done
+#4 DONE 0.0s
+
+#5 [internal] load build context
+#5 transferring context: 104.47kB 0.0s done
+#5 DONE 0.1s
+
+#6 [1/8] FROM docker.io/library/node:20-bookworm-slim@sha256:2cf067cfed83d5ea958367df9f966191a942351a2df77d6f0193e162b5febfc0
+#6 resolve docker.io/library/node:20-bookworm-slim@sha256:2cf067cfed83d5ea958367df9f966191a942351a2df77d6f0193e162b5febfc0
+#6 resolve docker.io/library/node:20-bookworm-slim@sha256:2cf067cfed83d5ea958367df9f966191a942351a2df77d6f0193e162b5febfc0 0.1s done
+#6 DONE 0.1s
+
+#7 [2/8] WORKDIR /app
+#7 CACHED
+
+#8 [3/8] COPY package.json package-lock.json ./
+#8 CACHED
+
+#9 [4/8] RUN npm ci --omit=dev
+#9 CACHED
+
+#10 [5/8] COPY src ./src
+#10 CACHED
+
+#11 [6/8] COPY scripts ./scripts
+#11 CACHED
+
+#12 [7/8] COPY docs ./docs
+#12 DONE 0.1s
+
+#13 [8/8] COPY README.md PROJECT_STATUS.md ./
+#13 DONE 0.2s
+
+#14 exporting to image
+#14 exporting layers
+#14 exporting layers 0.4s done
+#14 exporting manifest sha256:565d0554b6048fb01aa97bd95ebbe80025aec10d27a36756a5e5264caa9c5dd6 0.0s done
+#14 exporting config sha256:a303dfa2b9eaafa9388714169da793cdcc5ee67a2b767a1ad429cd52deb12598 0.0s done
+#14 exporting attestation manifest sha256:e1e8ec69f407f1a2fcb48ef0d319c4917bb707beb79b4044b2514ee5a38516af
+#14 exporting attestation manifest sha256:e1e8ec69f407f1a2fcb48ef0d319c4917bb707beb79b4044b2514ee5a38516af 0.1s done
+#14 exporting manifest list sha256:4ed099ebf9bc10c3e513ea7499d56aa20efd86fd94b243a255a87fa25dc6361b 0.0s done
+#14 naming to docker.io/library/modern-database-attacks-main-app:latest
+#14 naming to docker.io/library/modern-database-attacks-main-app:latest done
+#14 unpacking to docker.io/library/modern-database-attacks-main-app:latest 0.1s done
+#14 DONE 0.7s
+
+#15 resolving provenance for metadata file
+#15 DONE 0.0s
+ modern-database-attacks-main-app  Built
+ Network modern-database-attacks-main_default  Creating
+ Network modern-database-attacks-main_default  Created
+ Container modern-database-attacks-mongodb  Creating
+ Container modern-database-attacks-mongodb  Created
+ Container modern-database-attacks-app  Creating
+ Container modern-database-attacks-app  Created
+ Container modern-database-attacks-mongodb  Starting
+ Container modern-database-attacks-mongodb  Started
+ Container modern-database-attacks-mongodb  Waiting
+ Container modern-database-attacks-mongodb  Healthy
+ Container modern-database-attacks-app  Starting
+ Container modern-database-attacks-app  Started

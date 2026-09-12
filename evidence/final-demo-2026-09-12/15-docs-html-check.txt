@@ -1,0 +1,88 @@
+{
+  "totalMarkdown": 9,
+  "passed": 9,
+  "failed": 0,
+  "records": [
+    {
+      "markdown": "API.md",
+      "html": "API.html",
+      "exists": true,
+      "hasHtml": true,
+      "hasBody": true,
+      "title": "HTTP API Contract \u00b7 Modern Database Attacks",
+      "tableOrCodeBlocks": 27
+    },
+    {
+      "markdown": "ARCHITECTURE.md",
+      "html": "ARCHITECTURE.html",
+      "exists": true,
+      "hasHtml": true,
+      "hasBody": true,
+      "title": "Application Architecture \u00b7 Modern Database Attacks",
+      "tableOrCodeBlocks": 6
+    },
+    {
+      "markdown": "DATABASE.md",
+      "html": "DATABASE.html",
+      "exists": true,
+      "hasHtml": true,
+      "hasBody": true,
+      "title": "Database Design \u00b7 Modern Database Attacks",
+      "tableOrCodeBlocks": 20
+    },
+    {
+      "markdown": "DEMO_GUIDE.md",
+      "html": "DEMO_GUIDE.html",
+      "exists": true,
+      "hasHtml": true,
+      "hasBody": true,
+      "title": "Local Demonstration Guide \u00b7 Modern Database Attacks",
+      "tableOrCodeBlocks": 14
+    },
+    {
+      "markdown": "DEVELOPMENT.md",
+      "html": "DEVELOPMENT.html",
+      "exists": true,
+      "hasHtml": true,
+      "hasBody": true,
+      "title": "Development Workflow \u00b7 Modern Database Attacks",
+      "tableOrCodeBlocks": 21
+    },
+    {
+      "markdown": "PROJECT_OVERVIEW.md",
+      "html": "PROJECT_OVERVIEW.html",
+      "exists": true,
+      "hasHtml": true,
+      "hasBody": true,
+      "title": "Project Overview \u00b7 Modern Database Attacks",
+      "tableOrCodeBlocks": 2
+    },
+    {
+      "markdown": "RUN_AND_TEST.md",
+      "html": "RUN_AND_TEST.html",
+      "exists": true,
+      "hasHtml": true,
+      "hasBody": true,
+      "title": "H\u01b0\u1edbng d\u1eabn ch\u1ea1y, truy c\u1eadp v\u00e0 ki\u1ec3m th\u1eed \u00b7 Modern Database Attacks",
+      "tableOrCodeBlocks": 110
+    },
+    {
+      "markdown": "SECURITY.md",
+      "html": "SECURITY.html",
+      "exists": true,
+      "hasHtml": true,
+      "hasBody": true,
+      "title": "Security Model \u00b7 Modern Database Attacks",
+      "tableOrCodeBlocks": 4
+    },
+    {
+      "markdown": "TESTING.md",
+      "html": "TESTING.html",
+      "exists": true,
+      "hasHtml": true,
+      "hasBody": true,
+      "title": "Testing Strategy \u00b7 Modern Database Attacks",
+      "tableOrCodeBlocks": 11
+    }
+  ]
+}

@@ -1,0 +1,298 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light">
+  <title>HTTP API Contract · Modern Database Attacks</title>
+  <style>
+:root {
+  color-scheme: light;
+  --bg: #f3f6fb;
+  --surface: #ffffff;
+  --ink: #172033;
+  --muted: #5b6b86;
+  --line: #d8dfeb;
+  --accent: #2457d6;
+  --code-bg: #111827;
+  --code-ink: #d8e3f4;
+}
+
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--ink);
+  font: 16px/1.7 Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+.page {
+  width: min(1120px, calc(100% - 32px));
+  margin: 0 auto;
+  padding: 32px 0 64px;
+}
+.site-header {
+  margin-bottom: 24px;
+  padding: 24px 28px;
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  background: var(--surface);
+  box-shadow: 0 12px 32px rgb(26 42 70 / 7%);
+}
+.site-header h1 { margin: 0 0 6px; font-size: clamp(1.6rem, 4vw, 2.4rem); line-height: 1.2; }
+.site-header p { margin: 0; color: var(--muted); }
+.doc-nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 18px;
+}
+.doc-nav a {
+  padding: 6px 10px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  color: var(--accent);
+  text-decoration: none;
+  font-size: .92rem;
+}
+.doc-nav a:hover, .doc-nav a.active { background: #e8efff; border-color: #b9c9f5; }
+.content {
+  padding: 32px clamp(20px, 5vw, 56px);
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  background: var(--surface);
+  box-shadow: 0 12px 32px rgb(26 42 70 / 7%);
+}
+h1, h2, h3, h4 { line-height: 1.25; scroll-margin-top: 24px; }
+h1 { margin-top: 0; font-size: clamp(2rem, 5vw, 3rem); }
+h2 { margin-top: 2.2em; padding-bottom: .35em; border-bottom: 1px solid var(--line); }
+h3 { margin-top: 1.8em; }
+a { color: var(--accent); }
+p, ul, ol, table, blockquote, pre { margin-top: 1em; }
+li + li { margin-top: .35em; }
+blockquote {
+  margin-left: 0;
+  padding: 10px 16px;
+  border-left: 4px solid #cc7a00;
+  background: #fff6df;
+  color: #6d4600;
+}
+code {
+  padding: .12em .35em;
+  border-radius: 5px;
+  background: #edf1f7;
+  color: #253552;
+  font-size: .92em;
+}
+pre {
+  padding: 16px 18px;
+  overflow-x: auto;
+  border-radius: 10px;
+  background: var(--code-bg);
+  color: var(--code-ink);
+  box-shadow: inset 0 0 0 1px rgb(255 255 255 / 6%);
+}
+pre code { padding: 0; background: transparent; color: inherit; }
+table { width: 100%; border-collapse: collapse; display: block; overflow-x: auto; }
+th, td { min-width: 140px; padding: 10px 12px; border: 1px solid var(--line); text-align: left; vertical-align: top; }
+th { background: #eef3fb; }
+hr { margin: 2em 0; border: 0; border-top: 1px solid var(--line); }
+img { max-width: 100%; height: auto; }
+.footer { margin-top: 20px; color: var(--muted); font-size: .9rem; text-align: center; }
+.doc-list { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 12px; padding: 0; list-style: none; }
+.doc-list a { display: block; padding: 16px; border: 1px solid var(--line); border-radius: 12px; background: #fbfcfe; text-decoration: none; }
+.doc-list a:hover { border-color: #9fb4ed; background: #f1f5ff; }
+@media (max-width: 640px) {
+  .page { width: min(100% - 20px, 1120px); padding-top: 10px; }
+  .site-header, .content { padding: 20px; border-radius: 12px; }
+  body { font-size: 15px; }
+}
+</style>
+</head>
+<body>
+  <div class="page">
+    <header class="site-header">
+      <h1>Modern Database Attacks</h1>
+      <p>Project documentation · HTML reader view</p>
+      <nav class="doc-nav" aria-label="Documentation"><a href="index.html">All docs</a><a class="active" aria-current="page" href="API.html">API</a><a href="ARCHITECTURE.html">ARCHITECTURE</a><a href="DATABASE.html">DATABASE</a><a href="DEMO_GUIDE.html">DEMO GUIDE</a><a href="DEVELOPMENT.html">DEVELOPMENT</a><a href="PROJECT_OVERVIEW.html">PROJECT OVERVIEW</a><a href="RUN_AND_TEST.html">RUN AND TEST</a><a href="SECURITY.html">SECURITY</a><a href="TESTING.html">TESTING</a></nav>
+    </header>
+    <main class="content">
+      <h1 id="http-api-contract">HTTP API Contract</h1>
+<h2 id="1-conventions">1. Conventions</h2>
+<ul>
+<li>Base path: /api.</li>
+<li>Request and response format: application/json.</li>
+<li>Authentication failures use generic messages.</li>
+<li>Validation failures do not include database details.</li>
+<li>Passwords, password hashes and query internals are never returned.</li>
+</ul>
+<h2 id="2-health-endpoint">2. Health endpoint</h2>
+<h3 id="get-apihealth">GET /api/health</h3>
+<p>Purpose: verify that the process is alive and report MongoDB connectivity.</p>
+<p>Success:</p>
+<pre><code class="language-json">{
+  &quot;ok&quot;: true,
+  &quot;service&quot;: &quot;modern-database-attacks&quot;,
+  &quot;database&quot;: &quot;up&quot;
+}
+</code></pre>
+<p>Database unavailable:</p>
+<pre><code class="language-json">{
+  &quot;ok&quot;: false,
+  &quot;service&quot;: &quot;modern-database-attacks&quot;,
+  &quot;database&quot;: &quot;down&quot;
+}
+</code></pre>
+<p>The unavailable response uses HTTP 503.</p>
+<h2 id="3-secure-login">3. Secure login</h2>
+<h3 id="post-apiauthlogin">POST /api/auth/login</h3>
+<p>Request:</p>
+<pre><code class="language-json">{
+  &quot;username&quot;: &quot;alice&quot;,
+  &quot;password&quot;: &quot;synthetic-demo-password&quot;
+}
+</code></pre>
+<p>Success:</p>
+<pre><code class="language-json">{
+  &quot;ok&quot;: true,
+  &quot;user&quot;: {
+    &quot;username&quot;: &quot;alice&quot;,
+    &quot;role&quot;: &quot;student&quot;
+  }
+}
+</code></pre>
+<p>Invalid credentials:</p>
+<pre><code class="language-json">{
+  &quot;ok&quot;: false,
+  &quot;error&quot;: {
+    &quot;code&quot;: &quot;INVALID_CREDENTIALS&quot;,
+    &quot;message&quot;: &quot;Invalid credentials&quot;
+  }
+}
+</code></pre>
+<p>Invalid input:</p>
+<pre><code class="language-json">{
+  &quot;ok&quot;: false,
+  &quot;error&quot;: {
+    &quot;code&quot;: &quot;INVALID_INPUT&quot;,
+    &quot;message&quot;: &quot;Invalid request&quot;
+  }
+}
+</code></pre>
+<p>The secure route accepts only a string username and string password. It rejects objects, arrays, numbers, booleans, null values and unknown body fields before user lookup.</p>
+<h2 id="4-lab-status">4. Lab status</h2>
+<h3 id="get-apilabstatus">GET /api/lab/status</h3>
+<p>This endpoint is safe to call from the browser and reports the mode without returning database details.</p>
+<p>Lab disabled:</p>
+<pre><code class="language-json">{
+  &quot;ok&quot;: true,
+  &quot;enabled&quot;: false,
+  &quot;mode&quot;: &quot;secure-only&quot;
+}
+</code></pre>
+<p>Lab enabled:</p>
+<pre><code class="language-json">{
+  &quot;ok&quot;: true,
+  &quot;enabled&quot;: true,
+  &quot;mode&quot;: &quot;lab&quot;
+}
+</code></pre>
+<h2 id="5-lab-observation-route">5. Lab observation route</h2>
+<h3 id="post-apilablogin-observation">POST /api/lab/login-observation</h3>
+<p>This route is available only when LAB_MODE=true, NODE_ENV is not production and the request is local.</p>
+<p>Normal string request:</p>
+<pre><code class="language-json">{
+  &quot;username&quot;: &quot;alice&quot;,
+  &quot;password&quot;: &quot;lab-only-demo-password&quot;
+}
+</code></pre>
+<p>Brief-shaped object request:</p>
+<pre><code class="language-json">{
+  &quot;username&quot;: &quot;alice&quot;,
+  &quot;password&quot;: {
+    &quot;gt&quot;: &quot;&quot;
+  }
+}
+</code></pre>
+<p>Operator-shaped object request:</p>
+<pre><code class="language-json">{
+  &quot;username&quot;: &quot;alice&quot;,
+  &quot;password&quot;: {
+    &quot;$gt&quot;: &quot;&quot;
+  }
+}
+</code></pre>
+<p>Successful controlled observation:</p>
+<pre><code class="language-json">{
+  &quot;ok&quot;: true,
+  &quot;authenticated&quot;: true,
+  &quot;mode&quot;: &quot;lab&quot;,
+  &quot;inputType&quot;: &quot;object&quot;,
+  &quot;payloadVariant&quot;: &quot;$gt&quot;,
+  &quot;user&quot;: {
+    &quot;username&quot;: &quot;alice&quot;,
+    &quot;role&quot;: &quot;student&quot;
+  },
+  &quot;note&quot;: &quot;Controlled local lab result; do not reuse this route in production&quot;
+}
+</code></pre>
+<p>Failed lab observation returns HTTP 401 with the same mode and input metadata, but never returns a password or query object.</p>
+<h2 id="6-logout">6. Logout</h2>
+<h3 id="post-apiauthlogout">POST /api/auth/logout</h3>
+<p>The current application does not create a persistent session. The endpoint exists as a safe placeholder:</p>
+<pre><code class="language-json">{
+  &quot;ok&quot;: true
+}
+</code></pre>
+<h2 id="7-status-code-policy">7. Status code policy</h2>
+<table>
+<thead>
+<tr>
+<th>Status</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>200</td>
+<td>Request completed successfully.</td>
+</tr>
+<tr>
+<td>400</td>
+<td>Body type, shape or field validation failed.</td>
+</tr>
+<tr>
+<td>401</td>
+<td>Credentials are invalid.</td>
+</tr>
+<tr>
+<td>403</td>
+<td>The lab request is not from loopback.</td>
+</tr>
+<tr>
+<td>404</td>
+<td>Route is disabled or does not exist.</td>
+</tr>
+<tr>
+<td>503</td>
+<td>MongoDB is unavailable.</td>
+</tr>
+<tr>
+<td>500</td>
+<td>Unexpected server error; details stay in server logs.</td>
+</tr>
+</tbody>
+</table>
+<h2 id="8-implementation-rules">8. Implementation rules</h2>
+<ul>
+<li>Routes call services; services own authentication decisions.</li>
+<li>The secure route queries by username and verifies a stored hash in application code.</li>
+<li>The lab route is intentionally isolated and explicitly labelled.</li>
+<li>The browser sends JSON with Content-Type application/json.</li>
+<li>The browser never stores the password after submission.</li>
+</ul>
+    </main>
+    <p class="footer">Generated from API.md. Keep the Markdown source for edits.</p>
+  </div>
+</body>
+</html>

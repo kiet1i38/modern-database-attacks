@@ -1,0 +1,7 @@
+ Container modern-database-attacks-mongodb  Running
+{
+  "ok": true,
+  "database": "modern_database_attacks",
+  "secureUserSeeded": true,
+  "labUserSeeded": true
+}

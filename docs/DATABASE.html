@@ -1,0 +1,207 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light">
+  <title>Database Design · Modern Database Attacks</title>
+  <style>
+:root {
+  color-scheme: light;
+  --bg: #f3f6fb;
+  --surface: #ffffff;
+  --ink: #172033;
+  --muted: #5b6b86;
+  --line: #d8dfeb;
+  --accent: #2457d6;
+  --code-bg: #111827;
+  --code-ink: #d8e3f4;
+}
+
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--ink);
+  font: 16px/1.7 Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+.page {
+  width: min(1120px, calc(100% - 32px));
+  margin: 0 auto;
+  padding: 32px 0 64px;
+}
+.site-header {
+  margin-bottom: 24px;
+  padding: 24px 28px;
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  background: var(--surface);
+  box-shadow: 0 12px 32px rgb(26 42 70 / 7%);
+}
+.site-header h1 { margin: 0 0 6px; font-size: clamp(1.6rem, 4vw, 2.4rem); line-height: 1.2; }
+.site-header p { margin: 0; color: var(--muted); }
+.doc-nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 18px;
+}
+.doc-nav a {
+  padding: 6px 10px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  color: var(--accent);
+  text-decoration: none;
+  font-size: .92rem;
+}
+.doc-nav a:hover, .doc-nav a.active { background: #e8efff; border-color: #b9c9f5; }
+.content {
+  padding: 32px clamp(20px, 5vw, 56px);
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  background: var(--surface);
+  box-shadow: 0 12px 32px rgb(26 42 70 / 7%);
+}
+h1, h2, h3, h4 { line-height: 1.25; scroll-margin-top: 24px; }
+h1 { margin-top: 0; font-size: clamp(2rem, 5vw, 3rem); }
+h2 { margin-top: 2.2em; padding-bottom: .35em; border-bottom: 1px solid var(--line); }
+h3 { margin-top: 1.8em; }
+a { color: var(--accent); }
+p, ul, ol, table, blockquote, pre { margin-top: 1em; }
+li + li { margin-top: .35em; }
+blockquote {
+  margin-left: 0;
+  padding: 10px 16px;
+  border-left: 4px solid #cc7a00;
+  background: #fff6df;
+  color: #6d4600;
+}
+code {
+  padding: .12em .35em;
+  border-radius: 5px;
+  background: #edf1f7;
+  color: #253552;
+  font-size: .92em;
+}
+pre {
+  padding: 16px 18px;
+  overflow-x: auto;
+  border-radius: 10px;
+  background: var(--code-bg);
+  color: var(--code-ink);
+  box-shadow: inset 0 0 0 1px rgb(255 255 255 / 6%);
+}
+pre code { padding: 0; background: transparent; color: inherit; }
+table { width: 100%; border-collapse: collapse; display: block; overflow-x: auto; }
+th, td { min-width: 140px; padding: 10px 12px; border: 1px solid var(--line); text-align: left; vertical-align: top; }
+th { background: #eef3fb; }
+hr { margin: 2em 0; border: 0; border-top: 1px solid var(--line); }
+img { max-width: 100%; height: auto; }
+.footer { margin-top: 20px; color: var(--muted); font-size: .9rem; text-align: center; }
+.doc-list { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 12px; padding: 0; list-style: none; }
+.doc-list a { display: block; padding: 16px; border: 1px solid var(--line); border-radius: 12px; background: #fbfcfe; text-decoration: none; }
+.doc-list a:hover { border-color: #9fb4ed; background: #f1f5ff; }
+@media (max-width: 640px) {
+  .page { width: min(100% - 20px, 1120px); padding-top: 10px; }
+  .site-header, .content { padding: 20px; border-radius: 12px; }
+  body { font-size: 15px; }
+}
+</style>
+</head>
+<body>
+  <div class="page">
+    <header class="site-header">
+      <h1>Modern Database Attacks</h1>
+      <p>Project documentation · HTML reader view</p>
+      <nav class="doc-nav" aria-label="Documentation"><a href="index.html">All docs</a><a href="API.html">API</a><a href="ARCHITECTURE.html">ARCHITECTURE</a><a class="active" aria-current="page" href="DATABASE.html">DATABASE</a><a href="DEMO_GUIDE.html">DEMO GUIDE</a><a href="DEVELOPMENT.html">DEVELOPMENT</a><a href="PROJECT_OVERVIEW.html">PROJECT OVERVIEW</a><a href="RUN_AND_TEST.html">RUN AND TEST</a><a href="SECURITY.html">SECURITY</a><a href="TESTING.html">TESTING</a></nav>
+    </header>
+    <main class="content">
+      <h1 id="database-design">Database Design</h1>
+<h2 id="1-database-names">1. Database names</h2>
+<p>Default application database:</p>
+<pre><code class="language-text">modern_database_attacks
+</code></pre>
+<p>Integration tests use:</p>
+<pre><code class="language-text">modern_database_attacks_test
+</code></pre>
+<p>The test database is separate so integration cleanup cannot affect normal demo data.</p>
+<h2 id="2-collections">2. Collections</h2>
+<h3 id="users">users</h3>
+<p>The secure collection stores password hashes only:</p>
+<pre><code class="language-json">{
+  &quot;_id&quot;: &quot;ObjectId&quot;,
+  &quot;username&quot;: &quot;alice&quot;,
+  &quot;passwordHash&quot;: &quot;scrypt$...&quot;,
+  &quot;role&quot;: &quot;student&quot;,
+  &quot;active&quot;: true,
+  &quot;createdAt&quot;: &quot;ISODate&quot;,
+  &quot;updatedAt&quot;: &quot;ISODate&quot;
+}
+</code></pre>
+<p>The secure route finds a user by username and active status, then verifies the submitted string against passwordHash in application code.</p>
+<h3 id="lab_users">lab_users</h3>
+<p>The local laboratory collection uses synthetic plaintext data so the query-shape observation is easy to explain:</p>
+<pre><code class="language-json">{
+  &quot;_id&quot;: &quot;ObjectId&quot;,
+  &quot;username&quot;: &quot;alice&quot;,
+  &quot;password&quot;: &quot;lab-only-demo-password&quot;,
+  &quot;role&quot;: &quot;student&quot;,
+  &quot;active&quot;: true
+}
+</code></pre>
+<p>This collection must never contain a real password and must never be used by the secure route.</p>
+<h2 id="3-indexes">3. Indexes</h2>
+<p>The application creates unique username indexes for both collections:</p>
+<pre><code class="language-javascript">database.collection(&quot;users&quot;).createIndex(
+  { username: 1 },
+  { unique: true, name: &quot;users_username_unique&quot; }
+);
+
+database.collection(&quot;lab_users&quot;).createIndex(
+  { username: 1 },
+  { unique: true, name: &quot;lab_users_username_unique&quot; }
+);
+</code></pre>
+<h2 id="4-seed-command">4. Seed command</h2>
+<p>Seed secure data:</p>
+<pre><code class="language-bash">npm run seed
+</code></pre>
+<p>Seed both secure and lab data:</p>
+<pre><code class="language-bash">npm run seed -- --lab
+</code></pre>
+<p>The seed is idempotent. It upserts the synthetic user and does not print password values.</p>
+<p>The lab seed is permitted only when NODE_ENV is not production.</p>
+<h2 id="5-query-boundaries">5. Query boundaries</h2>
+<p>Secure query shape:</p>
+<pre><code class="language-javascript">database.collection(&quot;users&quot;).findOne({
+  username,
+  active: true
+});
+</code></pre>
+<p>The secure route never accepts a complete filter from the browser.</p>
+<p>Lab query shape:</p>
+<pre><code class="language-javascript">database.collection(&quot;lab_users&quot;).findOne({
+  username,
+  password
+});
+</code></pre>
+<p>The lab query is intentionally unsafe and exists only behind the local guard. It must not be copied into a real authentication service.</p>
+<h2 id="6-reset-command">6. Reset command</h2>
+<p>The reset script is deliberately guarded:</p>
+<pre><code class="language-bash">ALLOW_LOCAL_RESET=true npm run db:reset
+</code></pre>
+<p>It refuses production mode, requires the explicit flag and checks that the database name belongs to the project namespace.</p>
+<h2 id="7-data-lifecycle">7. Data lifecycle</h2>
+<ul>
+<li>Demo data is disposable.</li>
+<li>Lab data is synthetic.</li>
+<li>Real user data is out of scope.</li>
+<li>Docker volumes are local artifacts.</li>
+<li>Do not commit .env or database dumps.</li>
+</ul>
+    </main>
+    <p class="footer">Generated from DATABASE.md. Keep the Markdown source for edits.</p>
+  </div>
+</body>
+</html>

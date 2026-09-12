@@ -1,0 +1,255 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light">
+  <title>Application Architecture · Modern Database Attacks</title>
+  <style>
+:root {
+  color-scheme: light;
+  --bg: #f3f6fb;
+  --surface: #ffffff;
+  --ink: #172033;
+  --muted: #5b6b86;
+  --line: #d8dfeb;
+  --accent: #2457d6;
+  --code-bg: #111827;
+  --code-ink: #d8e3f4;
+}
+
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--ink);
+  font: 16px/1.7 Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+.page {
+  width: min(1120px, calc(100% - 32px));
+  margin: 0 auto;
+  padding: 32px 0 64px;
+}
+.site-header {
+  margin-bottom: 24px;
+  padding: 24px 28px;
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  background: var(--surface);
+  box-shadow: 0 12px 32px rgb(26 42 70 / 7%);
+}
+.site-header h1 { margin: 0 0 6px; font-size: clamp(1.6rem, 4vw, 2.4rem); line-height: 1.2; }
+.site-header p { margin: 0; color: var(--muted); }
+.doc-nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 18px;
+}
+.doc-nav a {
+  padding: 6px 10px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  color: var(--accent);
+  text-decoration: none;
+  font-size: .92rem;
+}
+.doc-nav a:hover, .doc-nav a.active { background: #e8efff; border-color: #b9c9f5; }
+.content {
+  padding: 32px clamp(20px, 5vw, 56px);
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  background: var(--surface);
+  box-shadow: 0 12px 32px rgb(26 42 70 / 7%);
+}
+h1, h2, h3, h4 { line-height: 1.25; scroll-margin-top: 24px; }
+h1 { margin-top: 0; font-size: clamp(2rem, 5vw, 3rem); }
+h2 { margin-top: 2.2em; padding-bottom: .35em; border-bottom: 1px solid var(--line); }
+h3 { margin-top: 1.8em; }
+a { color: var(--accent); }
+p, ul, ol, table, blockquote, pre { margin-top: 1em; }
+li + li { margin-top: .35em; }
+blockquote {
+  margin-left: 0;
+  padding: 10px 16px;
+  border-left: 4px solid #cc7a00;
+  background: #fff6df;
+  color: #6d4600;
+}
+code {
+  padding: .12em .35em;
+  border-radius: 5px;
+  background: #edf1f7;
+  color: #253552;
+  font-size: .92em;
+}
+pre {
+  padding: 16px 18px;
+  overflow-x: auto;
+  border-radius: 10px;
+  background: var(--code-bg);
+  color: var(--code-ink);
+  box-shadow: inset 0 0 0 1px rgb(255 255 255 / 6%);
+}
+pre code { padding: 0; background: transparent; color: inherit; }
+table { width: 100%; border-collapse: collapse; display: block; overflow-x: auto; }
+th, td { min-width: 140px; padding: 10px 12px; border: 1px solid var(--line); text-align: left; vertical-align: top; }
+th { background: #eef3fb; }
+hr { margin: 2em 0; border: 0; border-top: 1px solid var(--line); }
+img { max-width: 100%; height: auto; }
+.footer { margin-top: 20px; color: var(--muted); font-size: .9rem; text-align: center; }
+.doc-list { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 12px; padding: 0; list-style: none; }
+.doc-list a { display: block; padding: 16px; border: 1px solid var(--line); border-radius: 12px; background: #fbfcfe; text-decoration: none; }
+.doc-list a:hover { border-color: #9fb4ed; background: #f1f5ff; }
+@media (max-width: 640px) {
+  .page { width: min(100% - 20px, 1120px); padding-top: 10px; }
+  .site-header, .content { padding: 20px; border-radius: 12px; }
+  body { font-size: 15px; }
+}
+</style>
+</head>
+<body>
+  <div class="page">
+    <header class="site-header">
+      <h1>Modern Database Attacks</h1>
+      <p>Project documentation · HTML reader view</p>
+      <nav class="doc-nav" aria-label="Documentation"><a href="index.html">All docs</a><a href="API.html">API</a><a class="active" aria-current="page" href="ARCHITECTURE.html">ARCHITECTURE</a><a href="DATABASE.html">DATABASE</a><a href="DEMO_GUIDE.html">DEMO GUIDE</a><a href="DEVELOPMENT.html">DEVELOPMENT</a><a href="PROJECT_OVERVIEW.html">PROJECT OVERVIEW</a><a href="RUN_AND_TEST.html">RUN AND TEST</a><a href="SECURITY.html">SECURITY</a><a href="TESTING.html">TESTING</a></nav>
+    </header>
+    <main class="content">
+      <h1 id="application-architecture">Application Architecture</h1>
+<h2 id="1-architectural-style">1. Architectural style</h2>
+<p>The application is a small modular monolith. It runs as one Node.js process while keeping configuration, database access, authentication and the browser client in separate modules.</p>
+<p>The two authentication paths are intentionally separate:</p>
+<ul>
+<li>Secure path: strict scalar validation, username lookup and password-hash verification.</li>
+<li>Lab path: local-only, opt-in observation of an unsafe query shape using synthetic data.</li>
+</ul>
+<h2 id="2-runtime-topology">2. Runtime topology</h2>
+<pre><code class="language-mermaid">flowchart TD
+  Browser[&quot;Browser login form&quot;] --&gt; Express[&quot;Express application&quot;]
+  Express --&gt; Secure[&quot;Secure route&quot;]
+  Express --&gt; Lab[&quot;Guarded lab route&quot;]
+  Secure --&gt; Users[&quot;users collection&quot;]
+  Lab --&gt; LabUsers[&quot;lab_users collection&quot;]
+</code></pre>
+<p>MongoDB is never exposed directly to the browser.</p>
+<h2 id="3-source-tree">3. Source tree</h2>
+<pre><code class="language-text">src/
+├── app.js
+├── server.js
+├── config/
+│   └── env.js
+├── db/
+│   ├── client.js
+│   ├── collections.js
+│   └── indexes.js
+├── middleware/
+│   └── lab-guard.js
+├── modules/
+│   ├── health/
+│   │   └── health.routes.js
+│   └── auth/
+│       ├── auth.service.js
+│       ├── lab.routes.js
+│       ├── password.js
+│       ├── secure.routes.js
+│       └── validation.js
+├── public/
+│   ├── app.js
+│   ├── index.html
+│   └── styles.css
+└── shared/
+    └── errors.js
+</code></pre>
+<p>Supporting scripts are under scripts/ and tests are under tests/.</p>
+<h2 id="4-module-responsibilities">4. Module responsibilities</h2>
+<h3 id="appjs">app.js</h3>
+<ul>
+<li>Creates the Express application.</li>
+<li>Registers JSON parsing with a small body limit.</li>
+<li>Serves the static browser client.</li>
+<li>Mounts health, secure and lab routes.</li>
+<li>Registers safe 404 and error responses.</li>
+</ul>
+<h3 id="serverjs">server.js</h3>
+<ul>
+<li>Loads configuration.</li>
+<li>Connects to MongoDB.</li>
+<li>Creates indexes.</li>
+<li>Starts the HTTP server.</li>
+<li>Closes the HTTP server and database client on shutdown.</li>
+</ul>
+<h3 id="configenvjs">config/env.js</h3>
+<ul>
+<li>Parses environment variables.</li>
+<li>Validates ports and database names.</li>
+<li>Provides safe local defaults.</li>
+<li>Exposes LAB_MODE as an explicit feature flag.</li>
+</ul>
+<h3 id="dbclientjs">db/client.js</h3>
+<ul>
+<li>Owns the MongoDB client lifecycle.</li>
+<li>Exposes connect, db, ping and close operations.</li>
+<li>Uses a short server-selection timeout so startup failures are visible.</li>
+</ul>
+<h3 id="authservicejs">auth.service.js</h3>
+<ul>
+<li>Secure path: fixed username lookup and hash verification.</li>
+<li>Lab path: isolated query-shape observation.</li>
+<li>Returns only public user fields to routes.</li>
+</ul>
+<h3 id="validationjs">validation.js</h3>
+<ul>
+<li>Requires a plain JSON body.</li>
+<li>Requires exactly username and password keys.</li>
+<li>Normalizes the username.</li>
+<li>Requires a string password in secure mode.</li>
+<li>Allows a small structured password value only in lab mode.</li>
+</ul>
+<h3 id="lab-guardjs">lab-guard.js</h3>
+<ul>
+<li>Requires LAB_MODE=true.</li>
+<li>Refuses production mode.</li>
+<li>Accepts loopback host or loopback socket requests only.</li>
+</ul>
+<h2 id="5-secure-flow">5. Secure flow</h2>
+<pre><code class="language-mermaid">sequenceDiagram
+  participant B as Browser
+  participant R as Secure route
+  participant V as Validator
+  participant S as Auth service
+  participant M as MongoDB
+  B-&gt;&gt;R: JSON strings
+  R-&gt;&gt;V: Validate scalar fields
+  V--&gt;&gt;R: Typed credentials
+  R-&gt;&gt;S: Authenticate
+  S-&gt;&gt;M: Find by username and active
+  M--&gt;&gt;S: User with password hash
+  S--&gt;&gt;R: Verify hash
+  R--&gt;&gt;B: Generic success or failure
+</code></pre>
+<p>The password is not part of the secure MongoDB predicate.</p>
+<h2 id="6-lab-flow">6. Lab flow</h2>
+<p>The lab route receives a local JSON request and intentionally constructs a query using the password value. With a string, this behaves like ordinary equality. With an object, MongoDB may interpret the nested value as a predicate. The result must be recorded with the exact driver and database versions.</p>
+<p>The lab route is educational only. It is not a session system, authorization layer or production design.</p>
+<h2 id="7-runtime-modes">7. Runtime modes</h2>
+<ul>
+<li>Secure-only: default when LAB_MODE=false.</li>
+<li>Local lab: enabled only when LAB_MODE=true and NODE_ENV is not production.</li>
+<li>Test: use a separate database name for integration tests.</li>
+</ul>
+<h2 id="8-docker-boundary">8. Docker boundary</h2>
+<p>Docker Compose runs:</p>
+<ul>
+<li>One MongoDB 7.0.16 container.</li>
+<li>One Node.js 20 application container.</li>
+<li>A named local MongoDB volume.</li>
+<li>Loopback-only host port bindings for 27017 and 3000.</li>
+</ul>
+<p>The lab override file changes only the application LAB_MODE value.</p>
+    </main>
+    <p class="footer">Generated from ARCHITECTURE.md. Keep the Markdown source for edits.</p>
+  </div>
+</body>
+</html>

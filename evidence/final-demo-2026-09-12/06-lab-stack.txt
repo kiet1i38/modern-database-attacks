@@ -1,0 +1,32 @@
+ Container modern-database-attacks-app  Stopping
+ Container modern-database-attacks-app  Stopped
+ Container modern-database-attacks-app  Removing
+ Container modern-database-attacks-app  Removed
+ Container modern-database-attacks-mongodb  Stopping
+ Container modern-database-attacks-mongodb  Stopped
+ Container modern-database-attacks-mongodb  Removing
+ Container modern-database-attacks-mongodb  Removed
+ Network modern-database-attacks-main_default  Removing
+ Network modern-database-attacks-main_default  Removed
+ Network modern-database-attacks-main_default  Creating
+ Network modern-database-attacks-main_default  Created
+ Container modern-database-attacks-mongodb  Creating
+ Container modern-database-attacks-mongodb  Created
+ Container modern-database-attacks-app  Creating
+ Container modern-database-attacks-app  Created
+ Container modern-database-attacks-mongodb  Starting
+ Container modern-database-attacks-mongodb  Started
+ Container modern-database-attacks-mongodb  Waiting
+ Container modern-database-attacks-mongodb  Healthy
+ Container modern-database-attacks-app  Starting
+ Container modern-database-attacks-app  Started
+ Container modern-database-attacks-mongodb  Running
+{
+  "ok": true,
+  "database": "modern_database_attacks",
+  "secureUserSeeded": true,
+  "labUserSeeded": true
+}
+NAME                              IMAGE                              COMMAND                  SERVICE   CREATED          STATUS                   PORTS
+modern-database-attacks-app       modern-database-attacks-main-app   "docker-entrypoint.s…"   app       10 seconds ago   Up 2 seconds             127.0.0.1:3000->3000/tcp
+modern-database-attacks-mongodb   mongo:7.0.16                       "docker-entrypoint.s…"   mongodb   10 seconds ago   Up 8 seconds (healthy)   127.0.0.1:27018->27017/tcp

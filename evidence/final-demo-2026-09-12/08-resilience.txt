@@ -1,0 +1,136 @@
+ Container modern-database-attacks-mongodb  Stopping
+ Container modern-database-attacks-mongodb  Stopped
+
+--- after mongodb stop ---
+{
+  "health": {
+    "status": 503,
+    "body": {
+      "ok": false,
+      "service": "modern-database-attacks",
+      "database": "down"
+    }
+  },
+  "secureLogin": {
+    "status": 500,
+    "body": {
+      "ok": false,
+      "error": {
+        "code": 11600,
+        "message": "Internal server error"
+      }
+    }
+  },
+  "labStatus": {
+    "status": 200,
+    "body": {
+      "ok": true,
+      "enabled": true,
+      "mode": "lab"
+    }
+  },
+  "labOperator": {
+    "status": 500,
+    "body": {
+      "ok": false,
+      "error": {
+        "code": "INTERNAL_ERROR",
+        "message": "Internal server error"
+      }
+    }
+  }
+}
+ Container modern-database-attacks-mongodb  Starting
+ Container modern-database-attacks-mongodb  Started
+
+--- after mongodb recovery ---
+{
+  "health": {
+    "status": 200,
+    "body": {
+      "ok": true,
+      "service": "modern-database-attacks",
+      "database": "up"
+    }
+  },
+  "secureLogin": {
+    "status": 200,
+    "body": {
+      "ok": true,
+      "user": {
+        "username": "alice",
+        "role": "student"
+      }
+    }
+  },
+  "labStatus": {
+    "status": 200,
+    "body": {
+      "ok": true,
+      "enabled": true,
+      "mode": "lab"
+    }
+  },
+  "labOperator": {
+    "status": 200,
+    "body": {
+      "ok": true,
+      "authenticated": true,
+      "mode": "lab",
+      "inputType": "object",
+      "payloadVariant": "$gt",
+      "user": {
+        "username": "alice",
+        "role": "student"
+      },
+      "note": "Controlled local lab result; do not reuse this route in production"
+    }
+  }
+}
+ Container modern-database-attacks-app  Restarting
+ Container modern-database-attacks-app  Started
+
+--- after app restart ---
+{
+  "health": {
+    "status": 200,
+    "body": {
+      "ok": true,
+      "service": "modern-database-attacks",
+      "database": "up"
+    }
+  },
+  "secureLogin": {
+    "status": 200,
+    "body": {
+      "ok": true,
+      "user": {
+        "username": "alice",
+        "role": "student"
+      }
+    }
+  },
+  "labStatus": {
+    "status": 200,
+    "body": {
+      "ok": true,
+      "enabled": true,
+      "mode": "lab"
+    }
+  },
+  "labOperator": {
+    "status": 200,
+    "body": {
+      "ok": true,
+      "authenticated": true,
+      "mode": "lab",
+      "inputType": "object",
+      "payloadVariant": "$gt",
+      "user": {
+        "username": "alice",
+        "role": "student"
+      },
+      "note": "Controlled local lab result; do not reuse this route in production"
+    }
+  }
+}

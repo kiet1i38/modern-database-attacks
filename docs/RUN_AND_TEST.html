@@ -1,0 +1,407 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light">
+  <title>Hướng dẫn chạy, truy cập và kiểm thử · Modern Database Attacks</title>
+  <style>
+:root {
+  color-scheme: light;
+  --bg: #f3f6fb;
+  --surface: #ffffff;
+  --ink: #172033;
+  --muted: #5b6b86;
+  --line: #d8dfeb;
+  --accent: #2457d6;
+  --code-bg: #111827;
+  --code-ink: #d8e3f4;
+}
+
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--ink);
+  font: 16px/1.7 Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+.page {
+  width: min(1120px, calc(100% - 32px));
+  margin: 0 auto;
+  padding: 32px 0 64px;
+}
+.site-header {
+  margin-bottom: 24px;
+  padding: 24px 28px;
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  background: var(--surface);
+  box-shadow: 0 12px 32px rgb(26 42 70 / 7%);
+}
+.site-header h1 { margin: 0 0 6px; font-size: clamp(1.6rem, 4vw, 2.4rem); line-height: 1.2; }
+.site-header p { margin: 0; color: var(--muted); }
+.doc-nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 18px;
+}
+.doc-nav a {
+  padding: 6px 10px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  color: var(--accent);
+  text-decoration: none;
+  font-size: .92rem;
+}
+.doc-nav a:hover, .doc-nav a.active { background: #e8efff; border-color: #b9c9f5; }
+.content {
+  padding: 32px clamp(20px, 5vw, 56px);
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  background: var(--surface);
+  box-shadow: 0 12px 32px rgb(26 42 70 / 7%);
+}
+h1, h2, h3, h4 { line-height: 1.25; scroll-margin-top: 24px; }
+h1 { margin-top: 0; font-size: clamp(2rem, 5vw, 3rem); }
+h2 { margin-top: 2.2em; padding-bottom: .35em; border-bottom: 1px solid var(--line); }
+h3 { margin-top: 1.8em; }
+a { color: var(--accent); }
+p, ul, ol, table, blockquote, pre { margin-top: 1em; }
+li + li { margin-top: .35em; }
+blockquote {
+  margin-left: 0;
+  padding: 10px 16px;
+  border-left: 4px solid #cc7a00;
+  background: #fff6df;
+  color: #6d4600;
+}
+code {
+  padding: .12em .35em;
+  border-radius: 5px;
+  background: #edf1f7;
+  color: #253552;
+  font-size: .92em;
+}
+pre {
+  padding: 16px 18px;
+  overflow-x: auto;
+  border-radius: 10px;
+  background: var(--code-bg);
+  color: var(--code-ink);
+  box-shadow: inset 0 0 0 1px rgb(255 255 255 / 6%);
+}
+pre code { padding: 0; background: transparent; color: inherit; }
+table { width: 100%; border-collapse: collapse; display: block; overflow-x: auto; }
+th, td { min-width: 140px; padding: 10px 12px; border: 1px solid var(--line); text-align: left; vertical-align: top; }
+th { background: #eef3fb; }
+hr { margin: 2em 0; border: 0; border-top: 1px solid var(--line); }
+img { max-width: 100%; height: auto; }
+.footer { margin-top: 20px; color: var(--muted); font-size: .9rem; text-align: center; }
+.doc-list { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 12px; padding: 0; list-style: none; }
+.doc-list a { display: block; padding: 16px; border: 1px solid var(--line); border-radius: 12px; background: #fbfcfe; text-decoration: none; }
+.doc-list a:hover { border-color: #9fb4ed; background: #f1f5ff; }
+@media (max-width: 640px) {
+  .page { width: min(100% - 20px, 1120px); padding-top: 10px; }
+  .site-header, .content { padding: 20px; border-radius: 12px; }
+  body { font-size: 15px; }
+}
+</style>
+</head>
+<body>
+  <div class="page">
+    <header class="site-header">
+      <h1>Modern Database Attacks</h1>
+      <p>Project documentation · HTML reader view</p>
+      <nav class="doc-nav" aria-label="Documentation"><a href="index.html">All docs</a><a href="API.html">API</a><a href="ARCHITECTURE.html">ARCHITECTURE</a><a href="DATABASE.html">DATABASE</a><a href="DEMO_GUIDE.html">DEMO GUIDE</a><a href="DEVELOPMENT.html">DEVELOPMENT</a><a href="PROJECT_OVERVIEW.html">PROJECT OVERVIEW</a><a class="active" aria-current="page" href="RUN_AND_TEST.html">RUN AND TEST</a><a href="SECURITY.html">SECURITY</a><a href="TESTING.html">TESTING</a></nav>
+    </header>
+    <main class="content">
+      <h1 id="huong-dan-chay-truy-cap-va-kiem-thu">Hướng dẫn chạy, truy cập và kiểm thử</h1>
+<p>Tài liệu này hướng dẫn chạy project bằng Docker, truy cập giao diện, kiểm thử API/UI và xử lý các lỗi thường gặp.</p>
+<blockquote>
+<p>Chỉ dùng dữ liệu synthetic trong máy local. Không dùng project này với tài khoản, database hoặc hệ thống của người khác.</p>
+</blockquote>
+<h2 id="1-yeu-cau">1. Yêu cầu</h2>
+<ul>
+<li>Docker Desktop đang chạy.</li>
+<li>Docker Compose v2.</li>
+<li>Node.js 20+ và npm nếu muốn chạy lệnh kiểm tra ngoài container.</li>
+<li>Windows PowerShell hoặc terminal tương đương.</li>
+</ul>
+<p>Kiểm tra nhanh:</p>
+<pre><code class="language-powershell">docker --version
+docker compose version
+node --version
+npm --version
+</code></pre>
+<h2 id="2-chay-che-o-secure-mac-inh">2. Chạy chế độ secure mặc định</h2>
+<p>Từ thư mục gốc project:</p>
+<pre><code class="language-powershell">docker compose up --build -d
+docker compose run --rm app node scripts/seed.js
+docker compose ps
+</code></pre>
+<p><code>seed.js</code> tạo user synthetic cho secure route. Lệnh seed có thể chạy lại nhiều lần.</p>
+<p>Kết quả mong đợi trong <code>docker compose ps</code>:</p>
+<ul>
+<li><code>modern-database-attacks-mongodb</code>: <code>healthy</code>.</li>
+<li><code>modern-database-attacks-app</code>: <code>Up</code>.</li>
+<li>App được publish tại <code>127.0.0.1:3000</code>.</li>
+</ul>
+<h2 id="3-truy-cap-project">3. Truy cập project</h2>
+<p>Mở trình duyệt tại:</p>
+<pre><code class="language-text">http://127.0.0.1:3000
+</code></pre>
+<p>Các URL API chính:</p>
+<table>
+<thead>
+<tr>
+<th>Mục đích</th>
+<th>URL</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Health HTTP + MongoDB</td>
+<td><code>http://127.0.0.1:3000/api/health</code></td>
+</tr>
+<tr>
+<td>Trạng thái lab</td>
+<td><code>http://127.0.0.1:3000/api/lab/status</code></td>
+</tr>
+<tr>
+<td>Secure login</td>
+<td><code>POST http://127.0.0.1:3000/api/auth/login</code></td>
+</tr>
+<tr>
+<td>Logout placeholder</td>
+<td><code>POST http://127.0.0.1:3000/api/auth/logout</code></td>
+</tr>
+<tr>
+<td>Lab observation</td>
+<td><code>POST http://127.0.0.1:3000/api/lab/login-observation</code></td>
+</tr>
+</tbody>
+</table>
+<p>Credentials synthetic:</p>
+<table>
+<thead>
+<tr>
+<th>Route</th>
+<th>Username</th>
+<th>Password</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Secure</td>
+<td><code>alice</code></td>
+<td><code>synthetic-demo-password</code></td>
+</tr>
+<tr>
+<td>Lab string</td>
+<td><code>alice</code></td>
+<td><code>lab-only-demo-password</code></td>
+</tr>
+</tbody>
+</table>
+<h2 id="4-bat-che-o-lab">4. Bật chế độ lab</h2>
+<p>Lab route chỉ được bật khi <code>LAB_MODE=true</code>, <code>NODE_ENV</code> không phải production và request đến từ loopback.</p>
+<pre><code class="language-powershell">docker compose down
+docker compose -f docker-compose.yml -f docker-compose.lab.yml up --build -d
+docker compose -f docker-compose.yml -f docker-compose.lab.yml run --rm app node scripts/seed.js --lab
+</code></pre>
+<p>Sau đó mở lại <code>http://127.0.0.1:3000</code>, chọn <code>Local lab observation</code>.</p>
+<p>Hai payload trên giao diện:</p>
+<ul>
+<li>Assignment-shaped: <code>{"gt":""}</code> — thường trả <code>401</code>.</li>
+<li>MongoDB operator: <code>{"$gt":""}</code> — trong MongoDB lab hiện tại trả <code>200</code> và <code>authenticated: true</code>.</li>
+</ul>
+<p>Đây chỉ là kết quả của database local hiện tại, không phải kết luận cho mọi hệ thống MongoDB.</p>
+<h2 id="5-kiem-thu-tu-ong-trong-docker">5. Kiểm thử tự động trong Docker</h2>
+<p>Dockerfile là runtime image nên không copy thư mục <code>tests</code>. Mount thư mục test ở chế độ read-only khi chạy test:</p>
+<pre><code class="language-powershell">$repo = (Get-Location).Path
+docker compose run --rm -v &quot;${repo}\tests:/app/tests:ro&quot; app npm run test:all
+</code></pre>
+<p>Nếu đang chạy lab override, dùng đầy đủ các file Compose:</p>
+<pre><code class="language-powershell">$repo = (Get-Location).Path
+docker compose -f docker-compose.yml -f docker-compose.lab.yml run --rm -v &quot;${repo}\tests:/app/tests:ro&quot; app npm run test:all
+</code></pre>
+<p>Kết quả baseline đã xác nhận:</p>
+<ul>
+<li>Unit + security-boundary: <code>11/11 pass</code>.</li>
+<li>MongoDB integration: <code>1/1 pass</code>.</li>
+<li>Tổng cộng: <code>12/12 pass</code>.</li>
+</ul>
+<p>Kiểm tra dependency:</p>
+<pre><code class="language-powershell">docker compose run --rm app npm audit --omit=dev --audit-level=moderate
+</code></pre>
+<h2 id="6-kiem-thu-api-thu-cong">6. Kiểm thử API thủ công</h2>
+<p>Trong PowerShell, dùng <code>curl.exe</code> để tránh alias <code>curl</code> của PowerShell:</p>
+<pre><code class="language-powershell"># Health
+curl.exe -i http://127.0.0.1:3000/api/health
+
+# Secure login đúng: 200
+curl.exe -i -X POST http://127.0.0.1:3000/api/auth/login `
+  -H &quot;Content-Type: application/json&quot; `
+  -d '{&quot;username&quot;:&quot;alice&quot;,&quot;password&quot;:&quot;synthetic-demo-password&quot;}'
+
+# Sai password: 401
+curl.exe -i -X POST http://127.0.0.1:3000/api/auth/login `
+  -H &quot;Content-Type: application/json&quot; `
+  -d '{&quot;username&quot;:&quot;alice&quot;,&quot;password&quot;:&quot;wrong-password&quot;}'
+
+# Secure route phải chặn object: 400
+curl.exe -i -X POST http://127.0.0.1:3000/api/auth/login `
+  -H &quot;Content-Type: application/json&quot; `
+  -d '{&quot;username&quot;:&quot;alice&quot;,&quot;password&quot;:{&quot;$gt&quot;:&quot;&quot;}}'
+
+# Lab operator object: chạy khi đã bật lab, thường 200 trong môi trường này
+curl.exe -i -X POST http://127.0.0.1:3000/api/lab/login-observation `
+  -H &quot;Content-Type: application/json&quot; `
+  -d '{&quot;username&quot;:&quot;alice&quot;,&quot;password&quot;:{&quot;$gt&quot;:&quot;&quot;}}'
+
+# JSON hỏng: 400 INVALID_JSON
+curl.exe -i -X POST http://127.0.0.1:3000/api/auth/login `
+  -H &quot;Content-Type: application/json&quot; `
+  -d '{&quot;username&quot;:&quot;alice&quot;'
+</code></pre>
+<p>Ma trận kết quả quan trọng:</p>
+<table>
+<thead>
+<tr>
+<th>Case</th>
+<th>Kỳ vọng</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Secure đúng username/password</td>
+<td><code>200</code></td>
+</tr>
+<tr>
+<td>Secure sai hoặc user không tồn tại</td>
+<td><code>401</code></td>
+</tr>
+<tr>
+<td>Secure password là object/array/number/null</td>
+<td><code>400</code></td>
+</tr>
+<tr>
+<td>Secure có field thừa</td>
+<td><code>400</code></td>
+</tr>
+<tr>
+<td>Lab đang tắt</td>
+<td><code>404 LAB_DISABLED</code></td>
+</tr>
+<tr>
+<td>Lab request từ container/địa chỉ không loopback</td>
+<td><code>403 LAB_LOCAL_ONLY</code></td>
+</tr>
+<tr>
+<td>MongoDB không chạy</td>
+<td>Health <code>503</code>, <code>database: down</code></td>
+</tr>
+<tr>
+<td>Body vượt <code>16kb</code></td>
+<td><code>413</code></td>
+</tr>
+</tbody>
+</table>
+<h2 id="7-kiem-thu-giao-dien-nhu-nguoi-dung">7. Kiểm thử giao diện như người dùng</h2>
+<ol>
+<li>Mở <code>http://127.0.0.1:3000</code>.</li>
+<li>Xác nhận badge hiển thị <code>HTTP and MongoDB are ready.</code>.</li>
+<li>Chọn <code>Secure comparison</code>, dùng <code>alice</code> và password secure, bấm Submit; kết quả phải là HTTP <code>200</code>.</li>
+<li>Nhập sai password; kết quả phải là HTTP <code>401</code>.</li>
+<li>Chuyển sang <code>Local lab observation</code>; password input được thay bằng dropdown payload.</li>
+<li>Gửi variant <code>{"gt":""}</code> rồi <code>{"$gt":""}</code>; kiểm tra request hiển thị là object, không phải escaped string.</li>
+<li>Sau mỗi lần submit, password field phải được xóa.</li>
+<li>Thu nhỏ cửa sổ khoảng <code>375x812</code> để kiểm tra layout mobile.</li>
+</ol>
+<p>Có thể dùng Playwright CLI:</p>
+<pre><code class="language-powershell">npx --yes --package @playwright/cli playwright-cli open http://127.0.0.1:3000 --headed
+npx --yes --package @playwright/cli playwright-cli snapshot
+</code></pre>
+<p>Luôn snapshot lại sau navigation, đổi mode hoặc thao tác làm DOM thay đổi.</p>
+<h2 id="8-co-y-tao-loi-e-kiem-tra-recovery">8. Cố ý tạo lỗi để kiểm tra recovery</h2>
+<h3 id="mongodb-dung">MongoDB dừng</h3>
+<pre><code class="language-powershell">docker stop modern-database-attacks-mongodb
+curl.exe -i http://127.0.0.1:3000/api/health
+docker start modern-database-attacks-mongodb
+</code></pre>
+<p>Kỳ vọng:</p>
+<ul>
+<li>Khi Mongo dừng: HTTP <code>503</code>, <code>database: down</code>.</li>
+<li>Giao diện báo MongoDB unavailable.</li>
+<li>Sau khi start lại, health và secure login trở lại bình thường.</li>
+</ul>
+<h3 id="app-restart">App restart</h3>
+<pre><code class="language-powershell">docker restart modern-database-attacks-app
+docker compose ps
+</code></pre>
+<p>Sau restart, kiểm tra lại <code>/api/health</code> và login. Dữ liệu trong volume phải còn nguyên.</p>
+<h3 id="kiem-tra-lab-production-guard">Kiểm tra lab production guard</h3>
+<p>Không chạy seed bằng production:</p>
+<pre><code class="language-powershell">docker compose run --rm -e NODE_ENV=production app node scripts/seed.js
+</code></pre>
+<p>Lệnh này phải thất bại với thông báo từ chối seed production. Không bỏ qua lỗi này.</p>
+<h2 id="9-loi-port-mongodb-27017">9. Lỗi port MongoDB 27017</h2>
+<p>Nếu gặp:</p>
+<pre><code class="language-text">ports are not available ... 127.0.0.1:27017
+</code></pre>
+<p>Kiểm tra process đang giữ port, không tự ý kill process không xác định:</p>
+<pre><code class="language-powershell">Get-NetTCPConnection -LocalPort 27017 -State Listen |
+  Select-Object LocalAddress,LocalPort,OwningProcess
+</code></pre>
+<p>Nếu port thuộc MongoDB native mà bạn không muốn dừng, tạo file local-only <code>docker-compose.local.yml</code> ở thư mục gốc:</p>
+<pre><code class="language-yaml">services:
+  mongodb:
+    ports: !override
+      - &quot;127.0.0.1:27018:27017&quot;
+</code></pre>
+<p>Chạy Compose với file này:</p>
+<pre><code class="language-powershell">docker compose -f docker-compose.yml -f docker-compose.local.yml up --build -d
+docker compose -f docker-compose.yml -f docker-compose.local.yml run --rm app node scripts/seed.js
+</code></pre>
+<p>Muốn bật lab thì thêm <code>-f docker-compose.lab.yml</code> vào cuối mỗi lệnh. App vẫn kết nối Mongo qua network Docker tại <code>mongodb:27017</code>; chỉ cổng host đổi thành <code>27018</code>.</p>
+<p>File local override không nên commit. Nếu Compose cũ không hỗ trợ tag <code>!override</code>, hãy giải phóng port bằng process thuộc quyền quản lý của bạn hoặc đổi port tạm thời trong override theo tài liệu Compose đang dùng.</p>
+<h2 id="10-xem-log-va-chan-oan">10. Xem log và chẩn đoán</h2>
+<pre><code class="language-powershell">docker compose ps
+docker compose logs --tail=100 app
+docker compose logs --tail=100 mongodb
+docker inspect modern-database-attacks-mongodb
+</code></pre>
+<p>Không expose MongoDB ra Internet. Compose hiện publish MongoDB và app trên loopback (<code>127.0.0.1</code>).</p>
+<h2 id="11-cleanup-va-reset-database">11. Cleanup và reset database</h2>
+<p>Dừng app/Mongo nhưng giữ volume:</p>
+<pre><code class="language-powershell">docker compose down
+</code></pre>
+<p>Xóa cả volume database disposable chỉ khi chắc chắn đây là volume của project:</p>
+<pre><code class="language-powershell">docker compose down -v
+</code></pre>
+<p>Reset bằng script cũng cần cờ bảo vệ:</p>
+<pre><code class="language-powershell">docker compose run --rm -e ALLOW_LOCAL_RESET=true app node scripts/reset-db.js
+</code></pre>
+<p>Không chạy reset trên production hoặc database thật.</p>
+<h2 id="12-baseline-va-gioi-han-hien-tai">12. Baseline và giới hạn hiện tại</h2>
+<p>Baseline Docker/browser đã kiểm tra:</p>
+<ul>
+<li>Docker build pass với Node 20 và MongoDB 7.0.16.</li>
+<li><code>12/12</code> automated tests pass.</li>
+<li>Secure/lab API và UI flow chính pass.</li>
+<li>MongoDB stop/start và app restart recovery pass.</li>
+</ul>
+<p>Các điểm còn cần biết:</p>
+<ul>
+<li><code>/favicon.ico</code> hiện trả <code>404</code>, tạo một console error nhỏ khi load mới.</li>
+<li><code>npm audit</code> hiện báo <code>2 moderate vulnerabilities</code> qua Express/<code>qs</code>.</li>
+<li>Runtime image mặc định chạy bằng root; cần harden trước production.</li>
+<li>Project không tạo persistent session; <code>authenticated: true</code> chỉ là marker của lab demo.</li>
+</ul>
+    </main>
+    <p class="footer">Generated from RUN_AND_TEST.md. Keep the Markdown source for edits.</p>
+  </div>
+</body>
+</html>

@@ -1,0 +1,35 @@
+{
+  "generatedAt": "2026-09-12T15:16:49.5146055Z",
+  "productionContainer": "e9da26e09967939f451cfa3a040b2452242e88a5dd01597d4672155892fd45bb",
+  "production": {
+    "status": {
+      "status": 200,
+      "body": {
+        "ok": true,
+        "enabled": false,
+        "mode": "secure-only"
+      }
+    },
+    "labLogin": {
+      "status": 404,
+      "body": {
+        "ok": false,
+        "error": {
+          "code": "LAB_UNAVAILABLE",
+          "message": "The local lab route is unavailable in production mode"
+        }
+      }
+    }
+  },
+  "dockerNetwork": {
+    "status": 403,
+    "body": {
+      "ok": false,
+      "error": {
+        "code": "LAB_LOCAL_ONLY",
+        "message": "The local lab route accepts loopback requests only"
+      }
+    }
+  },
+  "networkRaw": "{\"status\":403,\"body\":{\"ok\":false,\"error\":{\"code\":\"LAB_LOCAL_ONLY\",\"message\":\"The local lab route accepts loopback requests only\"}}}"
+}

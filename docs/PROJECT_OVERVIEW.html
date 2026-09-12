@@ -1,0 +1,204 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light">
+  <title>Project Overview · Modern Database Attacks</title>
+  <style>
+:root {
+  color-scheme: light;
+  --bg: #f3f6fb;
+  --surface: #ffffff;
+  --ink: #172033;
+  --muted: #5b6b86;
+  --line: #d8dfeb;
+  --accent: #2457d6;
+  --code-bg: #111827;
+  --code-ink: #d8e3f4;
+}
+
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--ink);
+  font: 16px/1.7 Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+.page {
+  width: min(1120px, calc(100% - 32px));
+  margin: 0 auto;
+  padding: 32px 0 64px;
+}
+.site-header {
+  margin-bottom: 24px;
+  padding: 24px 28px;
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  background: var(--surface);
+  box-shadow: 0 12px 32px rgb(26 42 70 / 7%);
+}
+.site-header h1 { margin: 0 0 6px; font-size: clamp(1.6rem, 4vw, 2.4rem); line-height: 1.2; }
+.site-header p { margin: 0; color: var(--muted); }
+.doc-nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 18px;
+}
+.doc-nav a {
+  padding: 6px 10px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  color: var(--accent);
+  text-decoration: none;
+  font-size: .92rem;
+}
+.doc-nav a:hover, .doc-nav a.active { background: #e8efff; border-color: #b9c9f5; }
+.content {
+  padding: 32px clamp(20px, 5vw, 56px);
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  background: var(--surface);
+  box-shadow: 0 12px 32px rgb(26 42 70 / 7%);
+}
+h1, h2, h3, h4 { line-height: 1.25; scroll-margin-top: 24px; }
+h1 { margin-top: 0; font-size: clamp(2rem, 5vw, 3rem); }
+h2 { margin-top: 2.2em; padding-bottom: .35em; border-bottom: 1px solid var(--line); }
+h3 { margin-top: 1.8em; }
+a { color: var(--accent); }
+p, ul, ol, table, blockquote, pre { margin-top: 1em; }
+li + li { margin-top: .35em; }
+blockquote {
+  margin-left: 0;
+  padding: 10px 16px;
+  border-left: 4px solid #cc7a00;
+  background: #fff6df;
+  color: #6d4600;
+}
+code {
+  padding: .12em .35em;
+  border-radius: 5px;
+  background: #edf1f7;
+  color: #253552;
+  font-size: .92em;
+}
+pre {
+  padding: 16px 18px;
+  overflow-x: auto;
+  border-radius: 10px;
+  background: var(--code-bg);
+  color: var(--code-ink);
+  box-shadow: inset 0 0 0 1px rgb(255 255 255 / 6%);
+}
+pre code { padding: 0; background: transparent; color: inherit; }
+table { width: 100%; border-collapse: collapse; display: block; overflow-x: auto; }
+th, td { min-width: 140px; padding: 10px 12px; border: 1px solid var(--line); text-align: left; vertical-align: top; }
+th { background: #eef3fb; }
+hr { margin: 2em 0; border: 0; border-top: 1px solid var(--line); }
+img { max-width: 100%; height: auto; }
+.footer { margin-top: 20px; color: var(--muted); font-size: .9rem; text-align: center; }
+.doc-list { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 12px; padding: 0; list-style: none; }
+.doc-list a { display: block; padding: 16px; border: 1px solid var(--line); border-radius: 12px; background: #fbfcfe; text-decoration: none; }
+.doc-list a:hover { border-color: #9fb4ed; background: #f1f5ff; }
+@media (max-width: 640px) {
+  .page { width: min(100% - 20px, 1120px); padding-top: 10px; }
+  .site-header, .content { padding: 20px; border-radius: 12px; }
+  body { font-size: 15px; }
+}
+</style>
+</head>
+<body>
+  <div class="page">
+    <header class="site-header">
+      <h1>Modern Database Attacks</h1>
+      <p>Project documentation · HTML reader view</p>
+      <nav class="doc-nav" aria-label="Documentation"><a href="index.html">All docs</a><a href="API.html">API</a><a href="ARCHITECTURE.html">ARCHITECTURE</a><a href="DATABASE.html">DATABASE</a><a href="DEMO_GUIDE.html">DEMO GUIDE</a><a href="DEVELOPMENT.html">DEVELOPMENT</a><a class="active" aria-current="page" href="PROJECT_OVERVIEW.html">PROJECT OVERVIEW</a><a href="RUN_AND_TEST.html">RUN AND TEST</a><a href="SECURITY.html">SECURITY</a><a href="TESTING.html">TESTING</a></nav>
+    </header>
+    <main class="content">
+      <h1 id="project-overview">Project Overview</h1>
+<h2 id="1-problem-statement">1. Problem statement</h2>
+<p>A login endpoint often assumes that <code>username</code> and <code>password</code> arrive as scalar strings. JSON, however, can represent strings, objects, arrays, numbers, booleans and null values.</p>
+<p>If an application accepts an object where a string is expected and forwards that object into a MongoDB query, the database may interpret the object as a predicate or operator. The application has unintentionally allowed client input to influence query structure.</p>
+<p>This project turns that concept into a small local experiment with an intentionally isolated lab path and a corrected secure path.</p>
+<h2 id="2-research-questions">2. Research questions</h2>
+<ol>
+<li>What is the difference between a SQL query and a MongoDB query document?</li>
+<li>Which component first crosses the trust boundary when a password object reaches a database query?</li>
+<li>Why can a syntactically valid query still violate the security intent of a login form?</li>
+<li>Why is checking a password hash in the application safer than querying the password as a database predicate?</li>
+<li>Which tests prove that the secure path rejects the same malformed or malicious input?</li>
+</ol>
+<h2 id="3-scope">3. Scope</h2>
+<h3 id="in-scope">In scope</h3>
+<ul>
+<li>Local browser login form.</li>
+<li>Node.js HTTP server.</li>
+<li>MongoDB running locally or in Docker.</li>
+<li>Seeded synthetic users.</li>
+<li>One isolated lab path showing the unsafe query construction.</li>
+<li>One secure path using strict validation and password hashing.</li>
+<li>Request, query-shape and response evidence.</li>
+<li>Automated regression tests for normal and adversarial input types.</li>
+</ul>
+<h3 id="out-of-scope">Out of scope</h3>
+<ul>
+<li>Testing any third-party website or production account.</li>
+<li>Internet-facing deployment.</li>
+<li>Real customer data.</li>
+<li>Destructive database operations.</li>
+<li>Building a complete production identity platform.</li>
+<li>Treating one payload as a universal bypass for every MongoDB application.</li>
+</ul>
+<h2 id="4-actors-and-assets">4. Actors and assets</h2>
+<h3 id="actors">Actors</h3>
+<ul>
+<li><strong>Student or presenter:</strong> runs the local experiment and explains the result.</li>
+<li><strong>Normal user:</strong> submits valid login credentials.</li>
+<li><strong>Untrusted client:</strong> changes JSON types or fields before sending the request.</li>
+<li><strong>Application:</strong> validates input and constructs database operations.</li>
+<li><strong>MongoDB:</strong> evaluates the query document.</li>
+</ul>
+<h3 id="assets">Assets</h3>
+<ul>
+<li>Synthetic user records.</li>
+<li>Password hashes.</li>
+<li>Authentication result.</li>
+<li>Session or demonstration token, if implemented.</li>
+<li>Server logs and test evidence.</li>
+</ul>
+<h2 id="5-success-criteria">5. Success criteria</h2>
+<ul>
+<li>A clean machine can start MongoDB and the application using documented commands.</li>
+<li>A seeded synthetic user can log in with the correct password.</li>
+<li>An incorrect password is rejected.</li>
+<li>The isolated lab path visibly demonstrates the query-shape problem under the documented environment.</li>
+<li>The secure path rejects object, array, number and unexpected-field inputs.</li>
+<li>Passwords are not stored in plaintext in the secure collection.</li>
+<li>Tests cover both expected use and malformed input.</li>
+<li>No secret, real credential or public database endpoint is committed.</li>
+</ul>
+<h2 id="6-assumptions">6. Assumptions</h2>
+<ul>
+<li>The project uses a Node.js LTS release.</li>
+<li>MongoDB is reachable through a local connection string.</li>
+<li>The team owns the machine and database used for the experiment.</li>
+<li>The official MongoDB driver is used so the query construction is visible.</li>
+<li>The exact behavior of an operator input is recorded with the selected driver, database version and seed data.</li>
+</ul>
+<h2 id="7-important-terminology">7. Important terminology</h2>
+<ul>
+<li><strong>Data model:</strong> how information is represented and related.</li>
+<li><strong>Query document:</strong> a MongoDB object describing fields, values and predicates.</li>
+<li><strong>Operator:</strong> a database instruction such as a comparison or logical condition.</li>
+<li><strong>Authentication:</strong> proving an identity.</li>
+<li><strong>Authorization:</strong> deciding what an authenticated identity may do.</li>
+<li><strong>Validation:</strong> checking that input has the expected type, shape and allowed values.</li>
+<li><strong>Injection:</strong> allowing untrusted input to change the meaning or structure of a command or query.</li>
+</ul>
+    </main>
+    <p class="footer">Generated from PROJECT_OVERVIEW.md. Keep the Markdown source for edits.</p>
+  </div>
+</body>
+</html>

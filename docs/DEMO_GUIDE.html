@@ -1,0 +1,227 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light">
+  <title>Local Demonstration Guide · Modern Database Attacks</title>
+  <style>
+:root {
+  color-scheme: light;
+  --bg: #f3f6fb;
+  --surface: #ffffff;
+  --ink: #172033;
+  --muted: #5b6b86;
+  --line: #d8dfeb;
+  --accent: #2457d6;
+  --code-bg: #111827;
+  --code-ink: #d8e3f4;
+}
+
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--ink);
+  font: 16px/1.7 Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+.page {
+  width: min(1120px, calc(100% - 32px));
+  margin: 0 auto;
+  padding: 32px 0 64px;
+}
+.site-header {
+  margin-bottom: 24px;
+  padding: 24px 28px;
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  background: var(--surface);
+  box-shadow: 0 12px 32px rgb(26 42 70 / 7%);
+}
+.site-header h1 { margin: 0 0 6px; font-size: clamp(1.6rem, 4vw, 2.4rem); line-height: 1.2; }
+.site-header p { margin: 0; color: var(--muted); }
+.doc-nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 18px;
+}
+.doc-nav a {
+  padding: 6px 10px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  color: var(--accent);
+  text-decoration: none;
+  font-size: .92rem;
+}
+.doc-nav a:hover, .doc-nav a.active { background: #e8efff; border-color: #b9c9f5; }
+.content {
+  padding: 32px clamp(20px, 5vw, 56px);
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  background: var(--surface);
+  box-shadow: 0 12px 32px rgb(26 42 70 / 7%);
+}
+h1, h2, h3, h4 { line-height: 1.25; scroll-margin-top: 24px; }
+h1 { margin-top: 0; font-size: clamp(2rem, 5vw, 3rem); }
+h2 { margin-top: 2.2em; padding-bottom: .35em; border-bottom: 1px solid var(--line); }
+h3 { margin-top: 1.8em; }
+a { color: var(--accent); }
+p, ul, ol, table, blockquote, pre { margin-top: 1em; }
+li + li { margin-top: .35em; }
+blockquote {
+  margin-left: 0;
+  padding: 10px 16px;
+  border-left: 4px solid #cc7a00;
+  background: #fff6df;
+  color: #6d4600;
+}
+code {
+  padding: .12em .35em;
+  border-radius: 5px;
+  background: #edf1f7;
+  color: #253552;
+  font-size: .92em;
+}
+pre {
+  padding: 16px 18px;
+  overflow-x: auto;
+  border-radius: 10px;
+  background: var(--code-bg);
+  color: var(--code-ink);
+  box-shadow: inset 0 0 0 1px rgb(255 255 255 / 6%);
+}
+pre code { padding: 0; background: transparent; color: inherit; }
+table { width: 100%; border-collapse: collapse; display: block; overflow-x: auto; }
+th, td { min-width: 140px; padding: 10px 12px; border: 1px solid var(--line); text-align: left; vertical-align: top; }
+th { background: #eef3fb; }
+hr { margin: 2em 0; border: 0; border-top: 1px solid var(--line); }
+img { max-width: 100%; height: auto; }
+.footer { margin-top: 20px; color: var(--muted); font-size: .9rem; text-align: center; }
+.doc-list { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 12px; padding: 0; list-style: none; }
+.doc-list a { display: block; padding: 16px; border: 1px solid var(--line); border-radius: 12px; background: #fbfcfe; text-decoration: none; }
+.doc-list a:hover { border-color: #9fb4ed; background: #f1f5ff; }
+@media (max-width: 640px) {
+  .page { width: min(100% - 20px, 1120px); padding-top: 10px; }
+  .site-header, .content { padding: 20px; border-radius: 12px; }
+  body { font-size: 15px; }
+}
+</style>
+</head>
+<body>
+  <div class="page">
+    <header class="site-header">
+      <h1>Modern Database Attacks</h1>
+      <p>Project documentation · HTML reader view</p>
+      <nav class="doc-nav" aria-label="Documentation"><a href="index.html">All docs</a><a href="API.html">API</a><a href="ARCHITECTURE.html">ARCHITECTURE</a><a href="DATABASE.html">DATABASE</a><a class="active" aria-current="page" href="DEMO_GUIDE.html">DEMO GUIDE</a><a href="DEVELOPMENT.html">DEVELOPMENT</a><a href="PROJECT_OVERVIEW.html">PROJECT OVERVIEW</a><a href="RUN_AND_TEST.html">RUN AND TEST</a><a href="SECURITY.html">SECURITY</a><a href="TESTING.html">TESTING</a></nav>
+    </header>
+    <main class="content">
+      <h1 id="local-demonstration-guide">Local Demonstration Guide</h1>
+<h2 id="1-purpose">1. Purpose</h2>
+<p>Show a repeatable local experiment:</p>
+<ol>
+<li>A normal MongoDB-backed login form.</li>
+<li>Correct and incorrect scalar credential behavior.</li>
+<li>A structured payload sent as an object.</li>
+<li>The observed result in the isolated lab route.</li>
+<li>The secure route rejecting the same object.</li>
+</ol>
+<p>Use only the synthetic local account.</p>
+<h2 id="2-preparation">2. Preparation</h2>
+<p>Host workflow:</p>
+<pre><code class="language-bash">npm install
+docker compose up -d mongodb
+npm run seed -- --lab
+</code></pre>
+<p>Set LAB_MODE=true in .env and start:</p>
+<pre><code class="language-bash">npm start
+</code></pre>
+<p>Docker workflow:</p>
+<pre><code class="language-bash">docker compose -f docker-compose.yml -f docker-compose.lab.yml up --build -d
+docker compose -f docker-compose.yml -f docker-compose.lab.yml run --rm app node scripts/seed.js --lab
+</code></pre>
+<p>Check:</p>
+<pre><code class="language-bash">curl http://127.0.0.1:3000/api/health
+</code></pre>
+<h2 id="3-demonstration-order">3. Demonstration order</h2>
+<h3 id="step-a-normal-secure-login">Step A: normal secure login</h3>
+<p>Select Secure comparison.</p>
+<p>Use:</p>
+<ul>
+<li>Username: alice</li>
+<li>Password: synthetic-demo-password</li>
+</ul>
+<p>Show HTTP 200 and the public username/role only.</p>
+<h3 id="step-b-wrong-password">Step B: wrong password</h3>
+<p>Keep the username and enter a wrong string. Show HTTP 401 and the generic invalid-credentials response.</p>
+<h3 id="step-c-exact-brief-shaped-object">Step C: exact brief-shaped object</h3>
+<p>Select Local lab observation and choose the assignment-shaped object. The browser sends:</p>
+<pre><code class="language-json">{
+  &quot;username&quot;: &quot;alice&quot;,
+  &quot;password&quot;: {
+    &quot;gt&quot;: &quot;&quot;
+  }
+}
+</code></pre>
+<p>Record the status and response. This spelling must not be silently replaced.</p>
+<h3 id="step-d-mongodb-operator-object">Step D: MongoDB operator object</h3>
+<p>Choose the operator variant. The browser sends:</p>
+<pre><code class="language-json">{
+  &quot;username&quot;: &quot;alice&quot;,
+  &quot;password&quot;: {
+    &quot;$gt&quot;: &quot;&quot;
+  }
+}
+</code></pre>
+<p>Record the status, input type, payload variant and authenticated marker. The result is valid evidence only for the documented local environment.</p>
+<h3 id="step-e-secure-comparison">Step E: secure comparison</h3>
+<p>Send an object password to POST /api/auth/login. The secure route should return HTTP 400 before database authentication because the field is not a string.</p>
+<h2 id="4-what-to-explain">4. What to explain</h2>
+<ul>
+<li>JSON has multiple value types; a password field is not automatically a string.</li>
+<li>The application is responsible for validating the type and owning the query shape.</li>
+<li>The lab route intentionally shows the unsafe construction with synthetic data.</li>
+<li>The secure route finds by username and verifies a hash in application code.</li>
+<li>A local result does not prove universal behavior or production exposure.</li>
+</ul>
+<h2 id="5-evidence-to-capture">5. Evidence to capture</h2>
+<ul>
+<li>Browser form and mode label.</li>
+<li>Health response.</li>
+<li>Correct credential success.</li>
+<li>Wrong credential failure.</li>
+<li>Exact brief-shaped request.</li>
+<li>Operator-shaped request.</li>
+<li>Successful lab response if produced.</li>
+<li>Secure-route object rejection.</li>
+<li>Node.js, MongoDB and driver versions.</li>
+<li>Relevant commit and README commands.</li>
+</ul>
+<p>Do not capture real credentials, tokens, connection strings or personal data.</p>
+<h2 id="6-recovery-plan">6. Recovery plan</h2>
+<p>If a live run fails:</p>
+<ul>
+<li>Use the saved curl output or screen recording.</li>
+<li>Show the integration test output.</li>
+<li>Check Docker status and the configured database URI.</li>
+<li>Confirm that the payload is an object, not escaped text.</li>
+<li>Confirm LAB_MODE and local host.</li>
+<li>Explain the environment limitation instead of testing an external target.</li>
+</ul>
+<h2 id="7-cleanup">7. Cleanup</h2>
+<pre><code class="language-bash">docker compose down
+</code></pre>
+<p>Then:</p>
+<ul>
+<li>Set LAB_MODE=false.</li>
+<li>Remove temporary evidence containing credentials.</li>
+<li>Check git status.</li>
+<li>Confirm .env is ignored.</li>
+<li>Do not commit database volumes or logs.</li>
+</ul>
+    </main>
+    <p class="footer">Generated from DEMO_GUIDE.md. Keep the Markdown source for edits.</p>
+  </div>
+</body>
+</html>
