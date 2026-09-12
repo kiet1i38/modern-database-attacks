@@ -924,6 +924,7 @@ Suggested commit messages:
 - [DONE] Unit and security-boundary tests exist.
 - [DONE] Real MongoDB integration test exists.
 - [DONE] GitHub Actions workflow exists for automated checks.
+- [DONE] GitHub Actions passed unit tests, security tests, MongoDB integration and Docker/Compose validation: https://github.com/kiet1i38/modern-database-attacks/actions/runs/34699283730.
 - [DONE] README and supporting docs contain clone, run and test instructions.
 
 ### In progress
@@ -985,3 +986,4 @@ Do not mark G1, G2 or G3 as complete from source inspection alone. The next stat
 | 2026-09-12 | Added runnable Node.js application, Docker Compose, seed scripts, browser client, guarded lab route, secure route and tests. |
 | 2026-09-12 | Added GitHub Actions checks for unit, security and MongoDB integration tests. |
 | 2026-09-12 | Added package-lock.json and switched Docker to npm ci. |
+| 2026-09-12 | Added Docker/Compose validation to CI and recorded a successful run. |
