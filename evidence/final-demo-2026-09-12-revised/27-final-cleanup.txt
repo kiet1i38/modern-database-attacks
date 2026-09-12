@@ -1,0 +1,7 @@
+--- docker compose down ---
+--- remaining project containers ---
+--- native MongoDB port 27017 ---
+
+LocalAddress LocalPort OwningProcess
+------------ --------- -------------
+127.0.0.1        27017          6364
