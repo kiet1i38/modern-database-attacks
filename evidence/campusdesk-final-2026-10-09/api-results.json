@@ -1,0 +1,944 @@
+{
+  "generatedAt": "2026-10-08T21:23:46.871Z",
+  "environment": "real Docker MySQL/MongoDB via HTTP; synthetic data only",
+  "total": 187,
+  "passed": 187,
+  "failed": 0,
+  "results": [
+    {
+      "variant": "sql-unsafe",
+      "name": "health is real database ready",
+      "pass": true
+    },
+    {
+      "variant": "sql-unsafe",
+      "name": "configuration is fixed per server",
+      "pass": true
+    },
+    {
+      "variant": "sql-unsafe",
+      "name": "anonymous cannot access dashboard",
+      "pass": true
+    },
+    {
+      "variant": "sql-unsafe",
+      "name": "CSRF required at login",
+      "pass": true
+    },
+    {
+      "variant": "sql-unsafe",
+      "name": "cross-origin writes rejected",
+      "pass": true
+    },
+    {
+      "variant": "sql-unsafe",
+      "name": "multibyte invalid CSRF does not crash server",
+      "pass": true
+    },
+    {
+      "variant": "sql-unsafe",
+      "name": "malformed JSON rejected",
+      "pass": true
+    },
+    {
+      "variant": "sql-unsafe",
+      "name": "oversized body rejected",
+      "pass": true
+    },
+    {
+      "variant": "sql-unsafe",
+      "name": "object username rejected",
+      "pass": true
+    },
+    {
+      "variant": "sql-unsafe",
+      "name": "client role is not accepted",
+      "pass": true
+    },
+    {
+      "variant": "sql-unsafe",
+      "name": "wrong password denied without session",
+      "pass": true
+    },
+    {
+      "variant": "sql-unsafe",
+      "name": "gt without dollar is rejected",
+      "pass": true
+    },
+    {
+      "variant": "sql-unsafe",
+      "name": "server-side JS operator excluded from teaching lab",
+      "pass": true
+    },
+    {
+      "variant": "sql-unsafe",
+      "name": "payload tautology: real admin bypass",
+      "pass": true
+    },
+    {
+      "variant": "sql-unsafe",
+      "name": "payload comment: real admin bypass",
+      "pass": true
+    },
+    {
+      "variant": "sql-unsafe",
+      "name": "payload hash-comment: real admin bypass",
+      "pass": true
+    },
+    {
+      "variant": "sql-unsafe",
+      "name": "payload target-admin: real admin bypass",
+      "pass": true
+    },
+    {
+      "variant": "sql-unsafe",
+      "name": "malformed SQL is reported without stack",
+      "pass": true
+    },
+    {
+      "variant": "sql-unsafe",
+      "name": "normal admin login rotates session",
+      "pass": true
+    },
+    {
+      "variant": "sql-unsafe",
+      "name": "refresh session restores real admin",
+      "pass": true
+    },
+    {
+      "variant": "sql-unsafe",
+      "name": "public user never leaks password/hash",
+      "pass": true
+    },
+    {
+      "variant": "sql-unsafe",
+      "name": "dashboard metrics use database",
+      "pass": true
+    },
+    {
+      "variant": "sql-unsafe",
+      "name": "tickets paginate and filter",
+      "pass": true
+    },
+    {
+      "variant": "sql-unsafe",
+      "name": "unknown ticket is 404",
+      "pass": true
+    },
+    {
+      "variant": "sql-unsafe",
+      "name": "admin can change ticket status, invalid enum rejected",
+      "pass": true
+    },
+    {
+      "variant": "sql-unsafe",
+      "name": "audit contains metadata only",
+      "pass": true
+    },
+    {
+      "variant": "sql-unsafe",
+      "name": "admin cannot lock itself",
+      "pass": true
+    },
+    {
+      "variant": "sql-unsafe",
+      "name": "admin creates usable user and rejects duplicate",
+      "pass": true
+    },
+    {
+      "variant": "sql-unsafe",
+      "name": "tautology still returns real admin after creating extra accounts",
+      "pass": true
+    },
+    {
+      "variant": "sql-unsafe",
+      "name": "normal student login creates user session",
+      "pass": true
+    },
+    {
+      "variant": "sql-unsafe",
+      "name": "student denied /admin/users",
+      "pass": true
+    },
+    {
+      "variant": "sql-unsafe",
+      "name": "student denied /admin/audit",
+      "pass": true
+    },
+    {
+      "variant": "sql-unsafe",
+      "name": "student cannot create users or change ticket status",
+      "pass": true
+    },
+    {
+      "variant": "sql-unsafe",
+      "name": "student sees only own metrics/tickets",
+      "pass": true
+    },
+    {
+      "variant": "sql-unsafe",
+      "name": "other student's ticket denied by backend",
+      "pass": true
+    },
+    {
+      "variant": "sql-unsafe",
+      "name": "profile cannot escalate role or id",
+      "pass": true
+    },
+    {
+      "variant": "sql-unsafe",
+      "name": "profile update persists",
+      "pass": true
+    },
+    {
+      "variant": "sql-unsafe",
+      "name": "ticket create preserves literal injection text and ignores forged owner",
+      "pass": true
+    },
+    {
+      "variant": "sql-unsafe",
+      "name": "second user cannot view created ticket",
+      "pass": true
+    },
+    {
+      "variant": "sql-unsafe",
+      "name": "cookie role spoof does not grant admin",
+      "pass": true
+    },
+    {
+      "variant": "sql-unsafe",
+      "name": "locked accounts lose already-issued session and cannot log in",
+      "pass": true
+    },
+    {
+      "variant": "sql-unsafe",
+      "name": "new account lock type validation",
+      "pass": true
+    },
+    {
+      "variant": "sql-unsafe",
+      "name": "logout destroys server-side session",
+      "pass": true
+    },
+    {
+      "variant": "sql-unsafe",
+      "name": "HTTP security and no-store headers present",
+      "pass": true
+    },
+    {
+      "variant": "sql-safe",
+      "name": "health is real database ready",
+      "pass": true
+    },
+    {
+      "variant": "sql-safe",
+      "name": "configuration is fixed per server",
+      "pass": true
+    },
+    {
+      "variant": "sql-safe",
+      "name": "anonymous cannot access dashboard",
+      "pass": true
+    },
+    {
+      "variant": "sql-safe",
+      "name": "CSRF required at login",
+      "pass": true
+    },
+    {
+      "variant": "sql-safe",
+      "name": "cross-origin writes rejected",
+      "pass": true
+    },
+    {
+      "variant": "sql-safe",
+      "name": "multibyte invalid CSRF does not crash server",
+      "pass": true
+    },
+    {
+      "variant": "sql-safe",
+      "name": "malformed JSON rejected",
+      "pass": true
+    },
+    {
+      "variant": "sql-safe",
+      "name": "oversized body rejected",
+      "pass": true
+    },
+    {
+      "variant": "sql-safe",
+      "name": "object username rejected",
+      "pass": true
+    },
+    {
+      "variant": "sql-safe",
+      "name": "client role is not accepted",
+      "pass": true
+    },
+    {
+      "variant": "sql-safe",
+      "name": "wrong password denied without session",
+      "pass": true
+    },
+    {
+      "variant": "sql-safe",
+      "name": "gt without dollar is rejected",
+      "pass": true
+    },
+    {
+      "variant": "sql-safe",
+      "name": "server-side JS operator excluded from teaching lab",
+      "pass": true
+    },
+    {
+      "variant": "sql-safe",
+      "name": "payload tautology: blocked",
+      "pass": true
+    },
+    {
+      "variant": "sql-safe",
+      "name": "payload comment: blocked",
+      "pass": true
+    },
+    {
+      "variant": "sql-safe",
+      "name": "payload hash-comment: blocked",
+      "pass": true
+    },
+    {
+      "variant": "sql-safe",
+      "name": "payload target-admin: blocked",
+      "pass": true
+    },
+    {
+      "variant": "sql-safe",
+      "name": "normal admin login rotates session",
+      "pass": true
+    },
+    {
+      "variant": "sql-safe",
+      "name": "refresh session restores real admin",
+      "pass": true
+    },
+    {
+      "variant": "sql-safe",
+      "name": "public user never leaks password/hash",
+      "pass": true
+    },
+    {
+      "variant": "sql-safe",
+      "name": "dashboard metrics use database",
+      "pass": true
+    },
+    {
+      "variant": "sql-safe",
+      "name": "tickets paginate and filter",
+      "pass": true
+    },
+    {
+      "variant": "sql-safe",
+      "name": "unknown ticket is 404",
+      "pass": true
+    },
+    {
+      "variant": "sql-safe",
+      "name": "admin can change ticket status, invalid enum rejected",
+      "pass": true
+    },
+    {
+      "variant": "sql-safe",
+      "name": "audit contains metadata only",
+      "pass": true
+    },
+    {
+      "variant": "sql-safe",
+      "name": "admin cannot lock itself",
+      "pass": true
+    },
+    {
+      "variant": "sql-safe",
+      "name": "admin creates usable user and rejects duplicate",
+      "pass": true
+    },
+    {
+      "variant": "sql-safe",
+      "name": "normal student login creates user session",
+      "pass": true
+    },
+    {
+      "variant": "sql-safe",
+      "name": "student denied /admin/users",
+      "pass": true
+    },
+    {
+      "variant": "sql-safe",
+      "name": "student denied /admin/audit",
+      "pass": true
+    },
+    {
+      "variant": "sql-safe",
+      "name": "student cannot create users or change ticket status",
+      "pass": true
+    },
+    {
+      "variant": "sql-safe",
+      "name": "student sees only own metrics/tickets",
+      "pass": true
+    },
+    {
+      "variant": "sql-safe",
+      "name": "other student's ticket denied by backend",
+      "pass": true
+    },
+    {
+      "variant": "sql-safe",
+      "name": "profile cannot escalate role or id",
+      "pass": true
+    },
+    {
+      "variant": "sql-safe",
+      "name": "profile update persists",
+      "pass": true
+    },
+    {
+      "variant": "sql-safe",
+      "name": "ticket create preserves literal injection text and ignores forged owner",
+      "pass": true
+    },
+    {
+      "variant": "sql-safe",
+      "name": "second user cannot view created ticket",
+      "pass": true
+    },
+    {
+      "variant": "sql-safe",
+      "name": "cookie role spoof does not grant admin",
+      "pass": true
+    },
+    {
+      "variant": "sql-safe",
+      "name": "locked accounts lose already-issued session and cannot log in",
+      "pass": true
+    },
+    {
+      "variant": "sql-safe",
+      "name": "new account lock type validation",
+      "pass": true
+    },
+    {
+      "variant": "sql-safe",
+      "name": "logout destroys server-side session",
+      "pass": true
+    },
+    {
+      "variant": "sql-safe",
+      "name": "HTTP security and no-store headers present",
+      "pass": true
+    },
+    {
+      "variant": "mongo-unsafe",
+      "name": "health is real database ready",
+      "pass": true
+    },
+    {
+      "variant": "mongo-unsafe",
+      "name": "configuration is fixed per server",
+      "pass": true
+    },
+    {
+      "variant": "mongo-unsafe",
+      "name": "anonymous cannot access dashboard",
+      "pass": true
+    },
+    {
+      "variant": "mongo-unsafe",
+      "name": "CSRF required at login",
+      "pass": true
+    },
+    {
+      "variant": "mongo-unsafe",
+      "name": "cross-origin writes rejected",
+      "pass": true
+    },
+    {
+      "variant": "mongo-unsafe",
+      "name": "multibyte invalid CSRF does not crash server",
+      "pass": true
+    },
+    {
+      "variant": "mongo-unsafe",
+      "name": "malformed JSON rejected",
+      "pass": true
+    },
+    {
+      "variant": "mongo-unsafe",
+      "name": "oversized body rejected",
+      "pass": true
+    },
+    {
+      "variant": "mongo-unsafe",
+      "name": "object username rejected",
+      "pass": true
+    },
+    {
+      "variant": "mongo-unsafe",
+      "name": "client role is not accepted",
+      "pass": true
+    },
+    {
+      "variant": "mongo-unsafe",
+      "name": "wrong password denied without session",
+      "pass": true
+    },
+    {
+      "variant": "mongo-unsafe",
+      "name": "gt without dollar is rejected",
+      "pass": true
+    },
+    {
+      "variant": "mongo-unsafe",
+      "name": "server-side JS operator excluded from teaching lab",
+      "pass": true
+    },
+    {
+      "variant": "mongo-unsafe",
+      "name": "payload gt: real admin bypass",
+      "pass": true
+    },
+    {
+      "variant": "mongo-unsafe",
+      "name": "payload gte: real admin bypass",
+      "pass": true
+    },
+    {
+      "variant": "mongo-unsafe",
+      "name": "payload ne: real admin bypass",
+      "pass": true
+    },
+    {
+      "variant": "mongo-unsafe",
+      "name": "payload regex: real admin bypass",
+      "pass": true
+    },
+    {
+      "variant": "mongo-unsafe",
+      "name": "payload nin: real admin bypass",
+      "pass": true
+    },
+    {
+      "variant": "mongo-unsafe",
+      "name": "payload exists: real admin bypass",
+      "pass": true
+    },
+    {
+      "variant": "mongo-unsafe",
+      "name": "operator cannot authenticate nonexistent username",
+      "pass": true
+    },
+    {
+      "variant": "mongo-unsafe",
+      "name": "normal admin login rotates session",
+      "pass": true
+    },
+    {
+      "variant": "mongo-unsafe",
+      "name": "refresh session restores real admin",
+      "pass": true
+    },
+    {
+      "variant": "mongo-unsafe",
+      "name": "public user never leaks password/hash",
+      "pass": true
+    },
+    {
+      "variant": "mongo-unsafe",
+      "name": "dashboard metrics use database",
+      "pass": true
+    },
+    {
+      "variant": "mongo-unsafe",
+      "name": "tickets paginate and filter",
+      "pass": true
+    },
+    {
+      "variant": "mongo-unsafe",
+      "name": "unknown ticket is 404",
+      "pass": true
+    },
+    {
+      "variant": "mongo-unsafe",
+      "name": "admin can change ticket status, invalid enum rejected",
+      "pass": true
+    },
+    {
+      "variant": "mongo-unsafe",
+      "name": "audit contains metadata only",
+      "pass": true
+    },
+    {
+      "variant": "mongo-unsafe",
+      "name": "admin cannot lock itself",
+      "pass": true
+    },
+    {
+      "variant": "mongo-unsafe",
+      "name": "admin creates usable user and rejects duplicate",
+      "pass": true
+    },
+    {
+      "variant": "mongo-unsafe",
+      "name": "normal student login creates user session",
+      "pass": true
+    },
+    {
+      "variant": "mongo-unsafe",
+      "name": "student denied /admin/users",
+      "pass": true
+    },
+    {
+      "variant": "mongo-unsafe",
+      "name": "student denied /admin/audit",
+      "pass": true
+    },
+    {
+      "variant": "mongo-unsafe",
+      "name": "student cannot create users or change ticket status",
+      "pass": true
+    },
+    {
+      "variant": "mongo-unsafe",
+      "name": "student sees only own metrics/tickets",
+      "pass": true
+    },
+    {
+      "variant": "mongo-unsafe",
+      "name": "other student's ticket denied by backend",
+      "pass": true
+    },
+    {
+      "variant": "mongo-unsafe",
+      "name": "profile cannot escalate role or id",
+      "pass": true
+    },
+    {
+      "variant": "mongo-unsafe",
+      "name": "profile update persists",
+      "pass": true
+    },
+    {
+      "variant": "mongo-unsafe",
+      "name": "ticket create preserves literal injection text and ignores forged owner",
+      "pass": true
+    },
+    {
+      "variant": "mongo-unsafe",
+      "name": "second user cannot view created ticket",
+      "pass": true
+    },
+    {
+      "variant": "mongo-unsafe",
+      "name": "cookie role spoof does not grant admin",
+      "pass": true
+    },
+    {
+      "variant": "mongo-unsafe",
+      "name": "locked accounts lose already-issued session and cannot log in",
+      "pass": true
+    },
+    {
+      "variant": "mongo-unsafe",
+      "name": "new account lock type validation",
+      "pass": true
+    },
+    {
+      "variant": "mongo-unsafe",
+      "name": "logout destroys server-side session",
+      "pass": true
+    },
+    {
+      "variant": "mongo-unsafe",
+      "name": "HTTP security and no-store headers present",
+      "pass": true
+    },
+    {
+      "variant": "mongo-safe",
+      "name": "health is real database ready",
+      "pass": true
+    },
+    {
+      "variant": "mongo-safe",
+      "name": "configuration is fixed per server",
+      "pass": true
+    },
+    {
+      "variant": "mongo-safe",
+      "name": "anonymous cannot access dashboard",
+      "pass": true
+    },
+    {
+      "variant": "mongo-safe",
+      "name": "CSRF required at login",
+      "pass": true
+    },
+    {
+      "variant": "mongo-safe",
+      "name": "cross-origin writes rejected",
+      "pass": true
+    },
+    {
+      "variant": "mongo-safe",
+      "name": "multibyte invalid CSRF does not crash server",
+      "pass": true
+    },
+    {
+      "variant": "mongo-safe",
+      "name": "malformed JSON rejected",
+      "pass": true
+    },
+    {
+      "variant": "mongo-safe",
+      "name": "oversized body rejected",
+      "pass": true
+    },
+    {
+      "variant": "mongo-safe",
+      "name": "object username rejected",
+      "pass": true
+    },
+    {
+      "variant": "mongo-safe",
+      "name": "client role is not accepted",
+      "pass": true
+    },
+    {
+      "variant": "mongo-safe",
+      "name": "wrong password denied without session",
+      "pass": true
+    },
+    {
+      "variant": "mongo-safe",
+      "name": "gt without dollar is rejected",
+      "pass": true
+    },
+    {
+      "variant": "mongo-safe",
+      "name": "server-side JS operator excluded from teaching lab",
+      "pass": true
+    },
+    {
+      "variant": "mongo-safe",
+      "name": "payload gt: blocked",
+      "pass": true
+    },
+    {
+      "variant": "mongo-safe",
+      "name": "payload gte: blocked",
+      "pass": true
+    },
+    {
+      "variant": "mongo-safe",
+      "name": "payload ne: blocked",
+      "pass": true
+    },
+    {
+      "variant": "mongo-safe",
+      "name": "payload regex: blocked",
+      "pass": true
+    },
+    {
+      "variant": "mongo-safe",
+      "name": "payload nin: blocked",
+      "pass": true
+    },
+    {
+      "variant": "mongo-safe",
+      "name": "payload exists: blocked",
+      "pass": true
+    },
+    {
+      "variant": "mongo-safe",
+      "name": "normal admin login rotates session",
+      "pass": true
+    },
+    {
+      "variant": "mongo-safe",
+      "name": "refresh session restores real admin",
+      "pass": true
+    },
+    {
+      "variant": "mongo-safe",
+      "name": "public user never leaks password/hash",
+      "pass": true
+    },
+    {
+      "variant": "mongo-safe",
+      "name": "dashboard metrics use database",
+      "pass": true
+    },
+    {
+      "variant": "mongo-safe",
+      "name": "tickets paginate and filter",
+      "pass": true
+    },
+    {
+      "variant": "mongo-safe",
+      "name": "unknown ticket is 404",
+      "pass": true
+    },
+    {
+      "variant": "mongo-safe",
+      "name": "admin can change ticket status, invalid enum rejected",
+      "pass": true
+    },
+    {
+      "variant": "mongo-safe",
+      "name": "audit contains metadata only",
+      "pass": true
+    },
+    {
+      "variant": "mongo-safe",
+      "name": "admin cannot lock itself",
+      "pass": true
+    },
+    {
+      "variant": "mongo-safe",
+      "name": "admin creates usable user and rejects duplicate",
+      "pass": true
+    },
+    {
+      "variant": "mongo-safe",
+      "name": "normal student login creates user session",
+      "pass": true
+    },
+    {
+      "variant": "mongo-safe",
+      "name": "student denied /admin/users",
+      "pass": true
+    },
+    {
+      "variant": "mongo-safe",
+      "name": "student denied /admin/audit",
+      "pass": true
+    },
+    {
+      "variant": "mongo-safe",
+      "name": "student cannot create users or change ticket status",
+      "pass": true
+    },
+    {
+      "variant": "mongo-safe",
+      "name": "student sees only own metrics/tickets",
+      "pass": true
+    },
+    {
+      "variant": "mongo-safe",
+      "name": "other student's ticket denied by backend",
+      "pass": true
+    },
+    {
+      "variant": "mongo-safe",
+      "name": "profile cannot escalate role or id",
+      "pass": true
+    },
+    {
+      "variant": "mongo-safe",
+      "name": "profile update persists",
+      "pass": true
+    },
+    {
+      "variant": "mongo-safe",
+      "name": "ticket create preserves literal injection text and ignores forged owner",
+      "pass": true
+    },
+    {
+      "variant": "mongo-safe",
+      "name": "second user cannot view created ticket",
+      "pass": true
+    },
+    {
+      "variant": "mongo-safe",
+      "name": "cookie role spoof does not grant admin",
+      "pass": true
+    },
+    {
+      "variant": "mongo-safe",
+      "name": "locked accounts lose already-issued session and cannot log in",
+      "pass": true
+    },
+    {
+      "variant": "mongo-safe",
+      "name": "new account lock type validation",
+      "pass": true
+    },
+    {
+      "variant": "mongo-safe",
+      "name": "logout destroys server-side session",
+      "pass": true
+    },
+    {
+      "variant": "mongo-safe",
+      "name": "HTTP security and no-store headers present",
+      "pass": true
+    },
+    {
+      "variant": "sql-safe",
+      "name": "session cookie from sql-unsafe cannot authenticate here",
+      "pass": true
+    },
+    {
+      "variant": "mongo-unsafe",
+      "name": "session cookie from sql-unsafe cannot authenticate here",
+      "pass": true
+    },
+    {
+      "variant": "mongo-safe",
+      "name": "session cookie from sql-unsafe cannot authenticate here",
+      "pass": true
+    },
+    {
+      "variant": "sql-unsafe",
+      "name": "session cookie from sql-safe cannot authenticate here",
+      "pass": true
+    },
+    {
+      "variant": "mongo-unsafe",
+      "name": "session cookie from sql-safe cannot authenticate here",
+      "pass": true
+    },
+    {
+      "variant": "mongo-safe",
+      "name": "session cookie from sql-safe cannot authenticate here",
+      "pass": true
+    },
+    {
+      "variant": "sql-unsafe",
+      "name": "session cookie from mongo-unsafe cannot authenticate here",
+      "pass": true
+    },
+    {
+      "variant": "sql-safe",
+      "name": "session cookie from mongo-unsafe cannot authenticate here",
+      "pass": true
+    },
+    {
+      "variant": "mongo-safe",
+      "name": "session cookie from mongo-unsafe cannot authenticate here",
+      "pass": true
+    },
+    {
+      "variant": "sql-unsafe",
+      "name": "session cookie from mongo-safe cannot authenticate here",
+      "pass": true
+    },
+    {
+      "variant": "sql-safe",
+      "name": "session cookie from mongo-safe cannot authenticate here",
+      "pass": true
+    },
+    {
+      "variant": "mongo-unsafe",
+      "name": "session cookie from mongo-safe cannot authenticate here",
+      "pass": true
+    }
+  ]
+}

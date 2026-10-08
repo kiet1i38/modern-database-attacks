@@ -1,46 +1,78 @@
+name: campusdesk
+x-app: &app
+  build: .
+  restart: unless-stopped
+  init: true
+  volumes:
+    - ./evidence:/app/evidence:ro
+  environment: &env
+    NODE_ENV: development
+    HOST: 0.0.0.0
+    PORT: 3000
+    LAB_LOCAL_ONLY: "true"
+    MYSQL_HOST: mysql
+    MYSQL_USER: campus
+    MYSQL_PASSWORD: campus-local-demo-only
+    MONGODB_URI: mongodb://mongodb:27017
 services:
-  mongodb:
-    image: mongo:7.0.16
-    container_name: modern-database-attacks-mongodb
-    restart: unless-stopped
-    ports:
-      - "127.0.0.1:27017:27017"
+  mysql:
+    image: mysql:8.4
+    environment:
+      MYSQL_ROOT_PASSWORD: campus-root-local-demo-only
     volumes:
-      - mongodb_data:/data/db
-    command: ["mongod", "--bind_ip_all"]
+      - mysql_data:/var/lib/mysql
+      - ./docker/mysql-init.sql:/docker-entrypoint-initdb.d/campus.sql:ro
     healthcheck:
-      test:
-        [
-          "CMD-SHELL",
-          "mongosh --quiet --eval \"db.runCommand({ ping: 1 }).ok\" | grep 1"
-        ]
+      test: ["CMD-SHELL", "mysql --protocol=TCP -h 127.0.0.1 -uroot -p$$MYSQL_ROOT_PASSWORD -e 'SELECT 1' --silent"]
       interval: 5s
       timeout: 5s
-      retries: 20
-
-  app:
-    build:
-      context: .
-      dockerfile: Dockerfile
-    container_name: modern-database-attacks-app
+      retries: 40
     restart: unless-stopped
-    depends_on:
-      mongodb:
-        condition: service_healthy
-    ports:
-      - "127.0.0.1:3000:3000"
+  mongodb:
+    image: mongo:7.0.16
+    volumes: [mongo_data:/data/db]
+    healthcheck:
+      test: ["CMD", "mongosh", "--quiet", "--eval", "quit(db.runCommand({ping:1}).ok ? 0 : 1)"]
+      interval: 5s
+      timeout: 5s
+      retries: 30
+    restart: unless-stopped
+  sql-unsafe:
+    <<: *app
     environment:
-      NODE_ENV: development
-      HOST: 0.0.0.0
-      PORT: 3000
-      MONGODB_URI: mongodb://mongodb:27017
-      MONGODB_DATABASE: modern_database_attacks
-      MONGODB_TEST_DATABASE: modern_database_attacks_test
-      LAB_MODE: "false"
-      JSON_BODY_LIMIT: 16kb
-      DEMO_USERNAME: alice
-      SECURE_DEMO_PASSWORD: synthetic-demo-password
-      LAB_DEMO_PASSWORD: lab-only-demo-password
-
+      <<: *env
+      VARIANT: sql-unsafe
+      SESSION_SECRET: sql-unsafe-local-session-secret-not-for-production
+    ports: ["127.0.0.1:3001:3000"]
+    depends_on:
+      mysql: {condition: service_healthy}
+  sql-safe:
+    <<: *app
+    environment:
+      <<: *env
+      VARIANT: sql-safe
+      SESSION_SECRET: sql-safe-local-session-secret-not-for-production
+    ports: ["127.0.0.1:3002:3000"]
+    depends_on:
+      mysql: {condition: service_healthy}
+  mongo-unsafe:
+    <<: *app
+    environment:
+      <<: *env
+      VARIANT: mongo-unsafe
+      SESSION_SECRET: mongo-unsafe-local-session-secret-not-for-production
+    ports: ["127.0.0.1:3003:3000"]
+    depends_on:
+      mongodb: {condition: service_healthy}
+  mongo-safe:
+    <<: *app
+    environment:
+      <<: *env
+      VARIANT: mongo-safe
+      SESSION_SECRET: mongo-safe-local-session-secret-not-for-production
+    ports: ["127.0.0.1:3004:3000"]
+    depends_on:
+      mongodb: {condition: service_healthy}
 volumes:
-  mongodb_data:
+  mysql_data:
+  mongo_data:

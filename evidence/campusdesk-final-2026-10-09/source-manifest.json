@@ -1,0 +1,122 @@
+{
+  "generatedAt": "2026-10-08T21:24:21.678Z",
+  "algorithm": "SHA-256 of UTF-8 source normalized to LF for Git portability",
+  "files": [
+    {
+      "path": "Dockerfile",
+      "sha256Lf": "7aebe4af59cafd14b75a28cf4509b66efde96de0b852bcf0e52c4b342ad11734"
+    },
+    {
+      "path": "docker-compose.yml",
+      "sha256Lf": "dd4bb9a05efdbc2df7a55284a31bf6d0f6b132e443330b2e87c96ab8ee090b05"
+    },
+    {
+      "path": "frontend/index.html",
+      "sha256Lf": "7f2032dd7da32f07eb9f7b1bf3a7eeb369a4bd61c033f9c3fc966012d7734c5c"
+    },
+    {
+      "path": "frontend/public/favicon.svg",
+      "sha256Lf": "c013a247fc73df59327056a0149bd9f674fb8a74e9415ed846e2ff3579de1aa8"
+    },
+    {
+      "path": "frontend/src/main.tsx",
+      "sha256Lf": "9de0f726de78faac75c7e5dde0267c69a15773f8dd209e1f845935ee3492aabd"
+    },
+    {
+      "path": "frontend/src/styles.css",
+      "sha256Lf": "e3ffd4c4e9c2c17e08b87f7239305f0ad26a35c6f3c1d2be4df17307fd098d7c"
+    },
+    {
+      "path": "frontend/tsconfig.json",
+      "sha256Lf": "8f72c4d7ba87a73f3052561bdf87d0c2526acbb1bf273cd9e9fff367aab7a386"
+    },
+    {
+      "path": "frontend/vite.config.ts",
+      "sha256Lf": "040d19296b39ae876d76a9c5f1f8468b716922cb0abc6b9b76f34cf3b7a508dd"
+    },
+    {
+      "path": "package-lock.json",
+      "sha256Lf": "defb78774c7d95c146c07964f578188d2e1baf51552de69b162aa9afe4b039d8"
+    },
+    {
+      "path": "package.json",
+      "sha256Lf": "499648490779ee0236c0e10bcd522c69f563b44a6e39528924091b90ef6091ac"
+    },
+    {
+      "path": "scripts/.gitkeep",
+      "sha256Lf": "213f0cf88d1bafc73c8d46da3868c653940543646889570cf40aaaa199bfa0ac"
+    },
+    {
+      "path": "scripts/browser-campus.js",
+      "sha256Lf": "764b9244897211dfb809e79f113334fd2b8e7ec7c242998a1edd8cab08facfde"
+    },
+    {
+      "path": "scripts/build-evidence-report.js",
+      "sha256Lf": "d935f8ad8c5f319c3e5bcaff9512c76fdc36a2f0ee73fc13bade99c18c299efc"
+    },
+    {
+      "path": "scripts/campus-seed.js",
+      "sha256Lf": "c3d5b85deea187a5f5930f7978ef7e5932aa6dcccfd2741727d2ac69ee64517b"
+    },
+    {
+      "path": "scripts/capture-command.js",
+      "sha256Lf": "86a84fa04b52e1a280bf43f4dc96582e4b0fbf748d5c94f710ef2cd75cb82866"
+    },
+    {
+      "path": "scripts/check-campus-db.js",
+      "sha256Lf": "ad381eef9ecdcacb246410cd5d8dd8317d92573f6248280a7338a0479e295143"
+    },
+    {
+      "path": "scripts/reset-db.js",
+      "sha256Lf": "a61908ac3c52bf8d279bb548e9ced2042fd3e08bae3127552ad83926ef058833"
+    },
+    {
+      "path": "scripts/run-browser-evidence.ps1",
+      "sha256Lf": "4626a0a53323656c33d303e073b9af4c7f99e229f344c40edecb5a0dadff3f5f"
+    },
+    {
+      "path": "scripts/seed.js",
+      "sha256Lf": "851a8032d529b9160231cc18be3627b3ef1bfa5c66fd833337b38eba747605cd"
+    },
+    {
+      "path": "scripts/test-campus-api.js",
+      "sha256Lf": "a87db007555b7ec6479ef737bc7b7f99a89ecca5daf95b06c2fa9b60316fb734"
+    },
+    {
+      "path": "scripts/test-campus-expiry.js",
+      "sha256Lf": "20906846fcc6309f93a350b3f5a1075e79070c6cfd8d58e574c85a5920d62d0a"
+    },
+    {
+      "path": "scripts/test-campus-guards.js",
+      "sha256Lf": "2cd0c451c3de54d265a02f46b7efcd206841d0b3a762a60288267fd565982d9f"
+    },
+    {
+      "path": "scripts/test-campus-resilience.js",
+      "sha256Lf": "e5e947ad782ab4d3816c82d344ae656ac18a8db00422851713b75ee12e99538b"
+    },
+    {
+      "path": "src/modules/auth/password.js",
+      "sha256Lf": "19d5e576ec68844a5adf5dd1843b6472cc485319a3567360b1389f9a59f88e57"
+    },
+    {
+      "path": "src/campus/app.js",
+      "sha256Lf": "fe725f0422b631daa8b7a14e961f12d7a328921e97818bacba1baa995eec7142"
+    },
+    {
+      "path": "src/campus/domain.js",
+      "sha256Lf": "fdb2fd392587e463369f0f74fe8553f59e33e076c10c8d054754798c0135d11b"
+    },
+    {
+      "path": "src/campus/repository.js",
+      "sha256Lf": "28a1d1bfc8d4da1bdc1d2ee86c15200618f00961f37ab310faa91117263afe49"
+    },
+    {
+      "path": "src/campus/server.js",
+      "sha256Lf": "b6245354eb35cdd549edb8e13e2d9c1691cb41bb0a74c69174317d857e498085"
+    },
+    {
+      "path": "tests/campus/unit.test.js",
+      "sha256Lf": "29da586e8230dfea375df46ae18947a8aff1f602905f424e801e7a5765c27783"
+    }
+  ]
+}

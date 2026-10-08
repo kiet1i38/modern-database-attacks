@@ -1,0 +1,5 @@
+UTC: 2026-10-08T21:24:20.961Z
+Command: docker compose exec -T mongo-safe node scripts/check-campus-db.js
+{"variant":"mongo-safe","database":"campus_mongo_safe","passwordStorage":"scrypt-only","passwordStorageValid":true,"ticketCount":12,"ok":true}
+
+Exit code: 0

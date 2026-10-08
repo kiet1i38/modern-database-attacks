@@ -1,0 +1,219 @@
+UTC: 2026-10-08T20:55:57.272Z
+Command: docker compose up -d --build --wait --wait-timeout 240
+#1 [internal] load local bake definitions
+#1 reading from stdin 2.14kB done
+#1 DONE 0.0s
+
+#2 [mongo-safe internal] load build definition from Dockerfile
+#2 DONE 0.0s
+
+#2 [sql-safe internal] load build definition from Dockerfile
+#2 transferring dockerfile: 700B 0.0s done
+#2 DONE 0.0s
+
+#3 [sql-unsafe internal] load metadata for docker.io/library/node:22-bookworm-slim
+#3 DONE 1.5s
+
+#4 [mongo-unsafe internal] load .dockerignore
+#4 transferring context: 134B done
+#4 DONE 0.0s
+
+#5 [mongo-unsafe build 1/6] FROM docker.io/library/node:22-bookworm-slim@sha256:c3de60bf2f9dd0ac6370e6117950ff62d6e339527e7472301c9c78a017978392
+#5 resolve docker.io/library/node:22-bookworm-slim@sha256:c3de60bf2f9dd0ac6370e6117950ff62d6e339527e7472301c9c78a017978392 0.0s done
+#5 DONE 0.0s
+
+#6 [mongo-unsafe internal] load build context
+#6 transferring context: 295.88kB 0.1s done
+#6 transferring context: 295.88kB 0.1s done
+#6 DONE 0.1s
+
+#7 [sql-unsafe build 2/6] WORKDIR /app
+#7 CACHED
+
+#8 [sql-safe build 3/6] COPY package.json package-lock.json ./
+#8 DONE 0.1s
+
+#9 [mongo-safe stage-1 4/9] RUN npm ci --omit=dev && npm cache clean --force
+#9 ...
+
+#10 [mongo-safe build 4/6] RUN npm ci
+#10 ...
+
+#9 [mongo-safe stage-1 4/9] RUN npm ci --omit=dev && npm cache clean --force
+#9 109.9 
+#9 109.9 added 179 packages, and audited 180 packages in 2m
+#9 109.9 
+#9 109.9 20 packages are looking for funding
+#9 109.9   run `npm fund` for details
+#9 109.9 
+#9 109.9 found 0 vulnerabilities
+#9 109.9 npm notice
+#9 109.9 npm notice New major version of npm available! 10.9.9 -> 12.2.0
+#9 109.9 npm notice Changelog: https://github.com/npm/cli/releases/tag/v12.2.0
+#9 109.9 npm notice To update run: npm install -g npm@12.2.0
+#9 109.9 npm notice
+#9 110.0 npm warn using --force Recommended protections disabled.
+#9 DONE 110.4s
+
+#11 [sql-unsafe stage-1 5/9] COPY src ./src
+#11 DONE 0.2s
+
+#12 [mongo-unsafe stage-1 6/9] COPY scripts ./scripts
+#12 DONE 0.1s
+
+#13 [sql-safe stage-1 7/9] COPY tests ./tests
+#13 DONE 0.1s
+
+#14 [mongo-safe stage-1 8/9] COPY docs ./docs
+#14 DONE 0.1s
+
+#10 [mongo-safe build 4/6] RUN npm ci
+#10 163.9 
+#10 163.9 added 197 packages, and audited 198 packages in 3m
+#10 163.9 
+#10 163.9 28 packages are looking for funding
+#10 163.9   run `npm fund` for details
+#10 163.9 
+#10 163.9 found 0 vulnerabilities
+#10 163.9 npm notice
+#10 163.9 npm notice New major version of npm available! 10.9.9 -> 12.2.0
+#10 163.9 npm notice Changelog: https://github.com/npm/cli/releases/tag/v12.2.0
+#10 163.9 npm notice To update run: npm install -g npm@12.2.0
+#10 163.9 npm notice
+#10 DONE 164.0s
+
+#15 [mongo-safe build 5/6] COPY frontend ./frontend
+#15 DONE 0.3s
+
+#16 [sql-unsafe build 6/6] RUN npm run build
+#16 0.444 
+#16 0.444 > modern-database-attacks@1.0.0 build
+#16 0.444 > tsc -p frontend/tsconfig.json && vite build --config frontend/vite.config.ts
+#16 0.444 
+#16 1.069 vite v8.3.4 building client environment for production...
+#16 1.078 transforming...
+#16 1.388 ✓ 4803 modules transformed.
+#16 1.552 rendering chunks...
+#16 1.617 computing gzip size...
+#16 1.626 dist/index.html                   0.48 kB │ gzip:   0.35 kB
+#16 1.626 dist/assets/index-BBqgQZ7v.css  698.64 kB │ gzip:  86.18 kB
+#16 1.626 dist/assets/index-shacjQIY.js   425.45 kB │ gzip: 128.16 kB
+#16 1.626 
+#16 1.634 ✓ built in 564ms
+#16 DONE 1.7s
+
+#17 [mongo-unsafe stage-1 9/9] COPY --from=build /app/dist ./dist
+#17 DONE 0.1s
+
+#18 [sql-safe] exporting to image
+#18 exporting layers
+#18 exporting layers 4.4s done
+#18 exporting manifest sha256:1b894b44294e8b31dbb5ee6ce1b66d8c1a21f43f1f443d203d2d0940d8747c9b 0.1s done
+#18 exporting config sha256:7473b216c14ac2685c5a2664226445f5ae4cf69d32b21b34d1d7e2a868ed2765
+#18 exporting config sha256:7473b216c14ac2685c5a2664226445f5ae4cf69d32b21b34d1d7e2a868ed2765 0.1s done
+#18 exporting attestation manifest sha256:7ed964e4b254206bff6eba7023fd62069392b96f42d0aa883bc72b28f1064f96
+#18 exporting attestation manifest sha256:7ed964e4b254206bff6eba7023fd62069392b96f42d0aa883bc72b28f1064f96 0.2s done
+#18 exporting manifest list sha256:8fdc98823987c8f69b2f58706224d2616e8413e58ba0a13b8595e5f0e3e3cd45 0.1s done
+#18 naming to docker.io/library/campusdesk-sql-safe:latest
+#18 naming to docker.io/library/campusdesk-sql-safe:latest 0.0s done
+#18 unpacking to docker.io/library/campusdesk-sql-safe:latest
+#18 unpacking to docker.io/library/campusdesk-sql-safe:latest 1.7s done
+#18 DONE 6.7s
+
+#19 [mongo-unsafe] exporting to image
+#19 exporting layers 4.4s done
+#19 exporting manifest sha256:0d583888f8f7be6d47b15e50ebed30c9624538b4f87e3f6176cf6dc028e523cc 0.1s done
+#19 exporting config sha256:b7538eedc8bfd5677143586145047da7e70725f2538b2a99a44c7f7ab1f77fc3 0.1s done
+#19 exporting attestation manifest sha256:cfb831870c4c2c32e22ad4b8cc6fa92c3c5c6d90624dbd45dfbbeade25f4be75 0.2s done
+#19 exporting manifest list sha256:0ae9354c8bfc0e79c8c65af2f0675248244e1f4fbe286a61f8c45e04d36fd42c 0.1s done
+#19 naming to docker.io/library/campusdesk-mongo-unsafe:latest 0.0s done
+#19 unpacking to docker.io/library/campusdesk-mongo-unsafe:latest 1.7s done
+#19 DONE 6.6s
+
+#20 [mongo-safe] exporting to image
+#20 exporting layers 4.4s done
+#20 exporting manifest sha256:ce2ccd409f47aa647bd37b74b18f2e998824b779e13eae1c2bfe1ac2a30a3fe8 0.1s done
+#20 exporting config sha256:6fddc1fd0a4ad8235430b0fd77dcfa83017e15354e92330a2abc8e29a018c553 0.1s done
+#20 exporting attestation manifest sha256:574111930db02e33f68bfec785a78b8987e2f2ebb1211b5d584946341bc72ac0 0.2s done
+#20 exporting manifest list sha256:03b19f1e3fd979f2954fe7af7b4590e2613d24f07bed95681fd940e113f70cfe 0.1s done
+#20 naming to docker.io/library/campusdesk-mongo-safe:latest 0.0s done
+#20 unpacking to docker.io/library/campusdesk-mongo-safe:latest 1.7s done
+#20 DONE 6.7s
+
+#21 [sql-unsafe] exporting to image
+#21 exporting layers 4.4s done
+#21 exporting manifest sha256:a893c591c8623b18bde0c3f848e3378ced6a2f555c343f49cc02b8f47b4bdfd0 0.1s done
+#21 exporting config sha256:aa2d1676eaef1bfb08d6d875a4ced833ece6c8db23b6f84f3c04f5d89d12e609 0.1s done
+#21 exporting attestation manifest sha256:4cbd52afd6bd8b349e298fdb1405d7181445e326dd75971842f58fd0929dae24 0.2s done
+#21 exporting manifest list sha256:4389c2118e9ddb50257780174be3607b7f84065ad3b73fcbb6824b4516618622 0.1s done
+#21 naming to docker.io/library/campusdesk-sql-unsafe:latest 0.0s done
+#21 unpacking to docker.io/library/campusdesk-sql-unsafe:latest 1.7s done
+#21 DONE 6.7s
+
+#22 [mongo-unsafe] resolving provenance for metadata file
+#22 DONE 0.2s
+
+#23 [sql-safe] resolving provenance for metadata file
+#23 DONE 0.1s
+
+#24 [mongo-safe] resolving provenance for metadata file
+#24 DONE 0.2s
+
+#25 [sql-unsafe] resolving provenance for metadata file
+#25 DONE 0.0s
+ campusdesk-sql-unsafe  Built
+ campusdesk-sql-safe  Built
+ campusdesk-mongo-unsafe  Built
+ campusdesk-mongo-safe  Built
+ Network campusdesk_default  Creating
+ Network campusdesk_default  Created
+ Volume "campusdesk_mysql_data"  Creating
+ Volume "campusdesk_mysql_data"  Created
+ Volume "campusdesk_mongo_data"  Creating
+ Volume "campusdesk_mongo_data"  Created
+ Container campusdesk-mongodb-1  Creating
+ Container campusdesk-mysql-1  Creating
+ Container campusdesk-mysql-1  Created
+ Container campusdesk-sql-safe-1  Creating
+ Container campusdesk-sql-unsafe-1  Creating
+ Container campusdesk-mongodb-1  Created
+ Container campusdesk-mongo-safe-1  Creating
+ Container campusdesk-mongo-unsafe-1  Creating
+ Container campusdesk-sql-unsafe-1  Created
+ Container campusdesk-mongo-safe-1  Created
+ Container campusdesk-sql-safe-1  Created
+ Container campusdesk-mongo-unsafe-1  Created
+ Container campusdesk-mysql-1  Starting
+ Container campusdesk-mongodb-1  Starting
+ Container campusdesk-mongodb-1  Started
+ Container campusdesk-mongodb-1  Waiting
+ Container campusdesk-mongodb-1  Waiting
+ Container campusdesk-mysql-1  Started
+ Container campusdesk-mysql-1  Waiting
+ Container campusdesk-mysql-1  Waiting
+ Container campusdesk-mongodb-1  Healthy
+ Container campusdesk-mongo-safe-1  Starting
+ Container campusdesk-mongodb-1  Healthy
+ Container campusdesk-mongo-unsafe-1  Starting
+ Container campusdesk-mongo-unsafe-1  Started
+ Container campusdesk-mongo-safe-1  Started
+ Container campusdesk-mysql-1  Healthy
+ Container campusdesk-sql-unsafe-1  Starting
+ Container campusdesk-mysql-1  Healthy
+ Container campusdesk-sql-safe-1  Starting
+ Container campusdesk-sql-unsafe-1  Started
+ Container campusdesk-sql-safe-1  Started
+ Container campusdesk-mongodb-1  Waiting
+ Container campusdesk-sql-unsafe-1  Waiting
+ Container campusdesk-sql-safe-1  Waiting
+ Container campusdesk-mongo-unsafe-1  Waiting
+ Container campusdesk-mongo-safe-1  Waiting
+ Container campusdesk-mysql-1  Waiting
+ Container campusdesk-mongodb-1  Healthy
+ Container campusdesk-mongo-unsafe-1  Healthy
+ Container campusdesk-mongo-safe-1  Healthy
+ Container campusdesk-mysql-1  Healthy
+ Container campusdesk-sql-safe-1  Healthy
+ Container campusdesk-sql-unsafe-1  Healthy
+
+Exit code: 0

@@ -1,0 +1,13 @@
+import { spawn } from "node:child_process";
+import { mkdir, writeFile } from "node:fs/promises";
+import path from "node:path";
+const [output, command, ...args] = process.argv.slice(2);
+if (!output || !command) throw new Error("Usage: node scripts/capture-command.js evidence/path.log command args...");
+await mkdir(path.dirname(output), { recursive: true });
+const npmScript = process.platform === "win32" && ["npm","npx"].includes(command) ? path.join(path.dirname(process.execPath), "node_modules/npm/bin", command === "npm" ? "npm-cli.js" : "npx-cli.js") : null;
+const child=spawn(npmScript ? process.execPath : command,npmScript ? [npmScript,...args] : args,{env:process.env});
+let log="UTC: "+new Date().toISOString()+"\nCommand: "+command+" "+args.join(" ")+"\n";
+child.stdout.on("data",data=>{log+=data;process.stdout.write(data);});
+child.stderr.on("data",data=>{log+=data;process.stderr.write(data);});
+child.on("error",error=>{log+=error.message;});
+child.on("close",async code=>{log+="\nExit code: "+code+"\n";await writeFile(output,log);process.exitCode=code||0;});

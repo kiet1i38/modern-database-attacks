@@ -1,4 +1,2 @@
-services:
-  app:
-    environment:
-      LAB_MODE: "true"
+# The base Compose now includes all four isolated localhost laboratories.
+services: {}

@@ -4,3 +4,7 @@ npm-debug.log
 .git
 .gitignore
 coverage
+output
+evidence
+.playwright-cli
+dist

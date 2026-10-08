@@ -1,0 +1,1 @@
+{"variant":"sql-safe","ok":true,"check":"real database session expires and rate limiter enforces 100 attempts/minute","rateLimit100AttemptsValid":true,"testCookieMaxAgeMs":200,"defaultAppCookieMaxAgeMs":1800000}

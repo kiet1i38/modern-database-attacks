@@ -1,0 +1,16 @@
+UTC: 2026-10-08T21:23:48.765Z
+Command: node scripts/test-campus-resilience.js
+PASS sql-unsafe session survives application restart
+PASS sql-safe session survives application restart
+PASS mongo-unsafe session survives application restart
+PASS mongo-safe session survives application restart
+PASS sql-unsafe database outage produces health 503 without stack
+PASS sql-safe database outage produces health 503 without stack
+PASS mongo-unsafe database outage produces health 503 without stack
+PASS mongo-safe database outage produces health 503 without stack
+PASS sql-unsafe database recovery restores persistent session
+PASS sql-safe database recovery restores persistent session
+PASS mongo-unsafe database recovery restores persistent session
+PASS mongo-safe database recovery restores persistent session
+
+Exit code: 0

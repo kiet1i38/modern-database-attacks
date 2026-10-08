@@ -1,204 +1,72 @@
-# Topic 12 – Modern Database Attacks
+# CampusDesk · Modern Database Attacks
 
-> A controlled local MongoDB authentication laboratory. Use synthetic data only.
+Four real local websites in one repo: **MySQL safe/unsafe + MongoDB safe/unsafe**, with admin/user dashboards, tickets, persistent sessions and authentication-injection demonstrations.
 
-The repository now contains a runnable Node.js/Express application with:
+## Run
 
-- A secure comparison login route.
-- A separate local-only lab route that intentionally demonstrates unsafe query construction.
-- A browser login form with normal and structured-payload modes.
-- MongoDB seed scripts and Docker Compose.
-- Unit, security-boundary and real-MongoDB integration tests.
+Start Docker Desktop, then:
 
-Never point this project at a real account, real credential or a database that the team does not own.
-
-## 1. Quick start on the host
-
-Prerequisites:
-
-- Node.js 20 or newer.
-- npm.
-- Docker Desktop or another Docker Compose installation.
-- A browser.
-
-Clone and install:
-
-~~~bash
+~~~sh
 git clone https://github.com/kiet1i38/modern-database-attacks.git
 cd modern-database-attacks
+docker compose up -d --build --wait --wait-timeout 240
+~~~
+
+No host database or .env file is required.
+
+| Website | URL |
+| --- | --- |
+| SQL Unsafe | http://localhost:3001 |
+| SQL Safe | http://localhost:3002 |
+| Mongo Unsafe | http://localhost:3003 |
+| Mongo Safe | http://localhost:3004 |
+
+Synthetic accounts: **admin / Admin@123**, **student / Student@123**, **student2 / Student2@123**. Startup seeds three accounts and twelve tickets only when the variant database is empty.
+
+## Demo
+
+Use normal login first, then select **Demo injection** on the login page. Four SQL presets and six Mongo operators are available on both safe and unsafe versions. Unsafe attempts execute against a real database and create a real admin session when successful; safe counterparts reject them. Mongo operators require the dollar prefix, e.g. {"$gt":""}.
+
+Admin: global dashboard, ticket processing, account creation/lock, authentication audit. User: own dashboard/tickets and profile. Backend checks role and ownership on every protected request; account locking invalidates access from existing sessions.
+
+## Test and evidence
+
+Host tests need Node.js >=22.12:
+
+~~~sh
 npm ci
-cp .env.example .env
-~~~
-
-Start only MongoDB:
-
-~~~bash
-docker compose up -d mongodb
-npm run seed -- --lab
-~~~
-
-For a local lab run, open .env and change:
-
-~~~dotenv
-LAB_MODE=true
-~~~
-
-Then start the application:
-
-~~~bash
-npm start
-~~~
-
-Open http://127.0.0.1:3000.
-
-The synthetic credentials are:
-
-| Purpose | Username | Password |
-| --- | --- | --- |
-| Secure comparison | alice | synthetic-demo-password |
-| Lab normal string | alice | lab-only-demo-password |
-| Lab object payload | alice | Use the payload mode in the form |
-
-The values above are synthetic and exist only for this local exercise.
-
-## 2. Run everything with Docker
-
-The default Compose file starts the app with the lab route disabled:
-
-~~~bash
-docker compose up --build -d
-docker compose run --rm app node scripts/seed.js --lab
-~~~
-
-Open http://127.0.0.1:3000 and use secure comparison mode.
-
-To enable the isolated lab route, use the lab override:
-
-~~~bash
-docker compose down
-docker compose -f docker-compose.yml -f docker-compose.lab.yml up --build -d
-docker compose -f docker-compose.yml -f docker-compose.lab.yml run --rm app node scripts/seed.js --lab
-~~~
-
-The override only changes LAB_MODE to true. The application is still bound to the host loopback interface and the route checks that requests are local.
-
-Stop the services:
-
-~~~bash
-docker compose down
-~~~
-
-Remove the disposable local MongoDB volume only when you want a clean database:
-
-~~~bash
-docker compose down -v
-~~~
-
-## 3. API smoke checks
-
-Health:
-
-~~~bash
-curl http://127.0.0.1:3000/api/health
-~~~
-
-Secure login with a string:
-
-~~~bash
-curl -X POST http://127.0.0.1:3000/api/auth/login \
-  -H "Content-Type: application/json" \
-  -d '{"username":"alice","password":"synthetic-demo-password"}'
-~~~
-
-MongoDB operator payloads in the lab route:
-
-~~~bash
-# Greater than empty: bypasses equality without the correct password
-curl -X POST http://127.0.0.1:3000/api/lab/login-observation \
-  -H "Content-Type: application/json" \
-  -d '{"username":"alice","password":{"$gt":""}}'
-
-# Greater than or equal to empty
-curl -X POST http://127.0.0.1:3000/api/lab/login-observation \
-  -H "Content-Type: application/json" \
-  -d '{"username":"alice","password":{"$gte":""}}'
-
-# Not equal to a value that is not the stored password
-curl -X POST http://127.0.0.1:3000/api/lab/login-observation \
-  -H "Content-Type: application/json" \
-  -d '{"username":"alice","password":{"$ne":"not-the-password"}}'
-
-# Regex matching any string
-curl -X POST http://127.0.0.1:3000/api/lab/login-observation \
-  -H "Content-Type: application/json" \
-  -d '{"username":"alice","password":{"$regex":".*"}}'
-
-# Stored password is not in this list
-curl -X POST http://127.0.0.1:3000/api/lab/login-observation \
-  -H "Content-Type: application/json" \
-  -d '{"username":"alice","password":{"$nin":["not-the-password"]}}'
-
-# The password field exists
-curl -X POST http://127.0.0.1:3000/api/lab/login-observation \
-  -H "Content-Type: application/json" \
-  -d '{"username":"alice","password":{"$exists":true}}'
-~~~
-
-The word "like" in the assignment is illustrative, not a limit to `$gt` alone. This project uses a bounded catalog of six operator-shaped values. MongoDB operator syntax uses the `$` prefix, so `{ "gt": "" }` is not the same as `{ "$gt": "" }` and is intentionally rejected by the lab validator.
-
-These payloads are intentionally available only in the local lab route. The route is not a secure authentication implementation.
-
-## 4. Tests
-
-Unit and security-boundary tests do not require MongoDB:
-
-~~~bash
 npm test
-~~~
-
-The integration test requires a running MongoDB. It uses the separate database named by MONGODB_TEST_DATABASE and synthetic data:
-
-~~~bash
 npm run test:integration
+npm run build
+npm audit --omit=dev
 ~~~
 
-Run everything:
+Integration tests use the four running Docker sites and write a timestamped evidence folder. They create synthetic QA data. Browser reproduction on Windows: **scripts/run-browser-evidence.ps1**.
 
-~~~bash
-npm run test:all
+- [Run, access, reset and troubleshoot](docs/RUN_AND_TEST.html)
+- [Final demonstration script](docs/DEMO_GUIDE.html)
+- [Architecture](docs/ARCHITECTURE.html)
+- [API and session/CSRF contract](docs/API.html)
+- [Testing and limitations](docs/TESTING.html)
+- [New evidence report](evidence/campusdesk-final-2026-10-09/REPORT.html)
+- [Documentation hub](docs/index.html) — also served at http://localhost:3004/docs/
+
+HTML documents can be opened in a browser. Documentation v1 is archived in docs/legacy/; previous source/tests remain for comparison but are not the CampusDesk entrypoint.
+
+## Reset / stop
+
+The following commands delete **only the selected variant's synthetic lab data**, including accounts, tickets, audit and sessions, then reseed:
+
+~~~sh
+docker compose exec -T sql-unsafe npm run db:reset
+docker compose exec -T sql-safe npm run db:reset
+docker compose exec -T mongo-unsafe npm run db:reset
+docker compose exec -T mongo-safe npm run db:reset
+docker compose down
 ~~~
 
-The integration test verifies normal equality plus the six documented dollar-prefixed operator payloads against a real MongoDB server.
+Stopping with down preserves database volumes. Do not add -v unless you deliberately want to delete them.
 
-## 5. Application behavior
+## Local teaching boundary
 
-| Route | Mode | Behavior |
-| --- | --- | --- |
-| GET /api/health | All | Reports HTTP and MongoDB readiness. |
-| POST /api/auth/login | Secure | Accepts scalar strings, finds by username and verifies a password hash. |
-| POST /api/lab/login-observation | Local lab | Accepts a structured password value and observes the unsafe query shape. |
-| GET /api/lab/status | All | Reports whether lab mode is enabled without exposing database details. |
-
-The lab route is available only when LAB_MODE=true, NODE_ENV is not production and the request is from loopback.
-
-## 6. Repository map
-
-- PROJECT_STATUS.md: execution status, SOP, gates and next work item.
-- docs/ARCHITECTURE.md: module boundaries and request flows.
-- docs/DATABASE.md: collections, seed data and indexes.
-- docs/API.md: request and response contracts.
-- docs/SECURITY.md: trust boundary and lab safety.
-- docs/TESTING.md: test commands and evidence.
-- docs/DEVELOPMENT.md: local workflow.
-- docs/DEMO_GUIDE.md: presentation and recovery steps.
-- src/: application source and browser client.
-- scripts/: seed and guarded reset commands.
-- tests/: unit, security and MongoDB integration checks.
-
-## 7. Safety boundary
-
-- Keep the lab local and synthetic.
-- Do not publish the MongoDB port beyond loopback.
-- Do not commit .env, credentials, hashes from real accounts or session tokens.
-- Do not reuse the lab route as an authentication implementation.
-- Keep LAB_MODE=false unless the isolated observation is being performed.
+Unsafe authentication is intentional. All credentials/secrets in Compose are public synthetic lab values. Applications bind to host loopback; databases have no host-published ports. Startup rejects production mode and requires LAB_LOCAL_ONLY=true. Never expose this lab publicly, use real credentials, or point it at production data. Safe here means hardened against the demonstrated login-injection paths, not a comprehensive production-security certification.

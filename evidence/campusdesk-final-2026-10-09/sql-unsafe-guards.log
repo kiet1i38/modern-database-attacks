@@ -1,0 +1,3 @@
+{"variant":"sql-unsafe","name":"production startup rejected","ok":true}
+{"variant":"sql-unsafe","name":"missing local-lab opt-in rejected","ok":true}
+{"variant":"sql-unsafe","name":"reset requires explicit yes","ok":true}

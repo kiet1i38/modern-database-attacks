@@ -1,0 +1,9 @@
+UTC: 2026-10-08T21:24:18.325Z
+Command: docker compose exec -T mongo-unsafe npm run db:reset
+
+> modern-database-attacks@1.0.0 db:reset
+> node scripts/campus-seed.js --reset --yes
+
+{"variant":"mongo-unsafe","database":"campus_mongo_unsafe","operation":"reset-and-seed","ok":true}
+
+Exit code: 0

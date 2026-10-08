@@ -1,0 +1,3 @@
+{"variant":"mongo-safe","name":"production startup rejected","ok":true}
+{"variant":"mongo-safe","name":"missing local-lab opt-in rejected","ok":true}
+{"variant":"mongo-safe","name":"reset requires explicit yes","ok":true}
