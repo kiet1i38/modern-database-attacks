@@ -1,0 +1,338 @@
+#1 [internal] load local bake definitions
+#1 reading from stdin 2.12kB done
+#1 DONE 0.0s
+
+#2 [mongo-safe internal] load build definition from Dockerfile
+#2 DONE 0.0s
+
+#2 [mongo-safe internal] load build definition from Dockerfile
+#2 transferring dockerfile:
+#2 transferring dockerfile: 721B 0.2s done
+#2 DONE 2.7s
+
+#2 [sql-safe internal] load build definition from Dockerfile
+#2 DONE 2.7s
+
+#3 [mongo-safe internal] load metadata for docker.io/library/node:22-bookworm-slim
+#3 DONE 11.1s
+
+#4 [sql-unsafe internal] load .dockerignore
+#4 transferring context:
+#4 transferring context: 156B 0.1s done
+#4 DONE 2.4s
+
+#4 [sql-unsafe internal] load .dockerignore
+#4 DONE 2.4s
+
+#5 [mongo-unsafe internal] load build context
+#5 DONE 0.0s
+
+#6 [mongo-unsafe build 1/6] FROM docker.io/library/node:22-bookworm-slim@sha256:e9f565d32859f0cbfb52125eafe8be39390f24dac302dc3cdf566e8ba3ab21ee
+#6 resolve docker.io/library/node:22-bookworm-slim@sha256:e9f565d32859f0cbfb52125eafe8be39390f24dac302dc3cdf566e8ba3ab21ee
+#6 resolve docker.io/library/node:22-bookworm-slim@sha256:e9f565d32859f0cbfb52125eafe8be39390f24dac302dc3cdf566e8ba3ab21ee 3.4s done
+#6 resolve docker.io/library/node:22-bookworm-slim@sha256:e9f565d32859f0cbfb52125eafe8be39390f24dac302dc3cdf566e8ba3ab21ee 3.4s done
+#6 DONE 3.8s
+
+#5 [mongo-unsafe internal] load build context
+#5 transferring context:
+#5 transferring context: 225.20kB 0.7s done
+#5 DONE 2.4s
+
+#5 [sql-unsafe internal] load build context
+#5 DONE 2.4s
+
+#7 [mongo-unsafe build 2/6] WORKDIR /app
+#7 CACHED
+
+#7 [sql-safe build 2/6] WORKDIR /app
+#7 CACHED
+
+#8 [sql-safe build 3/6] COPY package.json package-lock.json ./
+#8 DONE 7.3s
+
+#8 [mongo-unsafe build 3/6] COPY package.json package-lock.json ./
+#8 DONE 7.3s
+
+#9 [sql-unsafe build 4/6] RUN npm ci
+#9 ...
+
+#10 [mongo-safe stage-1 4/9] RUN npm ci --omit=dev && npm cache clean --force
+#10 ...
+
+#9 [mongo-safe build 4/6] RUN npm ci
+#9 68.16 
+#9 68.16 added 199 packages, and audited 200 packages in 49s
+#9 68.16 
+#9 68.16 29 packages are looking for funding
+#9 68.16   run `npm fund` for details
+#9 68.16 
+#9 68.16 found 0 vulnerabilities
+#9 68.17 npm notice
+#9 68.17 npm notice New major version of npm available! 10.9.9 -> 12.2.2
+#9 68.17 npm notice Changelog: https://github.com/npm/cli/releases/tag/v12.2.2
+#9 68.17 npm notice To update run: npm install -g npm@12.2.2
+#9 68.17 npm notice
+#9 DONE 69.7s
+
+#10 [mongo-safe stage-1 4/9] RUN npm ci --omit=dev && npm cache clean --force
+#10 ...
+
+#9 [sql-safe build 4/6] RUN npm ci
+#9 DONE 69.7s
+
+#11 [sql-unsafe build 5/6] COPY frontend ./frontend
+#11 DONE 5.6s
+
+#10 [mongo-safe stage-1 4/9] RUN npm ci --omit=dev && npm cache clean --force
+#10 ...
+
+#11 [sql-safe build 5/6] COPY frontend ./frontend
+#11 DONE 5.6s
+
+#10 [mongo-safe stage-1 4/9] RUN npm ci --omit=dev && npm cache clean --force
+#10 ...
+
+#12 [mongo-safe build 6/6] RUN npm run build
+#12 ...
+
+#10 [sql-unsafe stage-1 4/9] RUN npm ci --omit=dev && npm cache clean --force
+#10 78.39 
+#10 78.39 added 179 packages, and audited 180 packages in 59s
+#10 78.39 
+#10 78.39 20 packages are looking for funding
+#10 78.39   run `npm fund` for details
+#10 78.39 
+#10 78.39 found 0 vulnerabilities
+#10 78.40 npm notice
+#10 78.40 npm notice New major version of npm available! 10.9.9 -> 12.2.2
+#10 78.40 npm notice Changelog: https://github.com/npm/cli/releases/tag/v12.2.2
+#10 78.40 npm notice To update run: npm install -g npm@12.2.2
+#10 78.40 npm notice
+#10 78.73 npm warn using --force Recommended protections disabled.
+#10 DONE 82.5s
+
+#10 [sql-safe stage-1 4/9] RUN npm ci --omit=dev && npm cache clean --force
+#10 DONE 82.5s
+
+#12 [sql-safe build 6/6] RUN npm run build
+#12 ...
+
+#13 [mongo-safe stage-1 5/9] COPY src ./src
+#13 ...
+
+#12 [sql-safe build 6/6] RUN npm run build
+#12 14.99 
+#12 14.99 > modern-database-attacks@1.0.0 build
+#12 14.99 > tsc -p frontend/tsconfig.json && vite build --config frontend/vite.config.ts
+#12 14.99 
+#12 ...
+
+#13 [mongo-safe stage-1 5/9] COPY src ./src
+#13 DONE 11.8s
+
+#13 [sql-unsafe stage-1 5/9] COPY src ./src
+#13 DONE 11.8s
+
+#12 [sql-safe build 6/6] RUN npm run build
+#12 ...
+
+#14 [sql-safe stage-1 6/9] COPY scripts ./scripts
+#14 DONE 11.2s
+
+#12 [sql-safe build 6/6] RUN npm run build
+#12 24.65 vite v8.3.4 building client environment for production...
+#12 27.62 transforming...
+#12 ...
+
+#14 [sql-unsafe stage-1 6/9] COPY scripts ./scripts
+#14 DONE 11.2s
+
+#12 [sql-safe build 6/6] RUN npm run build
+#12 ...
+
+#15 [mongo-unsafe stage-1 7/9] COPY tests ./tests
+#15 DONE 8.6s
+
+#12 [sql-safe build 6/6] RUN npm run build
+#12 ...
+
+#15 [mongo-unsafe stage-1 7/9] COPY tests ./tests
+#15 DONE 8.6s
+
+#12 [sql-safe build 6/6] RUN npm run build
+#12 ...
+
+#16 [mongo-safe stage-1 8/9] COPY docs ./docs
+#16 DONE 4.4s
+
+#12 [sql-safe build 6/6] RUN npm run build
+#12 ...
+
+#16 [sql-safe stage-1 8/9] COPY docs ./docs
+#16 DONE 4.4s
+
+#12 [sql-safe build 6/6] RUN npm run build
+#12 50.10 ✓ 4803 modules transformed.
+#12 57.24 rendering chunks...
+#12 57.60 computing gzip size...
+#12 57.64 dist/index.html                   0.48 kB │ gzip:   0.35 kB
+#12 57.64 dist/assets/index-BBqgQZ7v.css  698.64 kB │ gzip:  86.18 kB
+#12 57.64 dist/assets/index-CdwTlgQg.js   425.90 kB │ gzip: 128.31 kB
+#12 57.64 
+#12 57.68 ✓ built in 33.32s
+#12 DONE 57.8s
+
+#12 [sql-safe build 6/6] RUN npm run build
+#12 DONE 57.8s
+
+#17 [mongo-unsafe stage-1 9/9] COPY --from=build /app/dist ./dist
+#17 DONE 0.1s
+
+#17 [sql-unsafe stage-1 9/9] COPY --from=build /app/dist ./dist
+#17 DONE 0.1s
+
+#18 [sql-safe] exporting to image
+#18 exporting layers
+#18 ...
+
+#19 [mongo-safe] exporting to image
+#19 ...
+
+#20 [mongo-unsafe] exporting to image
+#20 ...
+
+#21 [sql-unsafe] exporting to image
+#21 ...
+
+#20 [mongo-unsafe] exporting to image
+#20 exporting layers 12.9s done
+#20 exporting manifest sha256:6be71eeb2c899bd04144a5dae0d0cc884504303974b17a7a91a601817730c027
+#20 exporting manifest sha256:6be71eeb2c899bd04144a5dae0d0cc884504303974b17a7a91a601817730c027 0.1s done
+#20 exporting config sha256:0df0cb3e01b2932a8afa8fc107dd84dc2759ea383d39ca66658697bc9de7450d
+#20 exporting config sha256:0df0cb3e01b2932a8afa8fc107dd84dc2759ea383d39ca66658697bc9de7450d 0.1s done
+#20 exporting attestation manifest sha256:d179af11e8b63e2c9bb401a6e233c51853586e4875e47450c8964bc9805b36a5
+#20 exporting attestation manifest sha256:d179af11e8b63e2c9bb401a6e233c51853586e4875e47450c8964bc9805b36a5 0.2s done
+#20 exporting manifest list sha256:b611ddc352a2257b48f11c75b006815b7fbbcdcf05af5545c153fd2c8cbadb45
+#20 exporting manifest list sha256:b611ddc352a2257b48f11c75b006815b7fbbcdcf05af5545c153fd2c8cbadb45 0.1s done
+#20 naming to docker.io/library/campusdesk-review-mongo-unsafe:latest
+#20 naming to docker.io/library/campusdesk-review-mongo-unsafe:latest 0.1s done
+#20 unpacking to docker.io/library/campusdesk-review-mongo-unsafe:latest
+#20 ...
+
+#19 [mongo-safe] exporting to image
+#19 exporting layers 12.9s done
+#19 exporting manifest sha256:3bb09da54ee15eb6f5c1e1b59f1392e80c117e4aa2a21a917ed1780632f5fd58 0.1s done
+#19 exporting config sha256:6e8eb9175652efd375e1791f3ba18875217961d61df2a561acd23a43711d9609 0.1s done
+#19 exporting attestation manifest sha256:8ce14ba6985b31e5c93d4f2d462723544c5393c9fbe309212cf4f1a1241a85e3 0.2s done
+#19 exporting manifest list sha256:abedde65202ce00cd7017338d53aa157b762ac88a6f4739c83dfd8b1ff3cccec 0.1s done
+#19 naming to docker.io/library/campusdesk-review-mongo-safe:latest 0.0s done
+#19 unpacking to docker.io/library/campusdesk-review-mongo-safe:latest
+#19 ...
+
+#21 [sql-unsafe] exporting to image
+#21 exporting layers 12.9s done
+#21 exporting manifest sha256:7b5025f237298339f41f952fe667af66cbcafc4c1bfa1fe30697a67c78deea69 0.1s done
+#21 exporting config sha256:5ba87240c6c0a6210c5d67546977ca5aeebdbe21ab53a0b9eaf9330aabd0a7c0 0.1s done
+#21 exporting attestation manifest sha256:878761c13d483d7ba8ff3234c5e1eb21186fd491238c6d1e5665aa5d13c0e738 0.2s done
+#21 exporting manifest list sha256:033c42f39d73bfb0a7684ff836cac41e4a4d2af6c97fbc7ad892e1d661ddd11c 0.1s done
+#21 naming to docker.io/library/campusdesk-review-sql-unsafe:latest 0.0s done
+#21 unpacking to docker.io/library/campusdesk-review-sql-unsafe:latest
+#21 ...
+
+#18 [sql-safe] exporting to image
+#18 exporting layers 12.9s done
+#18 exporting manifest sha256:04fb2a85a117a69e7c8b7dceb3e5874409398c6c26d844672144c02843ccd64a 0.1s done
+#18 exporting config sha256:899e41eb6713261d006278136770153bdb2adeb07120a3c4ade4652d1043f431 0.1s done
+#18 exporting attestation manifest sha256:b9ef8e8351a8c6403fd867901409fb0585148762f1e4edff46e4e33372bd56f4 0.2s done
+#18 exporting manifest list sha256:879309a607144610a1f07620893d98019a10309ce4b10e3cdc9bc618f3b1417a 0.1s done
+#18 naming to docker.io/library/campusdesk-review-sql-safe:latest 0.0s done
+#18 unpacking to docker.io/library/campusdesk-review-sql-safe:latest
+#18 ...
+
+#19 [mongo-safe] exporting to image
+#19 unpacking to docker.io/library/campusdesk-review-mongo-safe:latest 26.4s done
+#19 DONE 40.0s
+
+#18 [sql-safe] exporting to image
+#18 ...
+
+#20 [mongo-unsafe] exporting to image
+#20 unpacking to docker.io/library/campusdesk-review-mongo-unsafe:latest 26.7s done
+#20 DONE 40.3s
+
+#18 [sql-safe] exporting to image
+#18 ...
+
+#21 [sql-unsafe] exporting to image
+#21 unpacking to docker.io/library/campusdesk-review-sql-unsafe:latest 26.8s done
+#21 DONE 40.5s
+
+#18 [sql-safe] exporting to image
+#18 unpacking to docker.io/library/campusdesk-review-sql-safe:latest 27.1s done
+#18 DONE 40.8s
+
+#22 [mongo-safe] resolving provenance for metadata file
+#22 ...
+
+#23 [sql-unsafe] resolving provenance for metadata file
+#23 ...
+
+#24 [mongo-unsafe] resolving provenance for metadata file
+#24 ...
+
+#25 [sql-safe] resolving provenance for metadata file
+#25 ...
+
+#23 [sql-unsafe] resolving provenance for metadata file
+#23 DONE 14.9s
+
+#22 [mongo-safe] resolving provenance for metadata file
+#22 DONE 16.5s
+
+#24 [mongo-unsafe] resolving provenance for metadata file
+#24 DONE 23.0s
+
+#25 [sql-safe] resolving provenance for metadata file
+#25 DONE 12.0s
+ campusdesk-review-mongo-safe  Built
+ campusdesk-review-mongo-unsafe  Built
+ campusdesk-review-sql-safe  Built
+ campusdesk-review-sql-unsafe  Built
+ Container campusdesk-review-mongodb-1  Running
+ Container campusdesk-review-mysql-1  Running
+ Container campusdesk-review-sql-safe-1  Recreate
+ Container campusdesk-review-mongo-safe-1  Recreate
+ Container campusdesk-review-sql-unsafe-1  Recreate
+ Container campusdesk-review-mongo-unsafe-1  Recreate
+ Container campusdesk-review-sql-unsafe-1  Recreated
+ Container campusdesk-review-sql-safe-1  Recreated
+ Container campusdesk-review-mongo-safe-1  Recreated
+ Container campusdesk-review-mongo-unsafe-1  Recreated
+ Container campusdesk-review-mongodb-1  Waiting
+ Container campusdesk-review-mongodb-1  Waiting
+ Container campusdesk-review-mysql-1  Waiting
+ Container campusdesk-review-mysql-1  Waiting
+ Container campusdesk-review-mongodb-1  Healthy
+ Container campusdesk-review-mongo-safe-1  Starting
+ Container campusdesk-review-mongodb-1  Healthy
+ Container campusdesk-review-mongo-unsafe-1  Starting
+ Container campusdesk-review-mysql-1  Healthy
+ Container campusdesk-review-sql-unsafe-1  Starting
+ Container campusdesk-review-mysql-1  Healthy
+ Container campusdesk-review-sql-safe-1  Starting
+ Container campusdesk-review-sql-unsafe-1  Started
+ Container campusdesk-review-mongo-safe-1  Started
+ Container campusdesk-review-mongo-unsafe-1  Started
+ Container campusdesk-review-sql-safe-1  Started
+ Container campusdesk-review-mongodb-1  Waiting
+ Container campusdesk-review-sql-unsafe-1  Waiting
+ Container campusdesk-review-sql-safe-1  Waiting
+ Container campusdesk-review-mongo-unsafe-1  Waiting
+ Container campusdesk-review-mongo-safe-1  Waiting
+ Container campusdesk-review-mysql-1  Waiting
+ Container campusdesk-review-mysql-1  Healthy
+ Container campusdesk-review-mongodb-1  Healthy
+ Container campusdesk-review-sql-unsafe-1  Healthy
+ Container campusdesk-review-mongo-safe-1  Healthy
+ Container campusdesk-review-mongo-unsafe-1  Healthy
+ Container campusdesk-review-sql-safe-1  Healthy

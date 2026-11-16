@@ -56,13 +56,23 @@ for (const [variant, definition] of Object.entries(VARIANTS)) {
   await check("client role is not accepted", async () => assert.equal((await c.request("/auth/login","POST",{username:"admin",password:"Admin@123",role:"admin"})).status,400));
   await check("wrong password denied without session", async () => { assert.equal((await c.login("admin","wrong-password")).status,401); assert.equal((await c.request("/auth/me")).status,401); });
   await check("gt without dollar is rejected", async () => assert.equal((await c.login("admin",{gt:""})).status,400));
+  await check("stringified operator stays a literal password", async () => {
+    const r = await c.login("admin", JSON.stringify({ $gt: "" }));
+    assert.equal(r.status,401);
+    assert.equal(r.data.diagnostic.inputType,"string");
+    assert.equal(r.data.diagnostic.authQueryExecuted,true);
+    assert.equal((await c.request("/auth/me")).status,401);
+  });
   await check("server-side JS operator excluded from teaching lab", async () => assert.equal((await c.login("admin",{$where:"true"})).status,400));
   const payloads = variant.startsWith("sql") ? SQL_PAYLOADS : MONGO_PAYLOADS;
   for (const payload of payloads) {
     await check("payload " + payload.id + ": " + (definition.safe ? "blocked" : "real admin bypass"), async () => {
       const r = await c.login(payload.username || "admin", payload.password);
       assert.equal(r.status, definition.safe ? (variant.startsWith("mongo") ? 400 : 401) : 200);
-      if (definition.safe) assert.equal((await c.request("/auth/me")).status,401);
+      if (definition.safe) {
+        assert.equal((await c.request("/auth/me")).status,401);
+        assert.equal(r.data.diagnostic.authQueryExecuted,variant.startsWith("sql"));
+      }
       else {
         assert.equal(r.data.user.role,"admin"); assert.equal(r.data.user.username,"admin");
         assert.equal((await c.request("/auth/me")).data.user.role,"admin");
@@ -137,6 +147,7 @@ for (const [variant, definition] of Object.entries(VARIANTS)) {
     assert.equal((await c.request("/admin/users/user-001","PATCH",{active:false})).status,200);
     assert.equal((await u.request("/auth/me")).status,401);
     const locked=client(base); await locked.init(); assert.equal((await locked.login("student","Student@123")).status,401);
+    if (variant === "mongo-unsafe") assert.equal((await locked.login("student",{ $gt:"" })).status,401);
     assert.equal((await c.request("/admin/users/user-001","PATCH",{active:true})).status,200);
   });
   await check("new account lock type validation", async () => assert.equal((await c.request("/admin/users/"+newUserId,"PATCH",{active:"false"})).status,400));

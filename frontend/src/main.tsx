@@ -9,7 +9,7 @@ type User = { id: string; username: string; name: string; email: string; departm
 type Ticket = { id: string; code: string; ownerId: string; title: string; description: string; category: string; priority: string; status: string; createdAt: number };
 type Payload = { id: string; label: string; username?: string; password: string | object };
 type Config = { variant: string; database: string; safe: boolean; payloads: Payload[]; variants: Record<string, { database: string; safe: boolean; port: number }> };
-type Diagnostic = { success: boolean; payload: string; inputType: string; queryTemplate: string; request: unknown; explanation: string };
+type Diagnostic = { success: boolean; payload: string; inputType: string; authQueryExecuted: boolean; queryTemplate: string; request: unknown; explanation: string };
 type Dashboard = { total: number; counts: Record<string, number>; highPriority: number; users: number; recent: Ticket[]; categories: { id: string; count: number }[] };
 type ListData = { items: Ticket[]; total: number; page: number; pages: number };
 type Page = "overview" | "tickets" | "users" | "profile" | "lab";
@@ -40,7 +40,7 @@ function VariantLinks({ config }: { config: Config }) {
 }
 function Diagnostics({ detail }: { detail: Diagnostic | null }) {
   return <div className="diagnostics"><div className="section-label"><Flask size={17} /> Quan sát truy vấn</div>
-    {detail ? <><Badge color={detail.success ? "amber" : "teal"}>{detail.success ? "Đăng nhập thành công" : "Bị từ chối"} · {detail.payload}</Badge><pre>{detail.queryTemplate}</pre><p>{detail.explanation}</p><details><summary>Request đã che thông tin đăng nhập thông thường</summary><pre>{JSON.stringify(detail.request, null, 2)}</pre></details></> : <p>Chọn một payload và gửi request. Kết quả sẽ đến từ database thật, không phải mô phỏng phía trình duyệt.</p>}
+    {detail ? <><Badge color={detail.success ? "amber" : "teal"}>{detail.success ? "Đăng nhập thành công" : "Bị từ chối"} · {detail.payload}</Badge><p>Kiểu password: <code>{detail.inputType}</code> · Truy vấn xác thực: <strong>{detail.authQueryExecuted ? "Đã chạy" : "Chưa chạy"}</strong></p><pre>{detail.queryTemplate}</pre><p>{detail.explanation}</p><p>Mô tả từ luồng ứng dụng; không phải trace của database.</p><details><summary>Request đã che thông tin đăng nhập thông thường</summary><pre>{JSON.stringify(detail.request, null, 2)}</pre></details></> : <p>Chọn một payload và gửi request. Kết quả sẽ đến từ database thật, không phải mô phỏng phía trình duyệt.</p>}
   </div>;
 }
 function Login({ config, onLogin }: { config: Config; onLogin: (user: User, detail: Diagnostic) => void }) {
@@ -78,7 +78,7 @@ function Login({ config, onLogin }: { config: Config; onLogin: (user: User, deta
           <label>Tên đăng nhập<TextField.Root aria-label="Tên đăng nhập" autoComplete="username" value={username} onChange={e => setUsername(e.target.value)} size="3" required /></label>
           {!lab ? <label>Mật khẩu<TextField.Root aria-label="Mật khẩu" type="password" autoComplete="current-password" value={password} onChange={e => setPassword(e.target.value)} placeholder="Nhập mật khẩu" size="3" required /></label> :
             <><label>Payload demo<Select.Root value={selection} onValueChange={setSelection}><Select.Trigger aria-label="Payload demo" /><Select.Content>{config.payloads.map(p => <Select.Item key={p.id} value={p.id}>{p.label}</Select.Item>)}</Select.Content></Select.Root></label>
-              <pre className="payload-preview">{JSON.stringify({ username: payload.username || username, password: payload.password }, null, 2)}</pre>
+              {!customMode && <pre className="payload-preview">{JSON.stringify({ username: payload.username || username, password: payload.password }, null, 2)}</pre>}
               <label className="checkbox"><input type="checkbox" checked={customMode} onChange={e => setCustomMode(e.target.checked)} /> Nhập payload tùy chỉnh</label>
               {customMode && <label>{config.database === "MongoDB" ? "Password object (JSON)" : "Password SQL payload"}<TextArea aria-label="Payload tùy chỉnh" value={custom} onChange={e => setCustom(e.target.value)} required /></label>}
               <p className="form-note">{config.safe ? "Bản safe vẫn gửi cùng payload để kiểm tra backend chặn injection." : "Bản unsafe cố ý có lỗi xác thực. Chỉ dùng với dữ liệu demo tại localhost."}</p>

@@ -1,0 +1,37 @@
+
+> modern-database-attacks@1.0.0 test
+> node --test tests/campus/unit.test.js tests/campus/auth.test.js
+
+✔ mongo-safe: invalid types never reach credential lookup; valid login still works (1433.2835ms)
+✔ sql-safe: invalid types never reach credential lookup; valid login still works (836.3675ms)
+✔ sql-unsafe: scalar credentials accepted without trimming SQL comment space (7.3015ms)
+✔ sql-unsafe: rejects extra role, missing input and object username (1.9226ms)
+✔ sql-unsafe: six Mongo payloads only accepted by Mongo unsafe (1.3288ms)
+✔ sql-unsafe: password objects cannot use gt typo, $where, arbitrary regex, nested values or arrays (1.194ms)
+✔ sql-safe: scalar credentials accepted without trimming SQL comment space (0.467ms)
+✔ sql-safe: rejects extra role, missing input and object username (0.668ms)
+✔ sql-safe: six Mongo payloads only accepted by Mongo unsafe (0.8576ms)
+✔ sql-safe: password objects cannot use gt typo, $where, arbitrary regex, nested values or arrays (0.8241ms)
+✔ mongo-unsafe: scalar credentials accepted without trimming SQL comment space (1.0684ms)
+✔ mongo-unsafe: rejects extra role, missing input and object username (1.2389ms)
+✔ mongo-unsafe: six Mongo payloads only accepted by Mongo unsafe (0.9067ms)
+✔ mongo-unsafe: password objects cannot use gt typo, $where, arbitrary regex, nested values or arrays (0.7088ms)
+✔ mongo-safe: scalar credentials accepted without trimming SQL comment space (0.4521ms)
+✔ mongo-safe: rejects extra role, missing input and object username (0.7035ms)
+✔ mongo-safe: six Mongo payloads only accepted by Mongo unsafe (0.3964ms)
+✔ mongo-safe: password objects cannot use gt typo, $where, arbitrary regex, nested values or arrays (0.6053ms)
+✔ public users never export hashes/plaintext password (515.8945ms)
+✔ safe seed stores scrypt and no plaintext (1057.3837ms)
+✔ unsafe synthetic seed deliberately stores comparable password (0.5933ms)
+✔ ordinary diagnostics redact username and password (0.7405ms)
+✔ rejection diagnostics redact custom credentials and distinguish JSON types (0.6391ms)
+✔ known teaching payload is classified without normal password export (0.3612ms)
+✔ ticket input validates enum/length and ignores forged owner/role (0.6278ms)
+ℹ tests 25
+ℹ suites 0
+ℹ pass 25
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 3272.5961

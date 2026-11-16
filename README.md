@@ -29,6 +29,8 @@ Use normal login first, then select **Demo injection** on the login page. Four S
 
 Admin: global dashboard, ticket processing, account creation/lock, authentication audit. User: own dashboard/tickets and profile. Backend checks role and ownership on every protected request; account locking invalidates access from existing sessions.
 
+Start the presentation with Mongo Unsafe and Mongo Safe. Diagnostics show the password's JSON type and whether the credential query ran; rejected input can still use the database for session storage and audit. Recognized Mongo presets show their query shape. These explanations come from application control flow, not a database profiler. See the [code walkthrough](docs/CODE_AND_SECURITY_FLOW.html) for the vulnerable query and safe verification path.
+
 ## Test and evidence
 
 Host tests need Node.js >=22.12:

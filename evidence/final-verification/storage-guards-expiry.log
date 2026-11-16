@@ -1,0 +1,20 @@
+{"variant":"sql-unsafe","database":"campus_sql_unsafe","passwordStorage":"synthetic-plaintext-intentionally-unsafe","passwordStorageValid":true,"ticketCount":15,"ok":true}
+{"variant":"sql-unsafe","name":"production startup rejected","ok":true}
+{"variant":"sql-unsafe","name":"missing local-lab opt-in rejected","ok":true}
+{"variant":"sql-unsafe","name":"reset requires explicit yes","ok":true}
+{"variant":"sql-unsafe","ok":true,"check":"real database session expires and rate limiter enforces 100 attempts/minute","rateLimit100AttemptsValid":true,"testCookieMaxAgeMs":2000,"defaultAppCookieMaxAgeMs":1800000}
+{"variant":"sql-safe","database":"campus_sql_safe","passwordStorage":"scrypt-only","passwordStorageValid":true,"ticketCount":15,"ok":true}
+{"variant":"sql-safe","name":"production startup rejected","ok":true}
+{"variant":"sql-safe","name":"missing local-lab opt-in rejected","ok":true}
+{"variant":"sql-safe","name":"reset requires explicit yes","ok":true}
+{"variant":"sql-safe","ok":true,"check":"real database session expires and rate limiter enforces 100 attempts/minute","rateLimit100AttemptsValid":true,"testCookieMaxAgeMs":2000,"defaultAppCookieMaxAgeMs":1800000}
+{"variant":"mongo-unsafe","database":"campus_mongo_unsafe","passwordStorage":"synthetic-plaintext-intentionally-unsafe","passwordStorageValid":true,"ticketCount":15,"ok":true}
+{"variant":"mongo-unsafe","name":"production startup rejected","ok":true}
+{"variant":"mongo-unsafe","name":"missing local-lab opt-in rejected","ok":true}
+{"variant":"mongo-unsafe","name":"reset requires explicit yes","ok":true}
+{"variant":"mongo-unsafe","ok":true,"check":"real database session expires and rate limiter enforces 100 attempts/minute","rateLimit100AttemptsValid":true,"testCookieMaxAgeMs":2000,"defaultAppCookieMaxAgeMs":1800000}
+{"variant":"mongo-safe","database":"campus_mongo_safe","passwordStorage":"scrypt-only","passwordStorageValid":true,"ticketCount":15,"ok":true}
+{"variant":"mongo-safe","name":"production startup rejected","ok":true}
+{"variant":"mongo-safe","name":"missing local-lab opt-in rejected","ok":true}
+{"variant":"mongo-safe","name":"reset requires explicit yes","ok":true}
+{"variant":"mongo-safe","ok":true,"check":"real database session expires and rate limiter enforces 100 attempts/minute","rateLimit100AttemptsValid":true,"testCookieMaxAgeMs":2000,"defaultAppCookieMaxAgeMs":1800000}

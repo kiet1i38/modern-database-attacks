@@ -1,0 +1,21 @@
+{
+  ".dockerignore": "8d9d621bf9bc1467dde761c786faba88a911aaebfaaa34fd273e47a0adae82b2",
+  ".gitignore": "f1a3620d44a2838aa133c24645adf5032fc828b5dfda9a877d91e61d3e6d1ad3",
+  "PROJECT_STATUS.md": "d5bb5218344e0293adbb935f2ded8442a7141349064f733db27e7289559cc84a",
+  "README.md": "db4f47391b5665127bbc47637d2afa01bfd60d0309228627dbffb30f8d127422",
+  "docs/API.html": "aaf1f932174f5c37fe2a8546cb66b15fea32efe93908a855ee1fdfdadeb4e5ae",
+  "docs/CODE_AND_SECURITY_FLOW.html": "59206c3e9d44ca61393c151d1411cfcf6ac5bbfcf9d8da48f7884aae21006995",
+  "docs/DEMO_GUIDE.html": "749eafda1481b22934bb5fd264e2a9b25f08aa6b3709e22c901a5068f473b8f6",
+  "docs/index.html": "f6228ec109b435c82dec1d21480a1d093f1bfdcacb5646afc1ba53528b2e09cb",
+  "frontend/src/main.tsx": "91a1fd228b285ff4c3949b6f2de66504c0bd7b0ea5caa604830700a5aff028da",
+  "package-lock.json": "cb091724565dbc0ef439509134076e0e9be3f90e2787cb7fb38d69bd9c5fdc7e",
+  "package.json": "cfaff8f431ba94b91bcccadb0b1014d07c8bfb06efb23aef94591403e6c45810",
+  "scripts/browser-campus.js": "4c6cf626f9df9484de905975f403ea4bcf24d4ead838904681925d277bd33b13",
+  "scripts/build-evidence-report.js": "401f0093e7190e45834d447226f903f8db879428c4f28e60bbf0b21c5a3c8ab1",
+  "scripts/test-campus-api.js": "3fd09fc3615b8a3c55cb5c627508c7c941d7474c09d7d76ede839a87170185bb",
+  "scripts/test-campus-expiry.js": "5f854be6ee1e386edeefc04cbd08dcf07ad38078b860048ab4470554c567c309",
+  "src/campus/app.js": "8eae019f8075800ceadc60195ff87144bab76312f7ec8ec81c879e4b708a2c9b",
+  "src/campus/domain.js": "5160497f7cce02955f8caaccd5544efd20d15a23238a3893fcc4a3cd85a9bbc8",
+  "tests/campus/unit.test.js": "04df3d4d8e27ec3f0bebfe5e54b44bf99884721fcddea744b9c6c4d7fc6a30f3",
+  "tests/campus/auth.test.js": "3508b16f995f71720ecbe166c0829e0004f2567b4b82b644cc4f00fbb049b163"
+}

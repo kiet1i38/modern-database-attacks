@@ -67,6 +67,7 @@ async (page) => {
           await page.getByRole("alert").waitFor();
           assert(await page.getByRole("heading",{name:"Đăng nhập CampusDesk",exact:true}).isVisible(),"Safe payload authenticated");
           assert((await page.request.get(base+"/api/auth/me")).status()===401,"Safe payload got server session");
+          if (variant === "mongo-safe") assert((await page.locator(".diagnostics").innerText()).includes("Chưa chạy"), "Missing pre-query rejection diagnostic");
           await capture("payload-"+payload.id+"-blocked");
         } else {
           await page.getByRole("button",{name:"Người dùng",exact:true}).waitFor();
@@ -79,6 +80,20 @@ async (page) => {
           await logout();
         }
         pass("preset "+payload.id+(safe?" blocked":" real admin session"));
+      }
+      if (variant.startsWith("mongo")) {
+        await page.getByRole("button",{name:"Demo injection",exact:true}).click();
+        await page.getByRole("checkbox",{name:"Nhập payload tùy chỉnh",exact:true}).check();
+        assert(await page.locator(".payload-preview").count()===0,"Preset preview misrepresents custom input");
+        await page.getByRole("textbox",{name:"Payload tùy chỉnh",exact:true}).fill(JSON.stringify(JSON.stringify({$gt:""})));
+        const attempted = page.waitForResponse(r=>r.url()===base+"/api/auth/login" && r.request().method()==="POST");
+        await page.getByRole("button",{name:"Gửi payload & đăng nhập",exact:true}).click();
+        assert((await attempted).status()===401,"Stringified object was not a literal failed password");
+        await page.locator(".diagnostics code").filter({hasText:/^string$/}).waitFor();
+        assert((await page.request.get(base+"/api/auth/me")).status()===401,"Stringified object authenticated");
+        await capture("stringified-operator-denied");
+        await page.getByRole("checkbox",{name:"Nhập payload tùy chỉnh",exact:true}).uncheck();
+        pass("custom JSON string remains literal; preview and diagnostic match actual request");
       }
       await page.getByRole("button",{name:"Đăng nhập",exact:true}).first().click();
       await login("admin","Admin@123");

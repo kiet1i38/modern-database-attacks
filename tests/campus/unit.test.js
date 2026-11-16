@@ -46,6 +46,15 @@ test("ordinary diagnostics redact username and password", () => {
   const detail = diagnostic("sql-safe", { username: "someone", password: "sensitive" }, true);
   assert.ok(!JSON.stringify(detail).includes("sensitive")); assert.ok(!JSON.stringify(detail).includes("someone"));
 });
+
+test("rejection diagnostics redact custom credentials and distinguish JSON types", () => {
+  for (const [password, type] of [[null, "null"], [[], "array"], [123, "number"], [{ secret: "private" }, "object"]]) {
+    const detail = diagnostic("mongo-safe", { username: "private-user", password }, false, true);
+    assert.equal(detail.inputType, type);
+    assert.equal(detail.authQueryExecuted, false);
+    assert.ok(!JSON.stringify(detail).includes("private"));
+  }
+});
 test("known teaching payload is classified without normal password export", () => {
   assert.equal(diagnostic("sql-unsafe", SQL_PAYLOADS[0], true).payload, "tautology");
   assert.equal(diagnostic("mongo-unsafe", { username: "admin", password: { $gt: "" } }, true).payload, "gt");

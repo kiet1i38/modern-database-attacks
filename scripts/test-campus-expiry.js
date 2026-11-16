@@ -4,7 +4,9 @@ import { createRepository } from "../src/campus/repository.js";
 import { createCampusApp } from "../src/campus/app.js";
 const variant=process.env.VARIANT;
 const repo=await createRepository(variant);
-const app=createCampusApp({repo,variant,secret:process.env.SESSION_SECRET,sessionMaxAge:200});
+// Allow database round trips on slower machines before testing expiry.
+const sessionMaxAge = 2000;
+const app=createCampusApp({repo,variant,secret:process.env.SESSION_SECRET,sessionMaxAge});
 const server=app.listen(0,"127.0.0.1");
 await new Promise(resolve=>server.once("listening",resolve));
 let base="http://127.0.0.1:"+server.address().port+"/api";
@@ -21,7 +23,7 @@ try {
   await request("/auth/session");
   assert.equal((await request("/auth/login","POST",{username:"admin",password:"Admin@123"})).status,200);
   assert.equal((await request("/auth/me")).status,200);
-  await delay(400);
+  await delay(sessionMaxAge + 200);
   assert.equal((await request("/auth/me")).status,401);
   const rateApp=createCampusApp({repo,variant,secret:process.env.SESSION_SECRET});
   rateServer=rateApp.listen(0,"127.0.0.1");
@@ -30,5 +32,5 @@ try {
   await request("/auth/session");
   for (let i=0;i<100;i++) assert.equal((await request("/auth/login","POST",{username:"absent-rate-qa",password:"invalid"})).status,401);
   assert.equal((await request("/auth/login","POST",{username:"absent-rate-qa",password:"invalid"})).status,429);
-  console.log(JSON.stringify({variant,ok:true,check:"real database session expires and rate limiter enforces 100 attempts/minute",rateLimit100AttemptsValid:true,testCookieMaxAgeMs:200,defaultAppCookieMaxAgeMs:1800000}));
+  console.log(JSON.stringify({variant,ok:true,check:"real database session expires and rate limiter enforces 100 attempts/minute",rateLimit100AttemptsValid:true,testCookieMaxAgeMs:sessionMaxAge,defaultAppCookieMaxAgeMs:1800000}));
 } finally { if(rateServer) await new Promise(resolve=>rateServer.close(resolve)); await new Promise(resolve=>server.close(resolve)); await repo.close(); }

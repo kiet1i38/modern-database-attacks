@@ -1,0 +1,68 @@
+{
+  "generatedAt": "2026-11-16T03:46:54.727Z",
+  "total": 12,
+  "passed": 12,
+  "failed": 0,
+  "results": [
+    {
+      "variant": "sql-unsafe",
+      "name": "session survives application restart",
+      "pass": true
+    },
+    {
+      "variant": "sql-safe",
+      "name": "session survives application restart",
+      "pass": true
+    },
+    {
+      "variant": "mongo-unsafe",
+      "name": "session survives application restart",
+      "pass": true
+    },
+    {
+      "variant": "mongo-safe",
+      "name": "session survives application restart",
+      "pass": true
+    },
+    {
+      "variant": "sql-unsafe",
+      "name": "database outage produces health 503 without stack",
+      "pass": true
+    },
+    {
+      "variant": "sql-safe",
+      "name": "database outage produces health 503 without stack",
+      "pass": true
+    },
+    {
+      "variant": "mongo-unsafe",
+      "name": "database outage produces health 503 without stack",
+      "pass": true
+    },
+    {
+      "variant": "mongo-safe",
+      "name": "database outage produces health 503 without stack",
+      "pass": true
+    },
+    {
+      "variant": "sql-unsafe",
+      "name": "database recovery restores persistent session",
+      "pass": true
+    },
+    {
+      "variant": "sql-safe",
+      "name": "database recovery restores persistent session",
+      "pass": true
+    },
+    {
+      "variant": "mongo-unsafe",
+      "name": "database recovery restores persistent session",
+      "pass": true
+    },
+    {
+      "variant": "mongo-safe",
+      "name": "database recovery restores persistent session",
+      "pass": true
+    }
+  ]
+}

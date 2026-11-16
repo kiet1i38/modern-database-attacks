@@ -63,7 +63,7 @@ export function publicUser(user) {
   const { id, username, name, role, email, department, active } = user;
   return { id, username, name, role, email, department, active: Boolean(active) };
 }
-export function diagnostic(variant, input, success) {
+export function diagnostic(variant, input, success, rejected = false) {
   const sql = variant.startsWith("sql");
   const safe = VARIANTS[variant].safe;
   const recognized = sql
@@ -71,14 +71,19 @@ export function diagnostic(variant, input, success) {
     : MONGO_PAYLOADS.find(p => JSON.stringify(p.password) === JSON.stringify(input.password));
   return {
     variant, success, payload: recognized?.id || (typeof input.password === "object" ? "operator" : "normal"),
-    inputType: typeof input.password,
+    inputType: input.password === null ? "null" : Array.isArray(input.password) ? "array" : typeof input.password,
+    authQueryExecuted: !rejected,
     request: { username: recognized ? input.username : "[redacted]", password: recognized ? input.password : "[redacted]" },
-    queryTemplate: sql
+    queryTemplate: rejected ? "Không chạy truy vấn xác thực: input bị từ chối trước bước tìm tài khoản." : sql
       ? (safe ? "SELECT * FROM users WHERE username = ?; verifyPassword(password, passwordHash)" : "SELECT * FROM users WHERE username = '<input>' AND password = '<input>'\nORDER BY role ASC, username ASC LIMIT 1")
-      : (safe ? "findOne({ username: <validated string> }); verifyPassword(password, passwordHash)" : "findOne({ username: <input>, password: <input> })"),
-    explanation: safe
-      ? "Input không được diễn giải thành điều kiện truy vấn; mật khẩu được xác minh bằng scrypt."
-      : "Input thay đổi điều kiện truy vấn. Đây là lỗi xác thực cố ý của bản lab."
+      : (safe ? "findOne({ username: <validated string> }); verifyPassword(password, passwordHash)" : recognized
+        ? "findOne(" + JSON.stringify({ username: input.username, password: input.password }, null, 2) + ")"
+        : "findOne({ username: <input>, password: <input> })"),
+    explanation: rejected
+      ? "Validation chặn request trước truy vấn xác thực. Session và audit vẫn có thể dùng database."
+      : safe
+        ? "Truy vấn chỉ tìm username; mật khẩu được xác minh riêng bằng scrypt."
+        : "Bản unsafe đưa trực tiếp input vào truy vấn. Object toán tử có thể thay điều kiện so sánh mật khẩu; chuỗi thông thường vẫn được so sánh như giá trị."
   };
 }
 export function ticketInput(body) {

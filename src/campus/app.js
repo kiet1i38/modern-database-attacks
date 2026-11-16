@@ -86,6 +86,7 @@ export function createCampusApp({ repo, variant, secret, sessionMaxAge = 1800000
       detail = diagnostic(variant, input, Boolean(user));
     } catch (error) {
       if (error.status === 400) {
+        if (!input) error.diagnostic = diagnostic(variant, { username: req.body?.username, password: req.body?.password }, false, true);
         await repo.audit({ id: randomUUID(), actor: "anonymous", action: "login", result: "rejected", payload: "invalid-input", createdAt: now });
       }
       throw error;
@@ -183,7 +184,8 @@ export function createCampusApp({ repo, variant, secret, sessionMaxAge = 1800000
     if (res.headersSent) return next(error);
     const status = error.status || (error.type === "entity.too.large" ? 413 : 503);
     res.status(status).json({ ok: false, code: error.code || (status === 400 ? "INVALID_JSON" : "SERVICE_UNAVAILABLE"),
-      message: status >= 500 ? "Database tạm thời không khả dụng. Vui lòng thử lại." : error.message });
+      message: status >= 500 ? "Database tạm thời không khả dụng. Vui lòng thử lại." : error.message,
+      ...(error.diagnostic ? { diagnostic: error.diagnostic } : {}) });
   });
   return app;
 }
