@@ -68,7 +68,14 @@ export function diagnostic(variant, input, success, rejected = false) {
   const safe = VARIANTS[variant].safe;
   const recognized = sql
     ? SQL_PAYLOADS.find(p => p.username === input.username && p.password === input.password)
-    : MONGO_PAYLOADS.find(p => JSON.stringify(p.password) === JSON.stringify(input.password));
+    : MONGO_PAYLOADS.find(p => {
+      const password = input.password;
+      if (typeof input.username !== "string" || !password || typeof password !== "object" || Array.isArray(password) || Object.keys(password).length !== 1) return false;
+      const [operator, value] = Object.entries(p.password)[0];
+      return Array.isArray(value)
+        ? Array.isArray(password[operator]) && password[operator].length === value.length && value.every((item, index) => item === password[operator][index])
+        : password[operator] === value;
+    });
   return {
     variant, success, payload: recognized?.id || (typeof input.password === "object" ? "operator" : "normal"),
     inputType: input.password === null ? "null" : Array.isArray(input.password) ? "array" : typeof input.password,
@@ -83,7 +90,9 @@ export function diagnostic(variant, input, success, rejected = false) {
       ? "Validation chặn request trước truy vấn xác thực. Session và audit vẫn có thể dùng database."
       : safe
         ? "Truy vấn chỉ tìm username; mật khẩu được xác minh riêng bằng scrypt."
-        : "Bản unsafe đưa trực tiếp input vào truy vấn. Object toán tử có thể thay điều kiện so sánh mật khẩu; chuỗi thông thường vẫn được so sánh như giá trị."
+        : sql
+          ? "Bản unsafe ghép input vào câu SQL. Chuỗi payload có thể thay đổi cú pháp và điều kiện truy vấn để bỏ qua kiểm tra mật khẩu."
+          : "Bản unsafe đưa trực tiếp input vào truy vấn. Object toán tử có thể thay điều kiện so sánh mật khẩu; chuỗi thông thường vẫn được so sánh như giá trị."
   };
 }
 export function ticketInput(body) {

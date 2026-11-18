@@ -59,6 +59,30 @@ test("known teaching payload is classified without normal password export", () =
   assert.equal(diagnostic("sql-unsafe", SQL_PAYLOADS[0], true).payload, "tautology");
   assert.equal(diagnostic("mongo-unsafe", { username: "admin", password: { $gt: "" } }, true).payload, "gt");
 });
+
+test("diagnostics match every Mongo preset without walking rejected nested input", () => {
+  for (const preset of MONGO_PAYLOADS) {
+    assert.equal(diagnostic("mongo-safe", { username: "admin", password: preset.password }, false, true).payload, preset.id);
+  }
+  const nested = JSON.parse("[".repeat(7500) + "0" + "]".repeat(7500));
+  for (const input of [
+    { username: "admin", password: nested },
+    { username: "admin", password: { $gt: nested } },
+    { username: nested, password: { $gt: "" } }
+  ]) {
+    const detail = diagnostic("mongo-safe", input, false, true);
+    assert.deepEqual(detail.request, { username: "[redacted]", password: "[redacted]" });
+    assert.doesNotThrow(() => JSON.stringify(detail));
+  }
+});
+
+test("unsafe explanations distinguish SQL strings from Mongo operators", () => {
+  const sql = diagnostic("sql-unsafe", SQL_PAYLOADS[0], true).explanation;
+  const mongo = diagnostic("mongo-unsafe", { username: "admin", password: MONGO_PAYLOADS[0].password }, true).explanation;
+  assert.match(sql, /SQL/);
+  assert.doesNotMatch(sql, /Object toán tử/);
+  assert.match(mongo, /Object toán tử/);
+});
 test("ticket input validates enum/length and ignores forged owner/role", () => {
   const input = ticketInput({ title: "Help me", description: "A sufficiently long description", ownerId: "admin", role: "admin" });
   assert.equal(Object.hasOwn(input, "ownerId"), false);

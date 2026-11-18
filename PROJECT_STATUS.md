@@ -2,6 +2,8 @@
 
 Current application: four local variants in src/campus/, started with docker compose up -d --build --wait --wait-timeout 240.
 
+Vercel preparation is available through api/index.js and vercel.json. See docs/VERCEL.html for separate hosted configuration and database setup. Preparing this branch does not publish or change the main-branch deployments.
+
 - Required Topic 12: MongoDB-backed login, real operator-injection bypass, safe comparison.
 - Primary guide: README.md and docs/DEMO_GUIDE.html.
 - Code walkthrough: docs/CODE_AND_SECURITY_FLOW.html.

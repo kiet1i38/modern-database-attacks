@@ -18,11 +18,13 @@ class DatabaseStore extends session.Store {
   destroy(sid, callback) { this.repo.deleteSession(sid).then(() => callback?.()).catch(callback); }
   touch(sid, data, callback) { this.set(sid, data, callback); }
 }
-export function createCampusApp({ repo, variant, secret, sessionMaxAge = 1800000 }) {
+export function createCampusApp({ repo, variant, secret, sessionMaxAge = 1800000, hosted = false, variantUrls = {} }) {
   if (!VARIANTS[variant] || !secret || secret.length < 32) throw new Error("Invalid variant/session configuration.");
   const app = express();
+  if (hosted) app.set("trust proxy", 1);
   const definition = VARIANTS[variant];
   const cookieName = "campus_" + variant.replaceAll("-", "_");
+  // shortcut: this limit is per process; use a shared edge limit before hosting beyond a small demo.
   const attempts = new Map();
   app.disable("x-powered-by");
   app.use((req, res, next) => {
@@ -38,14 +40,14 @@ export function createCampusApp({ repo, variant, secret, sessionMaxAge = 1800000
     catch { res.status(503).json({ ok: false, variant, database: definition.database, status: "unavailable" }); }
   }));
   app.get("/api/config", (req, res) => res.json({
-    variant, ...definition, variants: VARIANTS,
+    variant, ...definition, variants: Object.fromEntries(Object.entries(VARIANTS).map(([id, value]) => [id, { ...value, ...(variantUrls[id] ? { url: variantUrls[id] } : {}) }])),
     payloads: variant.startsWith("sql") ? SQL_PAYLOADS : MONGO_PAYLOADS,
-    localOnly: true
+    localOnly: !hosted
   }));
   app.use("/api", express.json({ limit: "16kb" }));
   app.use("/api", session({
     name: cookieName, secret, store: new DatabaseStore(repo), resave: false, saveUninitialized: false,
-    cookie: { httpOnly: true, sameSite: "strict", secure: false, maxAge: sessionMaxAge }
+    cookie: { httpOnly: true, sameSite: "strict", secure: hosted, maxAge: sessionMaxAge }
   }));
   app.use("/api", (req, res, next) => {
     if (!req.session.csrfToken) req.session.csrfToken = token();

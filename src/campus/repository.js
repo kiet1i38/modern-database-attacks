@@ -4,12 +4,13 @@ import { seedData, VARIANTS } from "./domain.js";
 
 export async function createRepository(variant, env = process.env) {
   if (!VARIANTS[variant]) throw new Error("VARIANT phải là sql-safe/sql-unsafe/mongo-safe/mongo-unsafe.");
-  const databaseName = "campus_" + variant.replaceAll("-", "_");
+  const databaseName = env.CAMPUS_DATABASE || "campus_" + variant.replaceAll("-", "_");
   if (variant.startsWith("sql")) {
     const pool = mysql.createPool({
       host: env.MYSQL_HOST || "127.0.0.1", port: Number(env.MYSQL_PORT || 3306),
       user: env.MYSQL_USER || "campus", password: env.MYSQL_PASSWORD || "campus-local-demo-only",
-      database: databaseName, connectionLimit: 8, connectTimeout: 5000, multipleStatements: false
+      database: databaseName, connectionLimit: 8, connectTimeout: 5000, multipleStatements: false,
+      ...(env.MYSQL_SSL === "true" ? { ssl: { rejectUnauthorized: true, ...(env.MYSQL_SSL_CA ? { ca: env.MYSQL_SSL_CA } : {}) } } : {})
     });
     const query = async (sql, params = []) => (await pool.execute(sql, params))[0];
     const normalize = row => row ? { ...row, active: Boolean(row.active), createdAt: Number(row.createdAt), updatedAt: Number(row.updatedAt) } : null;
@@ -80,8 +81,12 @@ export async function createRepository(variant, env = process.env) {
     };
     return repository;
   }
-  const client = new MongoClient(env.MONGODB_URI || "mongodb://127.0.0.1:27017", { serverSelectionTimeoutMS: 3000 });
-  await client.connect();
+  const client = new MongoClient(env.MONGODB_URI || "mongodb://127.0.0.1:27017", {
+    serverSelectionTimeoutMS: 3000,
+    ...(env.CAMPUS_HOSTED_DEMO === "true" ? { tls: true, tlsAllowInvalidCertificates: false, tlsAllowInvalidHostnames: false } : {})
+  });
+  try { await client.connect(); }
+  catch (error) { await client.close(); throw error; }
   const db = client.db(databaseName);
   const users = db.collection("users"), tickets = db.collection("tickets"), sessions = db.collection("sessions"), audit = db.collection("audit");
   const strip = row => { if (!row) return null; const { _id, ...rest } = row; return rest; };

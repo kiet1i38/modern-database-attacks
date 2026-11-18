@@ -129,9 +129,10 @@ for (const [variant, definition] of Object.entries(VARIANTS)) {
   });
   await check("other student's ticket denied by backend", async () => assert.equal((await u.request("/tickets/ticket-001")).status,403));
   await check("profile cannot escalate role or id", async () => assert.equal((await u.request("/profile","PATCH",{role:"admin",id:"admin-001"})).status,400));
-  await check("profile update persists", async () => {
-    assert.equal((await u.request("/profile","PATCH",{name:"Nguyễn Minh Anh QA",email:"student@campus.example",department:"Công nghệ thông tin"})).status,200);
-    assert.equal((await u.request("/auth/me")).data.user.name,"Nguyễn Minh Anh QA");
+  await check("profile update preserves a legitimate apostrophe", async () => {
+    const name = "Minh Anh O'Connor";
+    assert.equal((await u.request("/profile","PATCH",{name,email:"student@campus.example",department:"Công nghệ thông tin"})).status,200);
+    assert.equal((await u.request("/auth/me")).data.user.name,name);
     assert.equal((await u.request("/profile","PATCH",{email:"not-email"})).status,400);
   });
   let ticketId;
