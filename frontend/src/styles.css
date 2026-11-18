@@ -73,6 +73,10 @@
 .demo-history summary { cursor: pointer; }
 .demo-history dt { font-weight: 650; }
 .demo-history dd { margin: 4px 0 12px; }
+.presentation { max-width: 920px; }
+.presentation .demo-panel { max-width: none; }
+.presentation .demo-controls label:first-child { flex: 0 0 150px; }
 @media (max-width: 600px) {
   .demo-results:not(:empty) { grid-template-columns: 1fr; }
+  .presentation .demo-controls label:first-child { flex-basis: 100%; }
 }
