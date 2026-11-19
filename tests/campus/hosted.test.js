@@ -43,10 +43,17 @@ test("hosted config validates opt-in, secrets, databases and HTTPS variant links
     { VARIANT: "sql-safe", MYSQL_HOST: undefined }, { VARIANT: "sql-safe", MYSQL_PASSWORD: undefined },
     { VARIANT: "sql-safe", MYSQL_SSL: "false" }, { VARIANT: "sql-safe", MYSQL_PORT: "bad" },
     { CAMPUS_SQL_SAFE_URL: "http://sql-safe.example" }, { CAMPUS_SQL_SAFE_URL: "https://sql-safe.example/path" },
+    { CAMPUS_SQL_UNSAFE_URL: "http://sql-unsafe.example" },
     { CAMPUS_SQL_SAFE_URL: "https://user:password@sql-safe.example" }
   ]) assert.throws(() => loadHostedConfig({ ...environment, ...changes }));
-  const config = loadHostedConfig({ ...environment, VERCEL_ENV: "preview", CAMPUS_SQL_UNSAFE_URL: "https://sql-unsafe.example" });
-  assert.equal(config.variantUrls["sql-unsafe"], undefined);
+  const config = loadHostedConfig({
+    ...environment,
+    VERCEL_ENV: "preview",
+    CAMPUS_SQL_UNSAFE_URL: "https://sql-unsafe.example",
+    CAMPUS_MONGO_UNSAFE_URL: "https://mongo-unsafe.example"
+  });
+  assert.equal(config.variantUrls["sql-unsafe"], "https://sql-unsafe.example");
+  assert.equal(config.variantUrls["mongo-unsafe"], "https://mongo-unsafe.example");
 });
 
 test("production and unsafe variants require separate explicit deployment opt-ins", () => {

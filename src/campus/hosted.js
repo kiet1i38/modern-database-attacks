@@ -24,8 +24,7 @@ export function loadHostedConfig(env = process.env) {
     throw new Error("Hosted MongoDB requires a TLS-enabled mongodb+srv:// MONGODB_URI.");
   }
   const variantUrls = {};
-  for (const [id, definition] of Object.entries(VARIANTS)) {
-    if (!definition.safe) continue;
+  for (const id of Object.keys(VARIANTS)) {
     const value = env["CAMPUS_" + id.replaceAll("-", "_").toUpperCase() + "_URL"];
     if (!value) continue;
     const url = new URL(value);
