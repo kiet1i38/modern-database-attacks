@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Báo cáo kiểm thử i18n · CampusDesk</title>
+<style>
+:root{font-family:Inter,Segoe UI,Arial,sans-serif;color:#172b3a;background:#f4f7f9}body{margin:0}main{max-width:1180px;margin:0 auto;padding:32px 22px 64px}h1,h2{color:#102d40}h1{font-size:2rem}p,li{line-height:1.6}.summary{background:#fff;border:1px solid #d9e4e9;border-radius:14px;padding:20px;margin:20px 0}.status{color:#087e68;font-weight:700}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:16px}.card{background:#fff;border:1px solid #d9e4e9;border-radius:12px;padding:12px}.card img{width:100%;height:auto;border:1px solid #e0e7eb;border-radius:8px}.card figcaption{font-size:.94rem;line-height:1.4;margin-top:8px}.links a{margin-right:14px}.note{color:#516775;font-size:.93rem}code{background:#e9eff2;padding:2px 5px;border-radius:4px}
+</style>
+</head>
+<body><main>
+<h1>CampusDesk · báo cáo kiểm thử và ảnh đối chiếu</h1>
+<p>Chạy trên nhánh <code>demo_updated</code>, ngày 19/11/2026. Tất cả kiểm thử có ghi database đều dùng Docker project riêng và dữ liệu synthetic. Không reset volume; không ghi hoặc seed lại database Production.</p>
+<section class="summary"><h2>Kết quả</h2>
+<ul>
+<li><span class="status">40/40</span> unit, auth, hosted-config và i18n tests.</li>
+<li><span class="status">12/12</span> legacy validation, password và security-route tests.</li>
+<li><span class="status">191/191</span> API integration assertions trên bốn app Docker dùng MySQL và MongoDB thật.</li>
+<li><span class="status">14/14</span> scenario trong mỗi biến thể, tổng cộng 56 lượt so sánh; cả kết quả uncontrolled và controlled đều hiển thị.</li>
+<li><span class="status">4/4</span> biến thể đã mở ở tiếng Việt và tiếng Anh; tài khoản admin và user đều đăng nhập được. Admin thấy mục Users; user không thấy.</li>
+<li><span class="status">Build đạt</span> <code>npm run build:vercel</code>; <span class="status">i18n đạt</span> 346 khóa khớp giữa hai locale và 12 trang docs tiếng Anh; <span class="status">Audit đạt</span> 0 dependency vulnerability ở production dependencies.</li>
+</ul>
+<p>Playwright kiểm tra login, đổi locale, dashboard đã tải xong, bảng Users, role visibility và scenario compare. UI ticket create/update và admin create/lock/unlock user đã được thao tác với dữ liệu synthetic local. API suite kiểm tra session, CSRF, role/ownership, CRUD, lock, headers, payloads safe/unsafe và isolation giữa bốn biến thể.</p>
+<p class="note">Không quay hoặc chụp mobile theo yêu cầu. Build có cảnh báo bundle JavaScript 528.24 kB vượt mốc 500 kB; build vẫn thành công. Một HTTP 401 trong browser log đến từ lượt nhập sai mật khẩu có chủ đích trên Mongo Safe.</p>
+<p class="links"><a href="api-results.json">Kết quả máy đọc JSON</a><a href="api-results.log">Log integration đầy đủ</a></p>
+</section>
+<h2>Login hai ngôn ngữ</h2><div class="grid">
+<figure class="card"><a href="login-sql-unsafe-vi.png"><img src="login-sql-unsafe-vi.png" alt="SQL Unsafe login tiếng Việt"></a><figcaption>SQL Unsafe · login tiếng Việt</figcaption></figure>
+<figure class="card"><a href="login-sql-unsafe-en.png"><img src="login-sql-unsafe-en.png" alt="SQL Unsafe login tiếng Anh"></a><figcaption>SQL Unsafe · login tiếng Anh</figcaption></figure>
+<figure class="card"><a href="login-sql-safe-vi.png"><img src="login-sql-safe-vi.png" alt="SQL Safe login tiếng Việt"></a><figcaption>SQL Safe · login tiếng Việt</figcaption></figure>
+<figure class="card"><a href="login-sql-safe-en.png"><img src="login-sql-safe-en.png" alt="SQL Safe login tiếng Anh"></a><figcaption>SQL Safe · login tiếng Anh</figcaption></figure>
+<figure class="card"><a href="login-mongo-unsafe-vi.png"><img src="login-mongo-unsafe-vi.png" alt="MongoDB Unsafe login tiếng Việt"></a><figcaption>MongoDB Unsafe · login tiếng Việt</figcaption></figure>
+<figure class="card"><a href="login-mongo-unsafe-en.png"><img src="login-mongo-unsafe-en.png" alt="MongoDB Unsafe login tiếng Anh"></a><figcaption>MongoDB Unsafe · login tiếng Anh</figcaption></figure>
+<figure class="card"><a href="login-mongo-safe-vi.png"><img src="login-mongo-safe-vi.png" alt="MongoDB Safe login tiếng Việt"></a><figcaption>MongoDB Safe · login tiếng Việt</figcaption></figure>
+<figure class="card"><a href="login-mongo-safe-en.png"><img src="login-mongo-safe-en.png" alt="MongoDB Safe login tiếng Anh"></a><figcaption>MongoDB Safe · login tiếng Anh</figcaption></figure>
+<figure class="card"><a href="login-mongo-safe-invalid-vi.png"><img src="login-mongo-safe-invalid-vi.png" alt="MongoDB Safe từ chối mật khẩu sai"></a><figcaption>MongoDB Safe · thông báo lỗi đã dịch khi nhập sai mật khẩu</figcaption></figure>
+</div>
+<h2>Dashboard, role và quản trị tài khoản</h2><div class="grid">
+<figure class="card"><a href="dashboard-sql-unsafe-admin-en.png"><img src="dashboard-sql-unsafe-admin-en.png" alt="SQL Unsafe dashboard admin"></a><figcaption>SQL Unsafe · admin dashboard</figcaption></figure>
+<figure class="card"><a href="dashboard-sql-unsafe-user-en.png"><img src="dashboard-sql-unsafe-user-en.png" alt="SQL Unsafe dashboard user"></a><figcaption>SQL Unsafe · user dashboard, không có tab Users</figcaption></figure>
+<figure class="card"><a href="dashboard-sql-safe-admin-en.png"><img src="dashboard-sql-safe-admin-en.png" alt="SQL Safe dashboard admin"></a><figcaption>SQL Safe · admin dashboard đã tải dữ liệu</figcaption></figure>
+<figure class="card"><a href="dashboard-sql-safe-user-en.png"><img src="dashboard-sql-safe-user-en.png" alt="SQL Safe dashboard user"></a><figcaption>SQL Safe · user dashboard</figcaption></figure>
+<figure class="card"><a href="dashboard-mongo-unsafe-admin-en.png"><img src="dashboard-mongo-unsafe-admin-en.png" alt="MongoDB Unsafe dashboard admin"></a><figcaption>MongoDB Unsafe · admin dashboard</figcaption></figure>
+<figure class="card"><a href="dashboard-mongo-unsafe-user-en.png"><img src="dashboard-mongo-unsafe-user-en.png" alt="MongoDB Unsafe dashboard user"></a><figcaption>MongoDB Unsafe · user dashboard</figcaption></figure>
+<figure class="card"><a href="dashboard-mongo-safe-admin-en.png"><img src="dashboard-mongo-safe-admin-en.png" alt="MongoDB Safe dashboard admin"></a><figcaption>MongoDB Safe · admin dashboard</figcaption></figure>
+<figure class="card"><a href="dashboard-mongo-safe-admin-vi.png"><img src="dashboard-mongo-safe-admin-vi.png" alt="MongoDB Safe admin dashboard tiếng Việt"></a><figcaption>MongoDB Safe · dashboard admin tiếng Việt</figcaption></figure>
+<figure class="card"><a href="dashboard-mongo-safe-user-en.png"><img src="dashboard-mongo-safe-user-en.png" alt="MongoDB Safe dashboard user"></a><figcaption>MongoDB Safe · user dashboard</figcaption></figure>
+<figure class="card"><a href="users-sql-unsafe-admin-en.png"><img src="users-sql-unsafe-admin-en.png" alt="SQL Unsafe user management"></a><figcaption>SQL Unsafe · trang quản lý user của admin</figcaption></figure>
+<figure class="card"><a href="users-sql-safe-admin-en.png"><img src="users-sql-safe-admin-en.png" alt="SQL Safe user management"></a><figcaption>SQL Safe · trang quản lý user đã tải dữ liệu</figcaption></figure>
+<figure class="card"><a href="users-mongo-unsafe-admin-en.png"><img src="users-mongo-unsafe-admin-en.png" alt="MongoDB Unsafe user management"></a><figcaption>MongoDB Unsafe · trang quản lý user</figcaption></figure>
+<figure class="card"><a href="users-mongo-safe-admin-en.png"><img src="users-mongo-safe-admin-en.png" alt="MongoDB Safe user management"></a><figcaption>MongoDB Safe · trang quản lý user</figcaption></figure>
+</div>
+<h2>Audit, demo và so sánh scenario</h2><div class="grid">
+<figure class="card"><a href="lab-sql-unsafe-admin-en.png"><img src="lab-sql-unsafe-admin-en.png" alt="SQL Unsafe audit và demo"></a><figcaption>SQL Unsafe · audit và demo</figcaption></figure>
+<figure class="card"><a href="lab-sql-safe-admin-en.png"><img src="lab-sql-safe-admin-en.png" alt="SQL Safe audit và demo"></a><figcaption>SQL Safe · audit và demo</figcaption></figure>
+<figure class="card"><a href="lab-mongo-unsafe-admin-en.png"><img src="lab-mongo-unsafe-admin-en.png" alt="MongoDB Unsafe audit và demo"></a><figcaption>MongoDB Unsafe · audit và demo</figcaption></figure>
+<figure class="card"><a href="lab-mongo-safe-admin-en.png"><img src="lab-mongo-safe-admin-en.png" alt="MongoDB Safe audit và demo"></a><figcaption>MongoDB Safe · audit và demo</figcaption></figure>
+<figure class="card"><a href="lab-scenarios-sql-unsafe-en.png"><img src="lab-scenarios-sql-unsafe-en.png" alt="So sánh scenario SQL Unsafe"></a><figcaption>SQL Unsafe · kết quả scenario sau khi chạy đủ 14 tình huống</figcaption></figure>
+<figure class="card"><a href="lab-scenarios-sql-safe-en.png"><img src="lab-scenarios-sql-safe-en.png" alt="So sánh scenario SQL Safe"></a><figcaption>SQL Safe · kết quả scenario sau khi chạy đủ 14 tình huống</figcaption></figure>
+<figure class="card"><a href="lab-scenarios-mongo-unsafe-en.png"><img src="lab-scenarios-mongo-unsafe-en.png" alt="So sánh scenario MongoDB Unsafe"></a><figcaption>MongoDB Unsafe · kết quả scenario sau khi chạy đủ 14 tình huống</figcaption></figure>
+<figure class="card"><a href="lab-scenarios-mongo-safe-en.png"><img src="lab-scenarios-mongo-safe-en.png" alt="So sánh scenario MongoDB Safe"></a><figcaption>MongoDB Safe · kết quả scenario sau khi chạy đủ 14 tình huống</figcaption></figure>
+<figure class="card"><a href="lab-simulation-sql-unsafe-en.png"><img src="lab-simulation-sql-unsafe-en.png" alt="SQL Unsafe so sánh mô phỏng đăng nhập sai"></a><figcaption>SQL Unsafe · một scenario mô phỏng đã chọn và so sánh</figcaption></figure>
+</div>
+<p class="note">Ảnh là bằng chứng hiển thị giao diện, không thay thế assertion hoặc API log. Bài kiểm thử Production chỉ đọc health/config sau khi triển khai; không chạy payload đăng nhập hoặc thao tác ghi lên database hosted.</p>
+</main></body></html>

@@ -3,9 +3,15 @@ import session from "express-session";
 import { randomBytes, randomUUID, timingSafeEqual } from "node:crypto";
 import path from "node:path";
 import { VARIANTS, SQL_PAYLOADS, MONGO_PAYLOADS, STATUSES, PRIORITIES, publicUser, loginInput, diagnostic, verifyPassword, hashPassword, textField, ticketInput, makeTicket, fail } from "./domain.js";
+import { resolveLocale } from "./i18n/locale.js";
+import { translateApiMessage } from "./i18n/messages.js";
 
 const asyncRoute = fn => (req, res, next) => Promise.resolve(fn(req, res, next)).catch(next);
 const token = () => randomBytes(24).toString("hex");
+function localizeDiagnostic(detail, locale) {
+  if (!detail) return null;
+  return { ...detail, explanation: detail.explanationKey ? translateApiMessage(detail.explanationKey, locale) : detail.explanation };
+}
 function sameToken(a, b) {
   if (typeof a !== "string" || typeof b !== "string") return false;
   const left = Buffer.from(a), right = Buffer.from(b);
@@ -35,6 +41,12 @@ export function createCampusApp({ repo, variant, secret, sessionMaxAge = 1800000
     if (req.path.startsWith("/api/")) res.set("Cache-Control", "no-store");
     next();
   });
+  app.use("/api", (req, res, next) => {
+    req.locale = resolveLocale(req.get("accept-language"));
+    res.set("Content-Language", req.locale);
+    res.vary("Accept-Language");
+    next();
+  });
   app.get("/api/health", asyncRoute(async (req, res) => {
     try { await repo.ping(); res.json({ ok: true, variant, database: definition.database, status: "ready" }); }
     catch { res.status(503).json({ ok: false, variant, database: definition.database, status: "unavailable" }); }
@@ -53,8 +65,8 @@ export function createCampusApp({ repo, variant, secret, sessionMaxAge = 1800000
     if (!req.session.csrfToken) req.session.csrfToken = token();
     if (["POST", "PATCH", "DELETE", "PUT"].includes(req.method)) {
       const origin = req.get("origin");
-      if (origin && origin !== req.protocol + "://" + req.get("host")) return next(fail(403, "CSRF_ORIGIN", "Origin không hợp lệ."));
-      if (!sameToken(req.session.csrfToken, req.get("x-csrf-token"))) return next(fail(403, "CSRF_TOKEN", "Phiên đã thay đổi. Vui lòng tải lại trang."));
+      if (origin && origin !== req.protocol + "://" + req.get("host")) return next(fail(403, "CSRF_ORIGIN", "Origin không hợp lệ.", "errors.csrfOrigin"));
+      if (!sameToken(req.session.csrfToken, req.get("x-csrf-token"))) return next(fail(403, "CSRF_TOKEN", "Phiên đã thay đổi. Vui lòng tải lại trang.", "errors.csrfToken"));
     }
     next();
   });
@@ -63,14 +75,14 @@ export function createCampusApp({ repo, variant, secret, sessionMaxAge = 1800000
     return user?.active ? publicUser(user) : null;
   };
   app.get("/api/auth/session", asyncRoute(async (req, res) => {
-    res.json({ user: await currentUser(req), csrfToken: req.session.csrfToken, diagnostic: req.session.diagnostic || null });
+    res.json({ user: await currentUser(req), csrfToken: req.session.csrfToken, diagnostic: localizeDiagnostic(req.session.diagnostic, req.locale) });
   }));
   app.post("/api/auth/login", asyncRoute(async (req, res) => {
     const now = Date.now(), key = req.ip;
     let count = attempts.get(key);
     if (!count || count.until < now) { count = { n: 0, until: now + 60000 }; attempts.set(key, count); }
     for (const [ip, entry] of attempts) if (entry.until < now) attempts.delete(ip);
-    if (++count.n > 100) throw fail(429, "RATE_LIMIT", "Quá nhiều lần đăng nhập. Thử lại sau một phút.");
+    if (++count.n > 100) throw fail(429, "RATE_LIMIT", "Quá nhiều lần đăng nhập. Thử lại sau một phút.", "errors.rateLimit");
     let input, user, detail;
     try {
       input = loginInput(req.body, variant);
@@ -80,7 +92,7 @@ export function createCampusApp({ repo, variant, secret, sessionMaxAge = 1800000
       } else {
         try { user = await repo.unsafeLogin(input.username, input.password); }
         catch (error) {
-          if (error.code === "ER_PARSE_ERROR") throw fail(400, "QUERY_SYNTAX", "Payload làm câu SQL sai cú pháp.");
+          if (error.code === "ER_PARSE_ERROR") throw fail(400, "QUERY_SYNTAX", "Payload làm câu SQL sai cú pháp.", "errors.sqlSyntax");
           throw error;
         }
       }
@@ -94,13 +106,13 @@ export function createCampusApp({ repo, variant, secret, sessionMaxAge = 1800000
       throw error;
     }
     await repo.audit({ id: randomUUID(), actor: user?.username || "anonymous", action: "login", result: user ? "success" : "denied", payload: detail.payload, createdAt: now });
-    if (!user) return res.status(401).json({ ok: false, code: "INVALID_CREDENTIALS", message: "Tên đăng nhập hoặc mật khẩu không đúng.", diagnostic: detail });
+    if (!user) return res.status(401).json({ ok: false, code: "INVALID_CREDENTIALS", messageKey: "errors.invalidCredentials", messageParams: {}, message: translateApiMessage("errors.invalidCredentials", req.locale), diagnostic: localizeDiagnostic(detail, req.locale) });
     await new Promise((resolve, reject) => req.session.regenerate(err => err ? reject(err) : resolve()));
     req.session.userId = user.id;
     req.session.csrfToken = token();
     req.session.diagnostic = detail;
     await new Promise((resolve, reject) => req.session.save(err => err ? reject(err) : resolve()));
-    res.json({ ok: true, user: publicUser(user), csrfToken: req.session.csrfToken, diagnostic: detail });
+    res.json({ ok: true, user: publicUser(user), csrfToken: req.session.csrfToken, diagnostic: localizeDiagnostic(detail, req.locale) });
   }));
   app.post("/api/auth/logout", asyncRoute(async (req, res) => {
     await new Promise((resolve, reject) => req.session.destroy(err => err ? reject(err) : resolve()));
@@ -108,11 +120,11 @@ export function createCampusApp({ repo, variant, secret, sessionMaxAge = 1800000
   }));
   app.use("/api", asyncRoute(async (req, res, next) => {
     req.user = await currentUser(req);
-    if (!req.user) throw fail(401, "UNAUTHENTICATED", "Vui lòng đăng nhập.");
+    if (!req.user) throw fail(401, "UNAUTHENTICATED", "Vui lòng đăng nhập.", "errors.unauthenticated");
     next();
   }));
   app.get("/api/auth/me", (req, res) => res.json({ user: req.user }));
-  const admin = (req, res, next) => req.user.role === "admin" ? next() : next(fail(403, "FORBIDDEN", "Chỉ admin được thực hiện thao tác này."));
+  const admin = (req, res, next) => req.user.role === "admin" ? next() : next(fail(403, "FORBIDDEN", "Chỉ admin được thực hiện thao tác này.", "errors.adminOnly"));
   app.get("/api/dashboard", asyncRoute(async (req, res) => {
     const items = await repo.tickets(req.user.role === "admin" ? null : req.user.id);
     const counts = Object.fromEntries(STATUSES.map(status => [status, items.filter(t => t.status === status).length]));
@@ -131,8 +143,8 @@ export function createCampusApp({ repo, variant, secret, sessionMaxAge = 1800000
   }));
   const ownTicket = async req => {
     const ticket = await repo.ticketById(req.params.id);
-    if (!ticket) throw fail(404, "NOT_FOUND", "Không tìm thấy yêu cầu.");
-    if (req.user.role !== "admin" && ticket.ownerId !== req.user.id) throw fail(403, "FORBIDDEN", "Bạn không có quyền xem yêu cầu này.");
+    if (!ticket) throw fail(404, "NOT_FOUND", "Không tìm thấy yêu cầu.", "errors.ticketNotFound");
+    if (req.user.role !== "admin" && ticket.ownerId !== req.user.id) throw fail(403, "FORBIDDEN", "Bạn không có quyền xem yêu cầu này.", "errors.forbiddenOwnership");
     return ticket;
   };
   app.get("/api/tickets/:id", asyncRoute(async (req, res) => res.json({ ticket: await ownTicket(req) })));
@@ -144,18 +156,18 @@ export function createCampusApp({ repo, variant, secret, sessionMaxAge = 1800000
   app.patch("/api/tickets/:id", admin, asyncRoute(async (req, res) => {
     const ticket = await ownTicket(req);
     const status = req.body.status ?? ticket.status, priority = req.body.priority ?? ticket.priority;
-    if (!STATUSES.includes(status) || !PRIORITIES.includes(priority)) throw fail(400, "INVALID_INPUT", "Trạng thái hoặc ưu tiên không hợp lệ.");
+    if (!STATUSES.includes(status) || !PRIORITIES.includes(priority)) throw fail(400, "INVALID_INPUT", "Trạng thái hoặc ưu tiên không hợp lệ.", "errors.invalidStatusPriority");
     res.json({ ticket: await repo.updateTicket(ticket.id, { status, priority }) });
   }));
   app.get("/api/admin/users", admin, asyncRoute(async (req, res) => res.json({ users: (await repo.users()).map(publicUser) })));
   app.get("/api/admin/audit", admin, asyncRoute(async (req, res) => res.json({ events: await repo.events() })));
   app.post("/api/admin/users", admin, asyncRoute(async (req, res) => {
     const username = textField(req.body.username, "Username", 40, 3);
-    if (!/^[a-zA-Z0-9_.-]+$/.test(username)) throw fail(400, "INVALID_INPUT", "Username chỉ nhận chữ, số, dấu chấm, gạch ngang.");
+    if (!/^[a-zA-Z0-9_.-]+$/.test(username)) throw fail(400, "INVALID_INPUT", "Username chỉ nhận chữ, số, dấu chấm, gạch ngang.", "errors.invalidUsername");
     const password = textField(req.body.password, "Mật khẩu", 128, 8);
     const role = req.body.role || "user";
-    if (!["user", "admin"].includes(role)) throw fail(400, "INVALID_INPUT", "Role không hợp lệ.");
-    if (await repo.userByUsername(username)) throw fail(409, "DUPLICATE_USER", "Username đã tồn tại.");
+    if (!["user", "admin"].includes(role)) throw fail(400, "INVALID_INPUT", "Role không hợp lệ.", "errors.invalidRole");
+    if (await repo.userByUsername(username)) throw fail(409, "DUPLICATE_USER", "Username đã tồn tại.", "errors.duplicateUser");
     const user = { id: randomUUID(), username, name: textField(req.body.name, "Họ tên", 120, 2), role,
       email: textField(req.body.email, "Email", 160), department: textField(req.body.department || "Sinh viên", "Đơn vị"), active: true,
       password: definition.safe ? null : password, passwordHash: definition.safe ? hashPassword(password) : null };
@@ -163,20 +175,20 @@ export function createCampusApp({ repo, variant, secret, sessionMaxAge = 1800000
     res.status(201).json({ user: publicUser(user) });
   }));
   app.patch("/api/admin/users/:id", admin, asyncRoute(async (req, res) => {
-    if (req.params.id === req.user.id) throw fail(400, "SELF_LOCK", "Không được khóa tài khoản đang sử dụng.");
+    if (req.params.id === req.user.id) throw fail(400, "SELF_LOCK", "Không được khóa tài khoản đang sử dụng.", "errors.selfLock");
     const target = await repo.userById(req.params.id);
-    if (!target) throw fail(404, "NOT_FOUND", "Không tìm thấy tài khoản.");
-    if (typeof req.body.active !== "boolean" || Object.keys(req.body).some(k => k !== "active")) throw fail(400, "INVALID_INPUT", "Chỉ nhận active kiểu boolean.");
+    if (!target) throw fail(404, "NOT_FOUND", "Không tìm thấy tài khoản.", "errors.accountNotFound");
+    if (typeof req.body.active !== "boolean" || Object.keys(req.body).some(k => k !== "active")) throw fail(400, "INVALID_INPUT", "Chỉ nhận active kiểu boolean.", "errors.activeBoolean");
     res.json({ user: publicUser(await repo.updateUser(target.id, { active: req.body.active })) });
   }));
   app.patch("/api/profile", asyncRoute(async (req, res) => {
-    if (Object.keys(req.body).some(key => !["name","email","department"].includes(key))) throw fail(400, "INVALID_INPUT", "Không được thay đổi role/id qua hồ sơ.");
+    if (Object.keys(req.body).some(key => !["name","email","department"].includes(key))) throw fail(400, "INVALID_INPUT", "Không được thay đổi role/id qua hồ sơ.", "errors.profileImmutable");
     const changes = {};
     for (const key of ["name", "email", "department"]) if (Object.hasOwn(req.body, key)) changes[key] = textField(req.body[key], key, key === "email" ? 160 : 120);
-    if (changes.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(changes.email)) throw fail(400, "INVALID_INPUT", "Email không hợp lệ.");
+    if (changes.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(changes.email)) throw fail(400, "INVALID_INPUT", "Email không hợp lệ.", "errors.invalidEmail");
     res.json({ user: publicUser(await repo.updateUser(req.user.id, changes)) });
   }));
-  app.use("/api", (req, res) => res.status(404).json({ code: "NOT_FOUND", message: "API không tồn tại." }));
+  app.use("/api", (req, res) => res.status(404).json({ code: "NOT_FOUND", messageKey: "errors.apiNotFound", messageParams: {}, message: translateApiMessage("errors.apiNotFound", req.locale) }));
   app.use("/docs", express.static(path.resolve("docs")), (req, res) => res.status(404).send("Documentation not found"));
   app.use("/evidence", express.static(path.resolve("evidence")), (req, res) => res.status(404).send("Evidence not found"));
   app.get("/favicon.ico", (req, res) => res.redirect("/favicon.svg"));
@@ -185,8 +197,10 @@ export function createCampusApp({ repo, variant, secret, sessionMaxAge = 1800000
   app.use((error, req, res, next) => {
     if (res.headersSent) return next(error);
     const status = error.status || (error.type === "entity.too.large" ? 413 : 503);
+    const messageKey = error.messageKey || (error.type === "entity.parse.failed" ? "errors.invalidJson" : status >= 500 ? "errors.databaseUnavailable" : "errors.invalidInput");
+    const messageParams = error.messageParams || {};
     res.status(status).json({ ok: false, code: error.code || (status === 400 ? "INVALID_JSON" : "SERVICE_UNAVAILABLE"),
-      message: status >= 500 ? "Database tạm thời không khả dụng. Vui lòng thử lại." : error.message,
+      messageKey, messageParams, message: translateApiMessage(messageKey, req.locale, messageParams),
       ...(error.diagnostic ? { diagnostic: error.diagnostic } : {}) });
   });
   return app;

@@ -19,7 +19,8 @@
     "db:logs": "docker compose logs -f mysql mongodb",
     "db:reset": "node scripts/campus-seed.js --reset --yes",
     "db:prepare:hosted": "node scripts/prepare-hosted-db.js",
-    "test": "node --test tests/campus/unit.test.js tests/campus/auth.test.js tests/campus/hosted.test.js",
+    "test": "node --test tests/campus/unit.test.js tests/campus/auth.test.js tests/campus/hosted.test.js tests/campus/i18n.test.js",
+    "test:i18n": "node scripts/check-i18n.mjs",
     "test:legacy": "node --test tests/unit/validation.test.js tests/unit/password.test.js tests/security/routes.test.js",
     "test:integration": "node scripts/test-campus-api.js",
     "test:all": "npm test && npm run test:integration"
@@ -29,10 +30,12 @@
     "@radix-ui/themes": "^3.3.0",
     "express": "^4.22.3",
     "express-session": "^1.19.0",
+    "i18next": "^27.2.1",
     "mongodb": "^6.21.0",
     "mysql2": "^3.24.5",
     "react": "^19.3.0",
-    "react-dom": "^19.3.0"
+    "react-dom": "^19.3.0",
+    "react-i18next": "^18.0.3"
   },
   "devDependencies": {
     "@types/node": "^26.6.4",

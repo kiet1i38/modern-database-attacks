@@ -23,19 +23,19 @@ export const MONGO_PAYLOADS = [
   { id: "nin", label: "$nin — không nằm trong danh sách", password: { $nin: ["not-the-password"] } },
   { id: "exists", label: "$exists — trường có tồn tại", password: { $exists: true } }
 ];
-export function fail(status, code, message) {
-  return Object.assign(new Error(message), { status, code });
+export function fail(status, code, message, messageKey = "errors.invalidInput", messageParams = {}) {
+  return Object.assign(new Error(message), { status, code, messageKey, messageParams });
 }
 export function textField(value, label, max = 120, min = 1) {
   if (typeof value !== "string" || value.trim().length < min || value.length > max) {
-    throw fail(400, "INVALID_INPUT", label + " phải là chuỗi từ " + min + " đến " + max + " ký tự.");
+    throw fail(400, "INVALID_INPUT", label + " phải là chuỗi từ " + min + " đến " + max + " ký tự.", "errors.fieldLength", { min, max });
   }
   return value.trim();
 }
 export function loginInput(body, variant) {
   if (!body || Array.isArray(body) || typeof body !== "object" ||
       Object.keys(body).some(key => !["username", "password"].includes(key))) {
-    throw fail(400, "INVALID_INPUT", "Chỉ nhận username và password.");
+    throw fail(400, "INVALID_INPUT", "Chỉ nhận username và password.", "errors.usernameAndPasswordOnly");
   }
   // Do not trim login strings: trailing spaces are material to MySQL -- comments.
   textField(body.username, "Username", 120);
@@ -43,7 +43,7 @@ export function loginInput(body, variant) {
   if (typeof password === "string") {
     textField(password, "Mật khẩu", 256);
   } else if (variant !== "mongo-unsafe" || !password || Array.isArray(password)) {
-    throw fail(400, "INVALID_INPUT", "Mật khẩu phải là chuỗi; object không được dùng làm điều kiện xác thực.");
+    throw fail(400, "INVALID_INPUT", "Mật khẩu phải là chuỗi; object không được dùng làm điều kiện xác thực.", "errors.passwordMustBeString");
   } else {
     // Bound the teaching surface without removing the intentional operator-injection defect.
     const entries = Object.entries(password);
@@ -54,7 +54,7 @@ export function loginInput(body, variant) {
       (key === "$nin" && Array.isArray(value) && value.length <= 5 && value.every(v => typeof v === "string" && v.length <= 120)) ||
       (key === "$exists" && typeof value === "boolean")
     );
-    if (!valid) throw fail(400, "INVALID_INPUT", "Lab chỉ nhận sáu toán tử trong bộ demo.");
+    if (!valid) throw fail(400, "INVALID_INPUT", "Lab chỉ nhận sáu toán tử trong bộ demo.", "errors.demoOperatorsOnly");
   }
   return { username: body.username, password };
 }
@@ -76,6 +76,7 @@ export function diagnostic(variant, input, success, rejected = false) {
         ? Array.isArray(password[operator]) && password[operator].length === value.length && value.every((item, index) => item === password[operator][index])
         : password[operator] === value;
     });
+  const explanationKey = rejected ? "lab.rejectedExplanation" : safe ? "lab.safeExplanation" : sql ? "lab.unsafeSqlExplanation" : "lab.unsafeMongoExplanation";
   return {
     variant, success, payload: recognized?.id || (typeof input.password === "object" ? "operator" : "normal"),
     inputType: input.password === null ? "null" : Array.isArray(input.password) ? "array" : typeof input.password,
@@ -86,6 +87,7 @@ export function diagnostic(variant, input, success, rejected = false) {
       : (safe ? "findOne({ username: <validated string> }); verifyPassword(password, passwordHash)" : recognized
         ? "findOne(" + JSON.stringify({ username: input.username, password: input.password }, null, 2) + ")"
         : "findOne({ username: <input>, password: <input> })"),
+    explanationKey,
     explanation: rejected
       ? "Validation chặn request trước truy vấn xác thực. Session và audit vẫn có thể dùng database."
       : safe
@@ -101,7 +103,7 @@ export function ticketInput(body) {
   const category = body?.category || "academic";
   const priority = body?.priority || "medium";
   if (!["academic", "it", "facilities", "other"].includes(category) || !PRIORITIES.includes(priority)) {
-    throw fail(400, "INVALID_INPUT", "Danh mục hoặc mức ưu tiên không hợp lệ.");
+    throw fail(400, "INVALID_INPUT", "Danh mục hoặc mức ưu tiên không hợp lệ.", "errors.invalidCategoryPriority");
   }
   return { title, description, category, priority };
 }

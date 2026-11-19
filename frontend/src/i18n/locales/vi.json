@@ -1,0 +1,158 @@
+{
+  "language": { "select": "Ngôn ngữ", "vietnamese": "Tiếng Việt", "english": "English" },
+  "common": {
+    "retry": "Thử lại", "close": "Đóng", "cancel": "Hủy", "saveChanges": "Lưu thay đổi",
+    "saveUpdate": "Lưu cập nhật", "search": "Tìm kiếm", "all": "Tất cả", "previousPage": "Trang trước",
+    "nextPage": "Trang sau", "loading": "Đang tải…", "submitting": "Đang xử lý…", "send": "Gửi",
+    "status": "Trạng thái", "priority": "Ưu tiên", "actions": "Thao tác", "account": "Tài khoản",
+    "time": "Thời gian", "result": "Kết quả", "requestType": "Loại request", "department": "Đơn vị",
+    "fullName": "Họ tên", "email": "Email", "username": "Tên đăng nhập", "password": "Mật khẩu"
+  },
+  "app": { "title": "CampusDesk · {{variant}}", "brandHome": "Trang chủ CampusDesk", "connecting": "Đang kết nối CampusDesk…", "connectionFailed": "Chưa thể kết nối", "loadingData": "Đang lấy dữ liệu…" },
+  "navigation": {
+    "overview": "Tổng quan", "tickets": "Yêu cầu hỗ trợ", "users": "Người dùng",
+    "profile": "Hồ sơ cá nhân", "lab": "Nhật ký & demo", "main": "Điều hướng chính",
+    "variants": "Phiên bản CampusDesk", "openMenu": "Mở menu", "closeMenu": "Đóng menu"
+  },
+  "roles": { "admin": "Quản trị viên", "user": "Sinh viên" },
+  "status": { "open": "Mới tiếp nhận", "in_progress": "Đang xử lý", "resolved": "Đã hoàn tất" },
+  "priority": { "low": "Thấp", "medium": "Trung bình", "high": "Cao" },
+  "category": { "academic": "Học vụ", "it": "Công nghệ", "facilities": "Cơ sở vật chất", "other": "Khác" },
+  "auth": {
+    "title": "Đăng nhập CampusDesk", "tagline": "Cổng hỗ trợ sinh viên", "username": "Tên đăng nhập",
+    "usernamePlaceholder": "Nhập tên đăng nhập", "password": "Mật khẩu", "passwordPlaceholder": "Nhập mật khẩu",
+    "demoPayload": "Payload demo", "authenticationGroup": "Xác thực", "simulationGroup": "Kịch bản mô phỏng",
+    "customPayload": "Nhập payload tùy chỉnh", "mongoPayload": "Password object (JSON)", "sqlPayload": "Password SQL payload",
+    "safeNotice": "Bản safe vẫn gửi cùng payload để kiểm tra backend chặn injection.",
+    "unsafeNotice": "Bản unsafe cố ý có lỗi xác thực. Chỉ dùng với dữ liệu giả lập trong bài demo.",
+    "signingIn": "Đang xác thực…", "sendPayload": "Gửi payload & đăng nhập", "signIn": "Đăng nhập",
+    "demoAccounts": "Tài khoản demo", "variantTitle": "Phiên bản CampusDesk", "loginMode": "Đăng nhập", "signOut": "Đăng xuất",
+    "welcome": "Chào mừng trở lại", "accessWorkspace": "Truy cập không gian hỗ trợ của bạn.",
+    "forgotPassword": "Nhập mật khẩu", "createAccount": "Tạo tài khoản"
+  },
+  "variant": { "safe": "An toàn", "unsafe": "Không an toàn", "sql": "SQL", "mongo": "MongoDB" },
+  "lab": {
+    "observedQuery": "Quan sát truy vấn", "success": "Đăng nhập thành công", "denied": "Bị từ chối", "demoInjection": "Demo injection",
+    "pageDescription": "So sánh kết quả bảo mật và xem nhật ký xác thực.",
+    "safeExplanation": "Truy vấn chỉ tìm username; mật khẩu được xác minh riêng bằng scrypt.",
+    "unsafeSqlExplanation": "Bản unsafe ghép input vào câu SQL. Chuỗi payload có thể thay đổi cú pháp và điều kiện truy vấn để bỏ qua kiểm tra mật khẩu.",
+    "unsafeMongoExplanation": "Bản unsafe đưa trực tiếp input vào truy vấn. Object toán tử có thể thay điều kiện so sánh mật khẩu; chuỗi thông thường vẫn được so sánh như giá trị.",
+    "rejectedExplanation": "Validation chặn request trước truy vấn xác thực. Session và audit vẫn có thể dùng database.",
+    "passwordType": "Kiểu password:", "authQuery": "Truy vấn xác thực:", "executed": "Đã chạy", "notExecuted": "Chưa chạy",
+    "appDescription": "Mô tả từ luồng ứng dụng; không phải trace của database.",
+    "requestRedacted": "Request đã che thông tin đăng nhập thông thường",
+    "emptyDiagnostic": "Chọn một payload và gửi request. Kết quả sẽ đến từ database thật, không phải mô phỏng phía trình duyệt.",
+    "currentSession": "Phiên đăng nhập hiện tại", "simulation": "Mô phỏng", "recordedExample": "minh họa",
+    "payloads": {
+      "sql": {
+        "tautology": "Điều kiện luôn đúng", "comment": "Kết thúc bằng comment SQL",
+        "hash-comment": "Kết thúc bằng comment MySQL", "target-admin": "Nhắm tới tài khoản quản trị"
+      },
+      "mongo": {
+        "gt": "Toán tử lớn hơn", "gte": "Toán tử lớn hơn hoặc bằng", "ne": "Toán tử khác",
+        "regex": "So khớp biểu thức chính quy", "nin": "Không thuộc danh sách", "exists": "Trường tồn tại"
+      }
+    }
+  },
+  "dashboard": {
+    "totalRequests": "Tổng yêu cầu", "inProgress": "Đang xử lý", "completed": "Đã hoàn tất",
+    "users": "Người dùng", "highPriority": "Ưu tiên cao", "greeting": "Tổng quan",
+    "adminSummary": "Theo dõi các yêu cầu hỗ trợ của trường.", "userSummary": "Theo dõi các yêu cầu hỗ trợ của bạn.",
+    "createRequest": "Tạo yêu cầu", "progress": "Tiến độ hỗ trợ", "distribution": "Phân bố theo trạng thái",
+    "completedLabel": "hoàn tất", "requestGroups": "Nhóm yêu cầu", "byCategory": "Số lượng theo danh mục",
+    "recent": "Yêu cầu gần đây", "recentDescription": "Những cập nhật mới nhất trong không gian của bạn", "viewAll": "Xem tất cả"
+  },
+  "tickets": {
+    "title": "Yêu cầu", "category": "Danh mục", "sentDate": "Ngày gửi", "empty": "Chưa có yêu cầu phù hợp.", "view": "Xem {{code}}",
+    "searchLabel": "Tìm yêu cầu", "searchPlaceholder": "Tìm tiêu đề hoặc mã yêu cầu…", "filterStatus": "Lọc trạng thái",
+    "allStatuses": "Tất cả trạng thái", "pagination": "{{count}} yêu cầu · Trang {{page}}/{{pages}}",
+    "pagePrevious": "Trang trước", "pageNext": "Trang sau", "create": "Tạo yêu cầu hỗ trợ",
+    "description": "Mô tả vấn đề để bộ phận hỗ trợ tiếp nhận.", "titleField": "Tiêu đề",
+    "titlePlaceholder": "Bạn cần hỗ trợ điều gì?", "content": "Nội dung", "contentPlaceholder": "Mô tả chi tiết vấn đề…",
+    "sentOn": "Gửi ngày {{date}}", "priorityLabel": "Ưu tiên {{priority}}", "created": "Yêu cầu đã được gửi thành công.",
+    "updated": "Đã cập nhật yêu cầu."
+  },
+  "users": {
+    "title": "Người dùng", "department": "Đơn vị", "role": "Vai trò", "state": "Trạng thái", "actions": "Thao tác",
+    "description": "Quản lý tài khoản và quyền truy cập hệ thống.", "newPassword": "Mật khẩu mới",
+    "active": "Hoạt động", "locked": "Đã khóa", "lock": "Khóa", "unlock": "Mở khóa",
+    "lockedNotice": "Tài khoản đã bị khóa.", "unlockedNotice": "Đã mở khóa tài khoản.",
+    "create": "Tạo tài khoản", "createDescription": "Chọn quyền truy cập cho người dùng mới.",
+    "student": "Sinh viên", "admin": "Quản trị viên", "created": "Đã tạo tài khoản."
+  },
+  "profile": {
+    "description": "Thông tin cá nhân trong không gian của bạn.", "save": "Đã lưu hồ sơ.", "departmentDefault": "Công nghệ thông tin"
+  },
+  "audit": {
+    "title": "Nhật ký xác thực", "recent": "20 sự kiện gần nhất của phiên bản này", "empty": "Chưa có sự kiện.", "success": "Thành công", "denied": "Bị từ chối",
+    "normal": "Đăng nhập thông thường", "operatorInput": "Dữ liệu toán tử", "invalidInput": "Dữ liệu không hợp lệ", "malformedSql": "SQL sai cú pháp"
+  },
+  "errors": {
+    "generic": "Không thể thực hiện thao tác.", "network": "Không thể kết nối. Vui lòng kiểm tra mạng và thử lại.",
+    "invalidCredentials": "Tên đăng nhập hoặc mật khẩu không đúng.", "csrfOrigin": "Origin không hợp lệ.",
+    "csrfToken": "Phiên đã thay đổi. Vui lòng tải lại trang.", "rateLimit": "Quá nhiều lần đăng nhập. Thử lại sau một phút.",
+    "sqlSyntax": "Payload làm câu SQL sai cú pháp.", "unauthenticated": "Vui lòng đăng nhập.",
+    "adminOnly": "Chỉ admin được thực hiện thao tác này.", "ticketNotFound": "Không tìm thấy yêu cầu.",
+    "accountNotFound": "Không tìm thấy tài khoản.", "forbiddenOwnership": "Bạn không có quyền xem yêu cầu này.",
+    "invalidStatusPriority": "Trạng thái hoặc ưu tiên không hợp lệ.", "invalidUsername": "Username chỉ nhận chữ, số, dấu chấm, gạch ngang.",
+    "invalidRole": "Role không hợp lệ.", "duplicateUser": "Username đã tồn tại.",
+    "selfLock": "Không được khóa tài khoản đang sử dụng.", "activeBoolean": "Chỉ nhận active kiểu boolean.",
+    "profileImmutable": "Không được thay đổi role/id qua hồ sơ.", "invalidEmail": "Email không hợp lệ.",
+    "invalidInput": "Dữ liệu gửi lên không hợp lệ.", "invalidJson": "JSON gửi lên không hợp lệ.",
+    "databaseUnavailable": "Database tạm thời không khả dụng. Vui lòng thử lại.", "apiNotFound": "API không tồn tại.",
+    "fieldLength": "Giá trị phải là chuỗi từ {{min}} đến {{max}} ký tự.",
+    "usernameAndPasswordOnly": "Chỉ nhận username và password.",
+    "passwordMustBeString": "Mật khẩu phải là chuỗi; object không được dùng làm điều kiện xác thực.",
+    "demoOperatorsOnly": "Lab chỉ nhận sáu toán tử trong bộ demo.", "invalidCategoryPriority": "Danh mục hoặc mức ưu tiên không hợp lệ.",
+    "invalidInputFallback": "Dữ liệu nhập không hợp lệ."
+  },
+  "notices": { "saved": "Đã lưu hồ sơ.", "userCreated": "Đã tạo tài khoản." },
+  "demo": {
+    "title": "Kịch bản bảo mật dữ liệu", "description": "Mô phỏng với dữ liệu hư cấu. Các kết quả được soạn sẵn và không gửi yêu cầu đến máy chủ.", "controlled": "Có kiểm soát", "uncontrolled": "Thiếu kiểm soát",
+    "engine": "Hệ cơ sở dữ liệu", "scenario": "Kịch bản", "compare": "So sánh kết quả", "reset": "Đặt lại mô phỏng",
+    "request": "Yêu cầu minh họa", "defense": "Biện pháp bảo vệ.", "before": "Dữ liệu ban đầu", "history": "Lịch sử mô phỏng trong trang này",
+    "checks": "Kiểm tra trên CampusDesk", "runCheck": "Kiểm tra quyền đọc của sinh viên", "checking": "Đang kiểm tra…",
+    "download": "Tải kết quả JSON", "maxPresentation": "Lưu tối đa 50 kết quả mô phỏng trong trang hiện tại.",
+    "maxHistory": "Lưu tối đa 50 lần ở mỗi loại trong trang hiện tại. Tệp phân biệt mô phỏng với kết quả API thực tế.",
+    "noRecords": "Không còn bản ghi.", "sampleCode": "Mã mẫu", "value": "Giá trị",
+    "illustrativeStatus": "minh họa", "liveFailure": "Không thể hoàn tất kiểm tra. Hãy thử lại.",
+    "notReadable": "Không đọc được danh sách.", "outOfScopeList": "Danh sách chứa yêu cầu không thuộc tài khoản này.",
+    "emptyList": "Danh sách trên trang đầu không có yêu cầu.", "ownedList": "Tất cả {{count}} yêu cầu trên trang đầu thuộc tài khoản này.",
+    "readOwn": "Đọc được yêu cầu của chính mình.", "cannotReadOwn": "Không đọc được yêu cầu của chính mình.",
+    "adminDenied": "Máy chủ từ chối truy cập nhật ký quản trị.", "adminAllowed": "Máy chủ đã cho phép truy cập nhật ký quản trị.",
+    "checkIncomplete": "Kiểm tra không hoàn tất.", "expectedActual": "Dự kiến HTTP {{expected}} · Thực tế HTTP {{actual}} · {{result}}",
+    "sqlDefense": "Dùng truy vấn tham số hóa để tìm tài khoản, sau đó kiểm tra mật khẩu độc lập.",
+    "mongoDefense": "Kiểm tra tên đăng nhập và mật khẩu đều là chuỗi. Dùng cấu trúc bộ lọc cố định và kiểm tra mật khẩu độc lập.",
+    "checksList": {
+      "ownership": { "title": "Quyền đọc yêu cầu", "instruction": "Mở danh sách yêu cầu bằng tài khoản sinh viên. Danh sách chỉ hiển thị yêu cầu của tài khoản đó. Kiểm thử API xác nhận yêu cầu thuộc sinh viên khác trả HTTP 403." },
+      "admin": { "title": "Quyền xử lý và chỉnh hồ sơ", "instruction": "Sửa một yêu cầu bằng tài khoản quản trị và mở lại bằng tài khoản sinh viên sở hữu để thấy trạng thái mới. Kiểm thử API xác nhận sinh viên không thể đổi trạng thái, tạo tài khoản hoặc sửa vai trò qua hồ sơ." },
+      "session": { "title": "Phiên và khóa tài khoản", "instruction": "Mở bản khác để kiểm tra phiên tách riêng. Kiểm thử API xác nhận phiên cũ mất quyền truy cập sau khi đăng xuất hoặc khi tài khoản bị khóa." },
+      "apostrophe": { "title": "Dữ liệu hợp lệ có dấu nháy", "instruction": "Lưu một tiêu đề như Yêu cầu của O'Connor rồi mở lại. Kiểm tra tiêu đề vẫn giữ nguyên dấu nháy." }
+    },
+    "rows": {
+      "groupAOpen": "Nhóm A · Đang mở", "groupAResolved": "Nhóm A · Đã xử lý", "groupBOpen": "Nhóm B · Đang mở",
+      "groupBInProgress": "Nhóm B · Đang xử lý", "groupBResolved": "Nhóm B · Đã xử lý",
+      "oldNameStudent": "Tên cũ · Sinh viên", "newNameAdmin": "Tên mới · Quản trị", "newNameStudent": "Tên mới · Sinh viên",
+      "caseA": "Trường hợp A", "caseB": "Trường hợp B", "found": "Có kết quả", "notFound": "Không có kết quả",
+      "requestProcessed": "Đã xử lý yêu cầu", "changeStatus": "Đổi trạng thái xử lý", "createAdmin": "Tạo tài khoản quản trị",
+      "editRole": "Đổi vai trò qua hồ sơ", "otherVariant": "Mở phiên bản khác", "afterLogout": "Sau khi đăng xuất",
+      "accountLocked": "Trong lúc tài khoản bị khóa", "title": "Tiêu đề", "apostropheTitle": "Yêu cầu của O'Connor"
+    },
+    "scenarios": {
+      "disclosure": { "title": "Lộ bản ghi ngoài phạm vi", "request": "Xem yêu cầu của nhóm A.", "defense": "Ràng buộc phạm vi theo phiên đăng nhập và chỉ trả các trường cần hiển thị.", "unsafe": "Phản hồi chứa 3 bản ghi, trong đó có 2 bản ghi của nhóm B.", "safe": "Phản hồi chỉ chứa 1 bản ghi của nhóm A." },
+      "targeted-update": { "title": "Sửa bản ghi ngoài phạm vi", "request": "Đóng yêu cầu M-01 của nhóm A.", "defense": "Kiểm tra quyền trên từng bản ghi và cố định phạm vi cập nhật.", "unsafe": "1 bản ghi bị sửa, nhưng đó là M-02 của nhóm B.", "safe": "Chỉ M-01 được cập nhật." },
+      "bulk-update": { "title": "Sửa hàng loạt ngoài dự kiến", "request": "Đóng duy nhất yêu cầu M-01.", "defense": "Dùng điều kiện cố định theo mã và quyền sở hữu. Kiểm tra số hàng bị ảnh hưởng trước khi xác nhận giao dịch.", "unsafe": "3 bản ghi bị sửa.", "safe": "Chỉ 1 bản ghi bị sửa." },
+      "bulk-delete": { "title": "Xóa nhiều bản ghi", "request": "Xóa duy nhất yêu cầu M-01.", "defense": "Giới hạn thao tác theo quyền và mã bản ghi. Dùng giao dịch để có thể hủy khi số hàng bị ảnh hưởng vượt dự kiến.", "unsafe": "3 bản ghi bị xóa.", "safe": "1 bản ghi bị xóa, 2 bản ghi còn lại." },
+      "table-loss": { "title": "Mất cả bảng hoặc bộ sưu tập", "request": "Đọc danh sách yêu cầu mẫu.", "defense": "Dành quyền quản lý lược đồ cho tài khoản riêng. Tài khoản chạy ứng dụng chỉ có quyền dữ liệu cần thiết.", "unsafe": "Lần đọc tiếp theo thất bại vì bảng hoặc bộ sưu tập minh họa đã mất.", "safe": "Bảng hoặc bộ sưu tập vẫn sẵn sàng và trả 3 bản ghi." },
+      "privilege": { "title": "Thay đổi quyền qua cập nhật dữ liệu", "request": "Đổi tên hiển thị của tài khoản mẫu.", "defense": "Chỉ nhận các trường hồ sơ được phép. Luồng đổi vai trò cần kiểm tra quyền riêng ở máy chủ.", "unsafe": "Tên và vai trò đều thay đổi. Tài khoản mẫu có quyền quản trị.", "safe": "Chỉ tên hiển thị thay đổi." },
+      "error-details": { "title": "Lộ chi tiết qua thông báo lỗi", "request": "Gửi một giá trị có định dạng không hợp lệ.", "defense": "Trả lỗi ngắn gọn cho người dùng. Lưu chi tiết cần thiết trong nhật ký giới hạn quyền truy cập.", "unsafe": "Thông báo để lộ tên bảng và trường nội bộ trong ví dụ giả định.", "safe": "Thông báo chỉ cho biết dữ liệu gửi lên không hợp lệ." },
+      "response-difference": { "title": "Rò rỉ qua phản hồi khác nhau", "request": "So sánh phản hồi cho hai trường hợp giả định.", "defense": "Giữ các phản hồi công khai nhất quán khi khác biệt có thể tiết lộ thông tin cần bảo vệ.", "unsafe": "Hai phản hồi khác nhau có thể tiết lộ một thuộc tính dù không trả giá trị đó.", "safe": "Hai phản hồi có cùng thông báo công khai." },
+      "authentication": { "title": "Xác thực và mật khẩu sai", "request": "Yêu cầu đăng nhập với mật khẩu không đúng.", "defense": "Tìm tài khoản bằng truy vấn có ràng buộc và kiểm tra mật khẩu độc lập. Mật khẩu hợp lệ vẫn đăng nhập được.", "unsafe": "Ứng dụng giả định cấp phiên dù thông tin đăng nhập không hợp lệ.", "safe": "Máy chủ từ chối đăng nhập và không cấp phiên." },
+      "mongo-types": { "title": "Kiểu dữ liệu trong xác thực MongoDB", "request": "So sánh object, chuỗi JSON, mảng, null, số và mật khẩu đúng.", "defense": "Chỉ nhận mật khẩu dạng chuỗi. Từ chối kiểu sai trước bước tìm thông tin xác thực.", "unsafe": "Trong ví dụ giả định, object được hiểu là điều kiện truy vấn và ứng dụng cấp phiên.", "safe": "Object, mảng, null và số bị chặn trước truy vấn. Chuỗi JSON sai trả 401, còn mật khẩu đúng trả 200." },
+      "ticket-ownership": { "title": "Quyền xem yêu cầu của sinh viên", "request": "Sinh viên nhóm A mở yêu cầu của mình, rồi so sánh với yêu cầu thuộc nhóm B.", "defense": "Kiểm tra quyền sở hữu trên máy chủ cho từng yêu cầu.", "unsafe": "Ví dụ thiếu kiểm tra quyền trả cả yêu cầu của nhóm B.", "safe": "Yêu cầu của nhóm B bị từ chối. Yêu cầu do chính sinh viên sở hữu vẫn trả HTTP 200." },
+      "role-boundaries": { "title": "Hành động bị cấm và trường vai trò", "request": "So sánh quyền đổi trạng thái, tạo tài khoản và cập nhật hồ sơ của sinh viên.", "defense": "Kiểm tra vai trò trên máy chủ và chỉ nhận các trường hồ sơ được phép.", "unsafe": "Ví dụ thiếu kiểm tra cho phép một thao tác dành cho quản trị viên hoặc chấp nhận thay đổi vai trò trong hồ sơ.", "safe": "Vai trò sinh viên được giữ nguyên." },
+      "session-boundaries": { "title": "Tách phiên, đăng xuất và khóa tài khoản", "request": "So sánh việc đọc hồ sơ ở phiên bản khác, sau khi đăng xuất và trong lúc tài khoản bị khóa.", "defense": "Tách cookie theo phiên bản, hủy phiên khi đăng xuất và kiểm tra trạng thái tài khoản khi đọc dữ liệu.", "unsafe": "Ví dụ thiếu kiểm tra vẫn chấp nhận một phiên cũ hoặc không thuộc phiên bản hiện tại.", "safe": "Máy chủ yêu cầu phiên còn hiệu lực của phiên bản hiện tại và một tài khoản đang hoạt động." },
+      "legitimate-apostrophe": { "title": "Dữ liệu hợp lệ có dấu nháy", "request": "Lưu và mở lại yêu cầu có tiêu đề Yêu cầu của O'Connor.", "defense": "Truyền dữ liệu qua tham số hoặc trường dữ liệu cố định để giữ nguyên dấu nháy.", "unsafe": "Ví dụ lọc ký tự quá mức từ chối một tiêu đề hợp lệ.", "safe": "Lưu thành công và đọc lại được nguyên văn." }
+    }
+  }
+}

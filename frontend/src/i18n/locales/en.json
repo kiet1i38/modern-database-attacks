@@ -1,0 +1,158 @@
+{
+  "language": { "select": "Language", "vietnamese": "Tiếng Việt", "english": "English" },
+  "common": {
+    "retry": "Try again", "close": "Close", "cancel": "Cancel", "saveChanges": "Save changes",
+    "saveUpdate": "Save update", "search": "Search", "all": "All", "previousPage": "Previous page",
+    "nextPage": "Next page", "loading": "Loading…", "submitting": "Processing…", "send": "Send",
+    "status": "Status", "priority": "Priority", "actions": "Actions", "account": "Account",
+    "time": "Time", "result": "Result", "requestType": "Request type", "department": "Department",
+    "fullName": "Full name", "email": "Email", "username": "Username", "password": "Password"
+  },
+  "app": { "title": "CampusDesk · {{variant}}", "brandHome": "CampusDesk home", "connecting": "Connecting to CampusDesk…", "connectionFailed": "Connection unavailable", "loadingData": "Loading data…" },
+  "navigation": {
+    "overview": "Overview", "tickets": "Support tickets", "users": "Users",
+    "profile": "My profile", "lab": "Audit log & demo", "main": "Main navigation",
+    "variants": "CampusDesk variants", "openMenu": "Open menu", "closeMenu": "Close menu"
+  },
+  "roles": { "admin": "Administrator", "user": "Student" },
+  "status": { "open": "Open", "in_progress": "In progress", "resolved": "Resolved" },
+  "priority": { "low": "Low", "medium": "Medium", "high": "High" },
+  "category": { "academic": "Academic", "it": "Technology", "facilities": "Facilities", "other": "Other" },
+  "auth": {
+    "title": "Sign in to CampusDesk", "tagline": "Student support portal", "username": "Username",
+    "usernamePlaceholder": "Enter your username", "password": "Password", "passwordPlaceholder": "Enter your password",
+    "demoPayload": "Demo payload", "authenticationGroup": "Authentication", "simulationGroup": "Simulated scenarios",
+    "customPayload": "Enter a custom payload", "mongoPayload": "Password object (JSON)", "sqlPayload": "SQL password payload",
+    "safeNotice": "The safe variant sends the same payload so you can verify that the backend blocks injection.",
+    "unsafeNotice": "The unsafe variant intentionally has an authentication flaw. Use synthetic data for this demonstration.",
+    "signingIn": "Signing in…", "sendPayload": "Send payload & sign in", "signIn": "Sign in",
+    "demoAccounts": "Demo accounts", "variantTitle": "CampusDesk variants", "loginMode": "Sign in", "signOut": "Sign out",
+    "welcome": "Welcome back", "accessWorkspace": "Access your support workspace.",
+    "forgotPassword": "Enter your password", "createAccount": "Create account"
+  },
+  "variant": { "safe": "Safe", "unsafe": "Unsafe", "sql": "SQL", "mongo": "MongoDB" },
+  "lab": {
+    "observedQuery": "Query observation", "success": "Sign-in succeeded", "denied": "Denied", "demoInjection": "Injection demo",
+    "pageDescription": "Compare security outcomes and review authentication events.",
+    "safeExplanation": "The query only finds the username; the password is independently verified with scrypt.",
+    "unsafeSqlExplanation": "The unsafe variant concatenates input into SQL. A payload string can alter the syntax and query condition to bypass password verification.",
+    "unsafeMongoExplanation": "The unsafe variant passes input directly into the query. An operator object can replace the password comparison; ordinary strings are still compared as values.",
+    "rejectedExplanation": "Validation blocked the request before the authentication query. The session and audit log may still use the database.",
+    "passwordType": "Password type:", "authQuery": "Authentication query:", "executed": "Executed", "notExecuted": "Not executed",
+    "appDescription": "Application-flow description; this is not a database trace.",
+    "requestRedacted": "Request with ordinary credentials redacted",
+    "emptyDiagnostic": "Choose a payload and send the request. The result comes from the real database, not a browser-side simulation.",
+    "currentSession": "Current sign-in session", "simulation": "Simulation", "recordedExample": "illustrative",
+    "payloads": {
+      "sql": {
+        "tautology": "Always-true condition", "comment": "End with an SQL comment",
+        "hash-comment": "End with a MySQL comment", "target-admin": "Target the administrator account"
+      },
+      "mongo": {
+        "gt": "Greater-than operator", "gte": "Greater-than-or-equal operator", "ne": "Not-equal operator",
+        "regex": "Regular-expression match", "nin": "Not-in-list operator", "exists": "Field-existence operator"
+      }
+    }
+  },
+  "dashboard": {
+    "totalRequests": "Total requests", "inProgress": "In progress", "completed": "Completed",
+    "users": "Users", "highPriority": "High priority", "greeting": "Overview",
+    "adminSummary": "Track support requests across the campus.", "userSummary": "Track your support requests.",
+    "createRequest": "Create request", "progress": "Support progress", "distribution": "Breakdown by status",
+    "completedLabel": "completed", "requestGroups": "Request categories", "byCategory": "Count by category",
+    "recent": "Recent requests", "recentDescription": "The latest updates in your workspace", "viewAll": "View all"
+  },
+  "tickets": {
+    "title": "Request", "category": "Category", "sentDate": "Submitted", "empty": "No matching requests.", "view": "View {{code}}",
+    "searchLabel": "Search requests", "searchPlaceholder": "Search by title or request code…", "filterStatus": "Filter by status",
+    "allStatuses": "All statuses", "pagination": "{{count}} requests · Page {{page}}/{{pages}}",
+    "pagePrevious": "Previous page", "pageNext": "Next page", "create": "Create support request",
+    "description": "Describe the issue for the support team.", "titleField": "Title",
+    "titlePlaceholder": "What do you need help with?", "content": "Details", "contentPlaceholder": "Describe the issue in detail…",
+    "sentOn": "Submitted {{date}}", "priorityLabel": "Priority: {{priority}}", "created": "Your request was submitted.",
+    "updated": "Request updated."
+  },
+  "users": {
+    "title": "Users", "department": "Department", "role": "Role", "state": "Status", "actions": "Actions",
+    "description": "Manage accounts and system access.", "newPassword": "New password",
+    "active": "Active", "locked": "Locked", "lock": "Lock", "unlock": "Unlock",
+    "lockedNotice": "The account has been locked.", "unlockedNotice": "The account has been unlocked.",
+    "create": "Create account", "createDescription": "Choose access for the new user.",
+    "student": "Student", "admin": "Administrator", "created": "Account created."
+  },
+  "profile": {
+    "description": "Your profile information in this workspace.", "save": "Profile saved.", "departmentDefault": "Information Technology"
+  },
+  "audit": {
+    "title": "Authentication log", "recent": "The 20 most recent events for this variant", "empty": "No events yet.", "success": "Success", "denied": "Denied",
+    "normal": "Standard sign-in", "operatorInput": "Operator input", "invalidInput": "Invalid input", "malformedSql": "Malformed SQL"
+  },
+  "errors": {
+    "generic": "The operation could not be completed.", "network": "Unable to connect. Check your network and try again.",
+    "invalidCredentials": "Invalid username or password.", "csrfOrigin": "The request origin is invalid.",
+    "csrfToken": "Your session changed. Reload the page and try again.", "rateLimit": "Too many sign-in attempts. Try again in one minute.",
+    "sqlSyntax": "The payload made the SQL statement invalid.", "unauthenticated": "Please sign in.",
+    "adminOnly": "Only an administrator can perform this action.", "ticketNotFound": "Request not found.",
+    "accountNotFound": "Account not found.", "forbiddenOwnership": "You do not have permission to view this request.",
+    "invalidStatusPriority": "The status or priority is invalid.", "invalidUsername": "Usernames may contain letters, numbers, periods, underscores, and hyphens only.",
+    "invalidRole": "The role is invalid.", "duplicateUser": "That username already exists.",
+    "selfLock": "You cannot lock the account you are currently using.", "activeBoolean": "The active field must be a boolean.",
+    "profileImmutable": "Role and ID cannot be changed through the profile.", "invalidEmail": "The email address is invalid.",
+    "invalidInput": "The submitted data is invalid.", "invalidJson": "The submitted JSON is invalid.",
+    "databaseUnavailable": "The database is temporarily unavailable. Please try again.", "apiNotFound": "API route not found.",
+    "fieldLength": "The value must be a string between {{min}} and {{max}} characters long.",
+    "usernameAndPasswordOnly": "Only username and password are accepted.",
+    "passwordMustBeString": "Password must be a string; an object cannot be used as an authentication condition.",
+    "demoOperatorsOnly": "The lab accepts only the six operators in its demo set.", "invalidCategoryPriority": "The category or priority is invalid.",
+    "invalidInputFallback": "The submitted value is invalid."
+  },
+  "notices": { "saved": "Profile saved.", "userCreated": "Account created." },
+  "demo": {
+    "title": "Data security scenarios", "description": "A fictional-data simulation. Results are prewritten and do not send requests to the server.", "controlled": "Controlled", "uncontrolled": "Uncontrolled",
+    "engine": "Database engine", "scenario": "Scenario", "compare": "Compare results", "reset": "Reset simulation",
+    "request": "Illustrative request", "defense": "Protection.", "before": "Initial data", "history": "Simulation history on this page",
+    "checks": "CampusDesk checks", "runCheck": "Check student read access", "checking": "Checking…",
+    "download": "Download JSON results", "maxPresentation": "Up to 50 simulation results are kept on this page.",
+    "maxHistory": "Up to 50 runs of each type are kept on this page. The file distinguishes simulations from live API results.",
+    "noRecords": "No records remain.", "sampleCode": "Sample ID", "value": "Value",
+    "illustrativeStatus": "illustrative", "liveFailure": "The check could not be completed. Try again.",
+    "notReadable": "The list could not be read.", "outOfScopeList": "The list contains requests that do not belong to this account.",
+    "emptyList": "There are no requests on the first page.", "ownedList": "All {{count}} requests on the first page belong to this account.",
+    "readOwn": "Your own request was readable.", "cannotReadOwn": "Your own request could not be read.",
+    "adminDenied": "The server denied access to the admin audit log.", "adminAllowed": "The server allowed access to the admin audit log.",
+    "checkIncomplete": "The check did not complete.", "expectedActual": "Expected HTTP {{expected}} · Actual HTTP {{actual}} · {{result}}",
+    "sqlDefense": "Use a parameterized query to find the account, then verify the password independently.",
+    "mongoDefense": "Require both username and password to be strings. Use a fixed filter structure and verify the password independently.",
+    "checksList": {
+      "ownership": { "title": "Request read access", "instruction": "Open the request list as a student. It should show only that account's requests. The API test confirms another student's request returns HTTP 403." },
+      "admin": { "title": "Admin actions and profile edits", "instruction": "Update a request as an administrator, then reopen it as its owner to see the new status. API tests confirm students cannot change status, create accounts, or change their role through the profile." },
+      "session": { "title": "Sessions and account locking", "instruction": "Open another variant to check session isolation. API tests confirm an old session loses access after logout or when its account is locked." },
+      "apostrophe": { "title": "Valid text with an apostrophe", "instruction": "Save and reopen a title such as Request from O'Connor. Confirm that the apostrophe is preserved." }
+    },
+    "rows": {
+      "groupAOpen": "Group A · Open", "groupAResolved": "Group A · Resolved", "groupBOpen": "Group B · Open",
+      "groupBInProgress": "Group B · In progress", "groupBResolved": "Group B · Resolved",
+      "oldNameStudent": "Old name · Student", "newNameAdmin": "New name · Administrator", "newNameStudent": "New name · Student",
+      "caseA": "Case A", "caseB": "Case B", "found": "Result found", "notFound": "No result",
+      "requestProcessed": "Request processed", "changeStatus": "Change request status", "createAdmin": "Create administrator account",
+      "editRole": "Change role through profile", "otherVariant": "Open another variant", "afterLogout": "After logout",
+      "accountLocked": "While the account is locked", "title": "Title", "apostropheTitle": "Request from O'Connor"
+    },
+    "scenarios": {
+      "disclosure": { "title": "Out-of-scope record disclosure", "request": "View a request from Group A.", "defense": "Scope results to the signed-in account and return only the fields needed for display.", "unsafe": "The response contains three records, including two from Group B.", "safe": "The response contains only one record from Group A." },
+      "targeted-update": { "title": "Out-of-scope record update", "request": "Close Group A's request M-01.", "defense": "Check authorization for each record and constrain the update scope.", "unsafe": "One record was changed, but it was Group B's M-02.", "safe": "Only M-01 was updated." },
+      "bulk-update": { "title": "Unexpected bulk update", "request": "Close only request M-01.", "defense": "Use a fixed condition based on the ID and owner. Check affected rows before committing the transaction.", "unsafe": "Three records were changed.", "safe": "Only one record was changed." },
+      "bulk-delete": { "title": "Deleting multiple records", "request": "Delete only request M-01.", "defense": "Limit the action by permission and record ID. Use a transaction so it can be rolled back if more rows than expected are affected.", "unsafe": "Three records were deleted.", "safe": "One record was deleted; two remain." },
+      "table-loss": { "title": "Dropping a table or collection", "request": "Read the sample request list.", "defense": "Give schema-management access to a separate account. The application account should have only the data permissions it needs.", "unsafe": "The next read fails because the illustrative table or collection is gone.", "safe": "The table or collection remains available and returns three records." },
+      "privilege": { "title": "Changing privileges through a data update", "request": "Change the display name of a sample account.", "defense": "Accept only permitted profile fields. Role changes require a separate server-side authorization check.", "unsafe": "Both the name and role changed. The sample account now has administrator access.", "safe": "Only the display name changed." },
+      "error-details": { "title": "Information disclosed in error messages", "request": "Submit a value with an invalid format.", "defense": "Return a concise error to the user. Keep necessary details in access-controlled logs.", "unsafe": "The message reveals an internal table name and field in this hypothetical example.", "safe": "The message only says that the submitted data is invalid." },
+      "response-difference": { "title": "Information leaked through different responses", "request": "Compare responses for two hypothetical cases.", "defense": "Keep public responses consistent when differences could disclose protected information.", "unsafe": "Different responses may reveal a property without returning its value.", "safe": "Both responses use the same public message." },
+      "authentication": { "title": "Authentication with an incorrect password", "request": "Attempt to sign in with an incorrect password.", "defense": "Find the account with a constrained query, then verify the password independently. Valid passwords must still work.", "unsafe": "The hypothetical application creates a session despite invalid credentials.", "safe": "The server rejects the sign-in and does not create a session." },
+      "mongo-types": { "title": "Data types in MongoDB authentication", "request": "Compare an object, JSON string, array, null, number, and correct password.", "defense": "Accept passwords only as strings. Reject invalid types before looking up credentials.", "unsafe": "In this hypothetical example, an object is treated as a query condition and the application creates a session.", "safe": "Objects, arrays, null, and numbers are blocked before the query. Invalid JSON strings return 401; a correct password returns 200." },
+      "ticket-ownership": { "title": "Student request ownership", "request": "Have a Group A student open their own request, then compare it with a Group B request.", "defense": "Check ownership on the server for every request.", "unsafe": "The hypothetical missing check returns a Group B request too.", "safe": "The Group B request is denied. The student's own request still returns HTTP 200." },
+      "role-boundaries": { "title": "Restricted actions and role fields", "request": "Compare a student's ability to change status, create accounts, and update a profile.", "defense": "Check roles on the server and accept only permitted profile fields.", "unsafe": "The hypothetical missing check permits an admin-only action or accepts a role change through the profile.", "safe": "The student's role remains unchanged." },
+      "session-boundaries": { "title": "Session isolation, logout, and account locking", "request": "Compare profile access on another variant, after logout, and while the account is locked.", "defense": "Use a separate cookie per variant, destroy sessions on logout, and check account status on every data request.", "unsafe": "The hypothetical missing check accepts an old session or one from another variant.", "safe": "The server requires a valid session for the current variant and an active account." },
+      "legitimate-apostrophe": { "title": "Valid text containing an apostrophe", "request": "Save and reopen a request titled Request from O'Connor.", "defense": "Pass data through parameters or a fixed data field so the apostrophe is preserved.", "unsafe": "The hypothetical over-filter rejects a valid title.", "safe": "The request is saved and read back unchanged." }
+    }
+  }
+}

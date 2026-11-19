@@ -1,53 +1,25 @@
 <!doctype html>
-<html lang="en">
-<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Vercel demo setup · CampusDesk</title><link rel="stylesheet" href="docs.css"></head>
-<body><main><header><a href="index.html">CampusDesk / Documentation</a></header><article>
-<h1>Prepare the hosted demo for Vercel</h1>
-<p>This branch contains deployment configuration. Preparing or building it does not publish a site. The existing main-branch deployments are separate.</p>
-<h2>$0 deployment setup</h2>
-<p>Use the following free plans for this personal, non-commercial teaching demo. No paid Vercel feature, subscription, purchased domain or database upgrade is required by the code. Plan selection and spending limits belong to the provider accounts; a source-code setting cannot change or verify their billing plans.</p>
-<table><thead><tr><th>Component</th><th>Free configuration</th></tr></thead><tbody>
-<tr><td>Website and API</td><td><strong>Vercel Hobby</strong>, with the included <code>*.vercel.app</code> addresses. Use Vercel Authentication with Standard Protection for the preview. Do not start a Pro trial or enable paid add-ons.</td></tr>
-<tr><td>SQL database</td><td><strong>TiDB Cloud Starter, MySQL-compatible</strong>, with its monthly spending limit kept at <strong>0</strong>. Use an eligible free instance for a separate SQL safe database. Copy its host, port and credentials into MYSQL_HOST, MYSQL_PORT, MYSQL_USER and MYSQL_PASSWORD; set MYSQL_SSL=true. This uses the existing mysql2 driver, without an extra package. It is MySQL-compatible hosted SQL; the Docker lab still runs MySQL itself.</td></tr>
-<tr><td>MongoDB database</td><td><strong>MongoDB Atlas Free (M0)</strong>. Use one free cluster with an isolated Mongo safe database. Select M0 explicitly; do not select Flex or a dedicated paid cluster.</td></tr>
-</tbody></table>
-<p>Keep existing verified free databases if your friend's setup already provides them; do not migrate or reset that deployment as part of branch preparation. For a fresh setup, do not add a payment method or increase the TiDB spending limit. Vercel Hobby can pause service when its free allowance is exhausted. TiDB Starter at a zero spending limit restricts connections or throttles usage when its free quota is exhausted. A free demo can therefore stop working temporarily instead of buying more capacity.</p>
-<p>Pricing references checked on 18 November 2026: <a href="https://vercel.com/docs/plans/hobby">Vercel Hobby</a>, <a href="https://docs.pingcap.com/tidbcloud/create-tidb-cluster-serverless/?plan=starter">TiDB Starter zero spending limit</a>, <a href="https://docs.pingcap.com/tidbcloud/manage-serverless-spend-limit/">TiDB quota behavior</a>, <a href="https://www.mongodb.com/docs/atlas/tutorial/deploy-free-tier-cluster/">Atlas Free M0</a>. Provider pricing and availability can change; verify these selections when you later deploy.</p>
-<h2>Project settings</h2>
-<p>Use the repository root, branch <code>demo_updated</code>, Framework Preset <strong>Other</strong>, and Node.js <strong>22.x</strong>. Keep the build, install and output settings from <code>vercel.json</code>: <code>npm ci</code>, <code>npm run build:vercel</code>, and <code>dist</code>. There is no Docker or long-running server in Vercel.</p>
-<p>Use a protected Preview deployment, targeted at <code>demo_updated</code>, for each Safe variant you need. Set <code>VARIANT</code> to <code>sql-safe</code> or <code>mongo-safe</code>. The hosted handler rejects production and both Unsafe variants. Use local Docker for the four-variant comparison.</p>
-<h2>Environment variables</h2>
-<p>Set these in the Vercel project environment and in your local shell when preparing its database. Do not commit credentials. Do not prefix database credentials or session secrets with <code>VITE_</code>.</p>
-<table><thead><tr><th>Variable</th><th>Value</th></tr></thead><tbody>
-<tr><td>CAMPUS_HOSTED_DEMO</td><td><code>true</code>. Explicitly enables the hosted synthetic demo.</td></tr>
-<tr><td>VARIANT</td><td>Either <code>sql-safe</code> or <code>mongo-safe</code>.</td></tr>
-<tr><td>SESSION_SECRET</td><td>A private random secret, at least 32 characters, different for each variant. Keep it stable across deployments to retain sessions.</td></tr>
-<tr><td>SESSION_MAX_AGE_MS</td><td>Optional positive integer; default <code>1800000</code> (30 minutes).</td></tr>
-<tr><td>CAMPUS_DATABASE</td><td>Optional database name. Defaults to <code>campus_sql_safe</code> or <code>campus_mongo_safe</code>. Each variant needs its own isolated database.</td></tr>
-<tr><td>MYSQL_HOST, MYSQL_USER, MYSQL_PASSWORD</td><td>Required for SQL variants. Use a hosted MySQL-compatible service and its actual credentials. The database must already exist.</td></tr>
-<tr><td>MYSQL_PORT</td><td>Optional SQL port; default <code>3306</code>.</td></tr>
-<tr><td>MYSQL_SSL</td><td><code>true</code>, required for hosted SQL. Certificate verification remains enabled.</td></tr>
-<tr><td>MYSQL_SSL_CA</td><td>Optional provider CA certificate as PEM text, when required by the provider.</td></tr>
-<tr><td>MONGODB_URI</td><td>Required for Mongo variants: the provider's TLS-enabled <code>mongodb+srv://</code> connection string. The app selects CAMPUS_DATABASE, rather than the database path in the URI.</td></tr>
-<tr><td>CAMPUS_SQL_SAFE_URL<br>CAMPUS_MONGO_SAFE_URL</td><td>Optional HTTPS origins for the variant navigation links. Use your existing domains. Omit unconfigured variants; the UI hides their links. Paths and credentials are not accepted.</td></tr>
-</tbody></table>
-<p>Generate a session secret locally, then put its output into the appropriate project's environment:</p>
-<pre>node -e "console.log(require('node:crypto').randomBytes(32).toString('hex'))"</pre>
-<h2>Prepare database storage once</h2>
-<p>Use dedicated synthetic databases and database users. For SQL, create the selected database with UTF-8 support before running the command below. On the zero-spend TiDB Starter instance, create <code>campus_sql_safe</code> in its SQL editor; configure a different CAMPUS_DATABASE only if needed. Allow network access from the intended Vercel environment and the machine doing setup. A hostname inside Docker, such as mysql or mongodb, is not reachable from Vercel.</p>
-<p>With that variant's environment variables set in your shell, run:</p>
-<pre>npm ci
-npm run db:prepare:hosted</pre>
-<p>Run setup sequentially once per variant before serving requests. It creates tables or indexes and seeds three synthetic users and twelve tickets only if the user store is empty. It does not reset existing data. Do not use <code>db:reset</code> as a hosted setup command. Never run this against a database containing real application data.</p>
-<p>The Vercel handler reuses a database connection pool per warm function instance. It does not create schema or reseed on requests. Sessions remain in the database across function instances. A SQL pool can use up to eight connections per instance; size the provider's connection budget for the number of instances you allow.</p>
-<h2>Local verification without publishing</h2>
-<pre>npm test
-npm run build:vercel
-npm audit --omit=dev</pre>
-<p>The build produces the frontend and the documentation under <code>dist/docs</code>. <code>api/index.js</code> routes API requests to the shared CampusDesk application. API routes are separate from the single-page frontend fallback; missing assets and documentation return 404. Historical screenshots and evidence are not included in the hosted static build. The other documentation pages describe the Docker lab and may link to localhost.</p>
-<h2>Hosted behavior and limits</h2>
-<p>Sessions use Secure, HttpOnly, SameSite=Strict cookies over HTTPS. The application trusts one hosting proxy for HTTPS detection and checks same-origin requests and CSRF tokens. Preview deployments need their own configured environment and isolated databases; do not seed or test against the existing main deployment's data.</p>
-<p>Keep Preview authentication enabled to limit access to the synthetic class demo. The existing login throttle is per warm function instance; a shared limit requires a Vercel Firewall rule or a shared limiter before allowing traffic beyond a small demonstration. This deployment path is not a production security certification.</p>
-<p>After you later choose to deploy, check <code>/api/health</code>, <code>/api/config</code>, normal login/logout, safe rejection, variant navigation and <code>/docs/</code>. A 503 during cold startup means configuration or database connectivity must be checked; connection details are not returned to the browser.</p>
-<p>References: <a href="https://vercel.com/docs/functions/runtimes/node-js">Vercel Node.js functions</a>, <a href="https://vercel.com/docs/project-configuration/vercel-json">Vercel configuration</a>, <a href="https://expressjs.com/en/guide/behind-proxies.html">Express behind proxies</a>.</p>
-</article></main></body></html>
+<html lang="vi">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Demo Vercel · CampusDesk</title><link rel="stylesheet" href="docs.css"></head>
+<body><main><header><a href="index.html">campusdesk. / Final documentation</a><p class="language-link"><a href="en/VERCEL.html" lang="en">English version</a></p></header><article>
+<h1>Bốn bản demo trên Vercel</h1>
+<p>Mỗi bản dùng một project Vercel và database riêng. Nhánh triển khai của đợt này là <code>demo_updated</code>. Các alias ổn định để mở từng bản:</p>
+<ul>
+<li><a href="https://campusdesk-kiet-sql-unsafe.vercel.app/?lang=vi">SQL Unsafe</a></li>
+<li><a href="https://campusdesk-kiet-sql-safe.vercel.app/?lang=vi">SQL Safe</a></li>
+<li><a href="https://campusdesk-kiet-mongo-unsafe.vercel.app/?lang=vi">MongoDB Unsafe</a></li>
+<li><a href="https://campusdesk-kiet-mongo-safe.vercel.app/?lang=vi">MongoDB Safe</a></li>
+</ul>
+<p>Thêm <code>?lang=en</code> để mở bằng tiếng Anh. Bộ chọn ngôn ngữ cập nhật URL và ghi nhớ lựa chọn trên từng host.</p>
+<h2>Cấu hình project</h2>
+<p>Bốn project dùng Framework Preset <strong>Other</strong>, thư mục gốc repository, Node.js theo cấu hình project, build <code>npm run build:vercel</code> và output <code>dist</code>. Mỗi project đặt <code>VARIANT</code> cố định tương ứng: <code>sql-unsafe</code>, <code>sql-safe</code>, <code>mongo-unsafe</code> hoặc <code>mongo-safe</code>. API được Vercel route qua <code>api/index.js</code>.</p>
+<p>Project production dùng các biến môi trường Production đã cấu hình trong Vercel. Không đưa connection string, session secret, cookie, mật khẩu hoặc token vào Git, ảnh chụp hay log. Việc triển khai ứng dụng không chạy lệnh reset hoặc seed lại database.</p>
+<h2>Kiểm tra sau triển khai</h2>
+<ol>
+<li>Mở <code>/api/health</code> và <code>/api/config</code> trên từng alias; xác nhận API sẵn sàng và đúng loại database/variant.</li>
+<li>Mở trang với <code>?lang=vi</code> và <code>?lang=en</code>; đăng nhập tài khoản synthetic, đổi ngôn ngữ và kiểm tra dashboard theo role.</li>
+<li>Kiểm tra link chuyển variant, logout và session riêng giữa các project.</li>
+<li>Chỉ dùng dữ liệu giả lập. Hai bản Unsafe cố ý có lỗ hổng đăng nhập để trình diễn; không dùng tài khoản thật hoặc dữ liệu nhạy cảm.</li>
+</ol>
+<p>Build thành công không tự chứng minh API có thể kết nối database. Nếu health trả lỗi, xem cấu hình biến Production và trạng thái provider; ứng dụng không trả thông tin kết nối ra trình duyệt.</p>
+</article><footer>CampusDesk course demo · Chỉ dùng tài khoản và dữ liệu synthetic · <a href="index.html">Trang tài liệu</a></footer></main></body></html>
