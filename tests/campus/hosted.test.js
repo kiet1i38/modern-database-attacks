@@ -1,5 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
+import { readFile } from "node:fs/promises";
 import { createServer } from "node:http";
 import mysql from "mysql2/promise";
 import { MongoClient } from "mongodb";
@@ -74,6 +75,13 @@ test("Vercel API rewrite restores nested routes, preserves query parameters and 
   assert.equal(restored.searchParams.get("search"), "admin demo");
   assert.equal(restored.searchParams.has("__route"), false);
   assert.equal(restoreVercelApiPath({ url: "/api/index?__route=..%2Fadmin" }), false);
+});
+
+test("Vercel routes nested API requests through the hosted function", async () => {
+  const vercel = JSON.parse(await readFile(new URL("../../vercel.json", import.meta.url), "utf8"));
+  assert.ok(vercel.rewrites.some(({ source, destination }) =>
+    source === "/api/:path*" && destination === "/api/index?__route=:path*"
+  ));
 });
 
 test("hosted SQL passes verified TLS and the selected database to the existing driver", async t => {
