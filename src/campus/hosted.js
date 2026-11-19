@@ -4,10 +4,12 @@ import { createRepository } from "./repository.js";
 
 export function loadHostedConfig(env = process.env) {
   if (env.CAMPUS_HOSTED_DEMO !== "true") throw new Error("Set CAMPUS_HOSTED_DEMO=true for a synthetic hosted demo.");
-  if (env.VERCEL_ENV === "production") throw new Error("Use a protected Vercel Preview for the synthetic demo.");
+  if (env.VERCEL_ENV === "production" && env.CAMPUS_ALLOW_PRODUCTION_DEMO !== "true") {
+    throw new Error("Set CAMPUS_ALLOW_PRODUCTION_DEMO=true for this explicitly approved synthetic production demo.");
+  }
   const variant = env.VARIANT;
-  if (!Object.hasOwn(VARIANTS, variant) || !VARIANTS[variant].safe) {
-    throw new Error("Set VARIANT to sql-safe or mongo-safe for hosted demos.");
+  if (!Object.hasOwn(VARIANTS, variant) || (!VARIANTS[variant].safe && env.CAMPUS_ALLOW_UNSAFE_DEMO !== "true")) {
+    throw new Error("Only safe hosted variants are enabled unless CAMPUS_ALLOW_UNSAFE_DEMO=true.");
   }
   if (!env.SESSION_SECRET || env.SESSION_SECRET.length < 32) throw new Error("SESSION_SECRET must contain at least 32 characters.");
   const sessionMaxAge = Number(env.SESSION_MAX_AGE_MS || 1800000);

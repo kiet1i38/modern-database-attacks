@@ -4,6 +4,7 @@ import { createServer } from "node:http";
 import mysql from "mysql2/promise";
 import { MongoClient } from "mongodb";
 import { createHostedHandler, loadHostedConfig } from "../../src/campus/hosted.js";
+import { restoreVercelApiPath } from "../../api/index.js";
 import { createRepository } from "../../src/campus/repository.js";
 import { seedData } from "../../src/campus/domain.js";
 
@@ -45,6 +46,34 @@ test("hosted config validates opt-in, secrets, databases and HTTPS variant links
   ]) assert.throws(() => loadHostedConfig({ ...environment, ...changes }));
   const config = loadHostedConfig({ ...environment, VERCEL_ENV: "preview", CAMPUS_SQL_UNSAFE_URL: "https://sql-unsafe.example" });
   assert.equal(config.variantUrls["sql-unsafe"], undefined);
+});
+
+test("production and unsafe variants require separate explicit deployment opt-ins", () => {
+  assert.throws(() => loadHostedConfig({ ...environment, VERCEL_ENV: "production" }));
+  assert.throws(() => loadHostedConfig({ ...environment, VARIANT: "mongo-unsafe" }));
+  assert.throws(() => loadHostedConfig({ ...environment, VARIANT: "mongo-unsafe", VERCEL_ENV: "production", CAMPUS_ALLOW_PRODUCTION_DEMO: "true" }));
+
+  const safeProduction = loadHostedConfig({ ...environment, VERCEL_ENV: "production", CAMPUS_ALLOW_PRODUCTION_DEMO: "true" });
+  assert.equal(safeProduction.variant, "mongo-safe");
+  for (const variant of ["sql-unsafe", "mongo-unsafe"]) {
+    const config = loadHostedConfig({
+      ...environment,
+      VARIANT: variant,
+      VERCEL_ENV: "production",
+      CAMPUS_ALLOW_PRODUCTION_DEMO: "true",
+      CAMPUS_ALLOW_UNSAFE_DEMO: "true"
+    });
+    assert.equal(config.variant, variant);
+  }
+});
+test("Vercel API rewrite restores nested routes, preserves query parameters and rejects traversal", () => {
+  const req = { url: "/api/index?__route=auth%2Fsession&search=admin%20demo" };
+  assert.equal(restoreVercelApiPath(req), true);
+  const restored = new URL(req.url, "http://localhost");
+  assert.equal(restored.pathname, "/api/auth/session");
+  assert.equal(restored.searchParams.get("search"), "admin demo");
+  assert.equal(restored.searchParams.has("__route"), false);
+  assert.equal(restoreVercelApiPath({ url: "/api/index?__route=..%2Fadmin" }), false);
 });
 
 test("hosted SQL passes verified TLS and the selected database to the existing driver", async t => {
