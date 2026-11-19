@@ -17,11 +17,12 @@
 <li><span class="status">191/191</span> API integration assertions trên bốn app Docker dùng MySQL và MongoDB thật.</li>
 <li><span class="status">14/14</span> scenario trong mỗi biến thể, tổng cộng 56 lượt so sánh; cả kết quả uncontrolled và controlled đều hiển thị.</li>
 <li><span class="status">4/4</span> biến thể đã mở ở tiếng Việt và tiếng Anh; tài khoản admin và user đều đăng nhập được. Admin thấy mục Users; user không thấy.</li>
+<li><span class="status">4/4 Production alias</span> health/config/trang chủ trả HTTP 200; health là <code>ready</code> với đúng DB và variant. Trình duyệt xác nhận đổi VI/EN và bốn link variant trên mọi alias.</li>
 <li><span class="status">Build đạt</span> <code>npm run build:vercel</code>; <span class="status">i18n đạt</span> 346 khóa khớp giữa hai locale và 12 trang docs tiếng Anh; <span class="status">Audit đạt</span> 0 dependency vulnerability ở production dependencies.</li>
 </ul>
 <p>Playwright kiểm tra login, đổi locale, dashboard đã tải xong, bảng Users, role visibility và scenario compare. UI ticket create/update và admin create/lock/unlock user đã được thao tác với dữ liệu synthetic local. API suite kiểm tra session, CSRF, role/ownership, CRUD, lock, headers, payloads safe/unsafe và isolation giữa bốn biến thể.</p>
-<p class="note">Không quay hoặc chụp mobile theo yêu cầu. Build có cảnh báo bundle JavaScript 528.24 kB vượt mốc 500 kB; build vẫn thành công. Một HTTP 401 trong browser log đến từ lượt nhập sai mật khẩu có chủ đích trên Mongo Safe.</p>
-<p class="links"><a href="api-results.json">Kết quả máy đọc JSON</a><a href="api-results.log">Log integration đầy đủ</a></p>
+<p class="note">Không quay hoặc chụp mobile theo yêu cầu. Build có cảnh báo bundle JavaScript 528.24 kB vượt mốc 500 kB; build vẫn thành công. Một HTTP 401 trong browser log local đến từ lượt nhập sai mật khẩu có chủ đích trên Mongo Safe. Production chỉ được kiểm tra bằng GET health/config/trang chủ; không đăng nhập, chạy payload, reset/seed hay ghi dữ liệu.</p>
+<p class="links"><a href="api-results.json">Kết quả máy đọc JSON local</a><a href="api-results.log">Log integration đầy đủ local</a><a href="production-checks.json">Kết quả kiểm tra Production read-only</a></p>
 </section>
 <h2>Login hai ngôn ngữ</h2><div class="grid">
 <figure class="card"><a href="login-sql-unsafe-vi.png"><img src="login-sql-unsafe-vi.png" alt="SQL Unsafe login tiếng Việt"></a><figcaption>SQL Unsafe · login tiếng Việt</figcaption></figure>
@@ -60,5 +61,15 @@
 <figure class="card"><a href="lab-scenarios-mongo-safe-en.png"><img src="lab-scenarios-mongo-safe-en.png" alt="So sánh scenario MongoDB Safe"></a><figcaption>MongoDB Safe · kết quả scenario sau khi chạy đủ 14 tình huống</figcaption></figure>
 <figure class="card"><a href="lab-simulation-sql-unsafe-en.png"><img src="lab-simulation-sql-unsafe-en.png" alt="SQL Unsafe so sánh mô phỏng đăng nhập sai"></a><figcaption>SQL Unsafe · một scenario mô phỏng đã chọn và so sánh</figcaption></figure>
 </div>
-<p class="note">Ảnh là bằng chứng hiển thị giao diện, không thay thế assertion hoặc API log. Bài kiểm thử Production chỉ đọc health/config sau khi triển khai; không chạy payload đăng nhập hoặc thao tác ghi lên database hosted.</p>
+<h2>Ảnh chụp Production</h2><p>Ảnh chụp desktop tại các alias công khai sau khi deployment báo READY. Chỉ mở trang đăng nhập; không nhập tài khoản Production.</p><div class="grid">
+<figure class="card"><a href="live-login-sql-unsafe-en.png"><img src="live-login-sql-unsafe-en.png" alt="Production SQL Unsafe login English"></a><figcaption>Production · SQL Unsafe · English</figcaption></figure>
+<figure class="card"><a href="live-login-sql-unsafe-vi.png"><img src="live-login-sql-unsafe-vi.png" alt="Production SQL Unsafe login Vietnamese"></a><figcaption>Production · SQL Unsafe · tiếng Việt</figcaption></figure>
+<figure class="card"><a href="live-login-sql-safe-en.png"><img src="live-login-sql-safe-en.png" alt="Production SQL Safe login English"></a><figcaption>Production · SQL Safe · English</figcaption></figure>
+<figure class="card"><a href="live-login-sql-safe-vi.png"><img src="live-login-sql-safe-vi.png" alt="Production SQL Safe login Vietnamese"></a><figcaption>Production · SQL Safe · tiếng Việt</figcaption></figure>
+<figure class="card"><a href="live-login-mongo-unsafe-en.png"><img src="live-login-mongo-unsafe-en.png" alt="Production MongoDB Unsafe login English"></a><figcaption>Production · MongoDB Unsafe · English</figcaption></figure>
+<figure class="card"><a href="live-login-mongo-unsafe-vi.png"><img src="live-login-mongo-unsafe-vi.png" alt="Production MongoDB Unsafe login Vietnamese"></a><figcaption>Production · MongoDB Unsafe · tiếng Việt</figcaption></figure>
+<figure class="card"><a href="live-login-mongo-safe-en.png"><img src="live-login-mongo-safe-en.png" alt="Production MongoDB Safe login English"></a><figcaption>Production · MongoDB Safe · English</figcaption></figure>
+<figure class="card"><a href="live-login-mongo-safe-vi.png"><img src="live-login-mongo-safe-vi.png" alt="Production MongoDB Safe login Vietnamese"></a><figcaption>Production · MongoDB Safe · tiếng Việt</figcaption></figure>
+</div>
+<p class="note">Ảnh là bằng chứng hiển thị giao diện, không thay thế assertion hoặc API log. Production health/config JSON là kiểm tra chỉ đọc.</p>
 </main></body></html>
