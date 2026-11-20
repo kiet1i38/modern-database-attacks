@@ -73,6 +73,7 @@
 .demo-history summary { cursor: pointer; }
 .demo-history dt { font-weight: 650; }
 .demo-history dd { margin: 4px 0 12px; }
+.demo-database-error { max-width: 100%; overflow: auto; white-space: pre-wrap; overflow-wrap: anywhere; font-size: 12px; color: var(--gray-11); }
 .presentation { max-width: 920px; }
 .presentation .demo-panel { max-width: none; }
 .presentation .demo-controls label:first-child { flex: 0 0 150px; }

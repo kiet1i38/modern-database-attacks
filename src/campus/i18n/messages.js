@@ -26,11 +26,10 @@ const catalogs = {
     "errors.fieldLength": "Giá trị phải là chuỗi từ {{min}} đến {{max}} ký tự.",
     "errors.usernameAndPasswordOnly": "Chỉ nhận username và password.",
     "errors.passwordMustBeString": "Mật khẩu phải là chuỗi; object không được dùng làm điều kiện xác thực.",
-    "errors.demoOperatorsOnly": "Lab chỉ nhận sáu toán tử trong bộ demo.",
     "errors.invalidCategoryPriority": "Danh mục hoặc mức ưu tiên không hợp lệ.",
     "lab.safeExplanation": "Truy vấn chỉ tìm username; mật khẩu được xác minh riêng bằng scrypt.",
     "lab.unsafeSqlExplanation": "Bản unsafe ghép input vào câu SQL. Chuỗi payload có thể thay đổi cú pháp và điều kiện truy vấn để bỏ qua kiểm tra mật khẩu.",
-    "lab.unsafeMongoExplanation": "Bản unsafe đưa trực tiếp input vào truy vấn. Object toán tử có thể thay điều kiện so sánh mật khẩu; chuỗi thông thường vẫn được so sánh như giá trị.",
+    "lab.unsafeMongoExplanation": "Bản unsafe đưa trực tiếp input vào truy vấn. Object JSON tự nhập có thể thay điều kiện tìm mật khẩu; chuỗi thông thường vẫn được so sánh như giá trị.",
     "lab.rejectedExplanation": "Validation chặn request trước truy vấn xác thực. Session và audit vẫn có thể dùng database."
   },
   en: {
@@ -60,11 +59,10 @@ const catalogs = {
     "errors.fieldLength": "The value must be a string between {{min}} and {{max}} characters long.",
     "errors.usernameAndPasswordOnly": "Only username and password are accepted.",
     "errors.passwordMustBeString": "Password must be a string; an object cannot be used as an authentication condition.",
-    "errors.demoOperatorsOnly": "The lab accepts only the six operators in its demo set.",
     "errors.invalidCategoryPriority": "The category or priority is invalid.",
     "lab.safeExplanation": "The query only finds the username; the password is independently verified with scrypt.",
     "lab.unsafeSqlExplanation": "The unsafe variant concatenates input into SQL. A payload string can alter the syntax and query condition to bypass password verification.",
-    "lab.unsafeMongoExplanation": "The unsafe variant passes input directly into the query. An operator object can replace the password comparison; ordinary strings are still compared as values.",
+    "lab.unsafeMongoExplanation": "The unsafe variant passes input directly into the query. A custom JSON object can replace the password condition; ordinary strings are still compared as values.",
     "lab.rejectedExplanation": "Validation blocked the request before the authentication query. The session and audit log may still use the database."
   }
 };

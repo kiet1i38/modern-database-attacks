@@ -32,6 +32,18 @@ export async function createRepository(variant, env = process.env) {
         for (const user of data.users) await this.createUser(user);
         for (const ticket of data.tickets) await this.createTicket(ticket);
       },
+      async resetDemoSeed() {
+        const data = seedData(VARIANTS[variant].safe);
+        for (const user of data.users) {
+          await query("INSERT INTO users (id,username,name,role,email,department,active,password,passwordHash) VALUES (?,?,?,?,?,?,?,?,?) ON DUPLICATE KEY UPDATE username=VALUES(username),name=VALUES(name),role=VALUES(role),email=VALUES(email),department=VALUES(department),active=VALUES(active),password=VALUES(password),passwordHash=VALUES(passwordHash)",
+            [user.id,user.username,user.name,user.role,user.email,user.department,user.active,user.password,user.passwordHash]);
+        }
+        for (const ticket of data.tickets) {
+          await query("INSERT INTO tickets (id,code,ownerId,title,description,category,priority,status,createdAt,updatedAt) VALUES (?,?,?,?,?,?,?,?,?,?) ON DUPLICATE KEY UPDATE code=VALUES(code),ownerId=VALUES(ownerId),title=VALUES(title),description=VALUES(description),category=VALUES(category),priority=VALUES(priority),status=VALUES(status),createdAt=VALUES(createdAt),updatedAt=VALUES(updatedAt)",
+            [ticket.id,ticket.code,ticket.ownerId,ticket.title,ticket.description,ticket.category,ticket.priority,ticket.status,ticket.createdAt,ticket.updatedAt]);
+        }
+        return { usersRestored: data.users.length, ticketsRestored: data.tickets.length };
+      },
       async userByUsername(username) { return normalize((await query("SELECT * FROM users WHERE username = ?", [username]))[0]); },
       async userById(id) { return normalize((await query("SELECT * FROM users WHERE id = ?", [id]))[0]); },
       async unsafeLogin(username, password) {
@@ -106,6 +118,12 @@ export async function createRepository(variant, env = process.env) {
       const data = seedData(VARIANTS[variant].safe);
       await users.insertMany(data.users);
       await tickets.insertMany(data.tickets);
+    },
+    async resetDemoSeed() {
+      const data = seedData(VARIANTS[variant].safe);
+      for (const user of data.users) await users.updateOne({ id: user.id }, { $set: user }, { upsert: true });
+      for (const ticket of data.tickets) await tickets.updateOne({ id: ticket.id }, { $set: ticket }, { upsert: true });
+      return { usersRestored: data.users.length, ticketsRestored: data.tickets.length };
     },
     async userByUsername(username) { return strip(await users.findOne({ username })); },
     async userById(id) { return strip(await users.findOne({ id })); },

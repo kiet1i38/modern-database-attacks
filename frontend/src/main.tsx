@@ -6,7 +6,6 @@ import { SquaresFour, Ticket as TicketIcon, Users, UserCircle, SignOut, Plus, Ma
 import "@radix-ui/themes/styles.css";
 import "./styles.css";
 import { DemoPanel } from "./demo-panel";
-import { scenarios } from "./demo-scenarios";
 import i18n from "./i18n";
 import { formatDate, formatDateTime, formatNumber } from "./i18n/format";
 import type { Language } from "./i18n/language";
@@ -100,11 +99,10 @@ function Diagnostics({ detail, config }: { detail: Diagnostic | null; config: Co
 }
 function Login({ config, onLogin }: { config: Config; onLogin: (user: User, detail: Diagnostic) => void }) {
   const [username, setUsername] = useState(""), [password, setPassword] = useState("");
-  const [lab, setLab] = useState(false), [selection, setSelection] = useState(config.payloads[0]?.id ?? "simulation:" + scenarios[0].id);
+  const [lab, setLab] = useState(false), [selection, setSelection] = useState(config.payloads[0]?.id ?? "");
   const [custom, setCustom] = useState(""), [customMode, setCustomMode] = useState(false);
   const [busy, setBusy] = useState(false), [error, setError] = useState(""), [detail, setDetail] = useState<Diagnostic | null>(null);
   const payload = config.payloads.find(p => p.id === selection);
-  const simulation = lab ? scenarios.find(scenario => "simulation:" + scenario.id === selection) : undefined;
   async function submit(event: React.FormEvent) {
     event.preventDefault();
     if (busy || (lab && !payload)) return;
@@ -128,7 +126,7 @@ function Login({ config, onLogin }: { config: Config; onLogin: (user: User, deta
         <h1>{tx("auth.title")}</h1>
         <p className="muted">{tx("auth.tagline")}</p>
         <form onSubmit={submit} className="stack">
-          {!simulation && <label>{tx("auth.username")}<TextField.Root aria-label={tx("auth.username")} autoComplete="username" placeholder={tx("auth.usernamePlaceholder")} value={username} onChange={e => setUsername(e.target.value)} size="3" required /></label>}
+          <label>{tx("auth.username")}<TextField.Root aria-label={tx("auth.username")} autoComplete="username" placeholder={tx("auth.usernamePlaceholder")} value={username} onChange={e => setUsername(e.target.value)} size="3" required /></label>
           {lab && <label>{tx("auth.demoPayload")}
             <Select.Root value={selection} disabled={busy} onValueChange={value => { setSelection(value); setError(""); setDetail(null); }}>
               <Select.Trigger aria-label={tx("auth.demoPayload")} />
@@ -137,10 +135,6 @@ function Login({ config, onLogin }: { config: Config; onLogin: (user: User, deta
                   <Select.Label>{tx("auth.authenticationGroup")}</Select.Label>
                   {config.payloads.map(p => <Select.Item key={p.id} value={p.id}>{tx(`lab.payloads.${config.database === "MySQL" ? "sql" : "mongo"}.${p.id}`, { defaultValue: p.label })}</Select.Item>)}
                 </Select.Group>}
-                <Select.Group>
-                  <Select.Label>{tx("auth.simulationGroup")}</Select.Label>
-                  {scenarios.map(scenario => <Select.Item key={scenario.id} value={"simulation:" + scenario.id}>{tx(`demo.scenarios.${scenario.id}.title`, { defaultValue: scenario.title })}</Select.Item>)}
-                </Select.Group>
               </Select.Content>
             </Select.Root>
           </label>}
@@ -151,12 +145,10 @@ function Login({ config, onLogin }: { config: Config; onLogin: (user: User, deta
               {customMode && <label>{tx(config.database === "MongoDB" ? "auth.mongoPayload" : "auth.sqlPayload")}<TextArea aria-label={tx("auth.customPayload")} value={custom} onChange={e => setCustom(e.target.value)} required /></label>}
               <p className="form-note">{tx(config.safe ? "auth.safeNotice" : "auth.unsafeNotice")}</p>
             </>}
-          {!simulation && <>
             <ErrorNotice message={error} />
             <Button type="submit" size="3" disabled={busy}>{busy ? tx("auth.signingIn") : lab ? tx("auth.sendPayload") : tx("auth.signIn")}<ArrowRight size={18} /></Button>
-          </>}
         </form>
-        {simulation ? <DemoPanel variant={config.variant} selectedScenario={simulation} /> : lab && <Diagnostics detail={detail} config={config} />}
+          {lab && <Diagnostics detail={detail} config={config} />}
         <details className="demo-accounts">
           <summary>{tx("auth.demoAccounts")}</summary>
           <dl>
@@ -265,6 +257,13 @@ function App() {
     event.preventDefault(); const values = Object.fromEntries(new FormData(event.currentTarget));
     await action(async () => { await api("/admin/users", "POST", values); setNewUser(false); setNotice("users.created"); });
   }
+  async function resetDemoSeed() {
+    if (!window.confirm(tx("demo.resetConfirm"))) return;
+    await action(async () => {
+      await api("/admin/demo/reset", "POST", {});
+      setNotice("demo.resetSuccess");
+    });
+  }
   if (loading) return <div className="loading-page"><GraduationCap size={40} /><p>{tx("app.connecting")}</p></div>;
   if (fatal || !config) return <div className="loading-page"><LanguageSwitcher /><ShieldWarning size={40} /><h1>{tx("app.connectionFailed")}</h1><p role="alert">{tx(fatal || "errors.generic")}</p><Button onClick={bootstrap}>{tx("common.retry")}</Button></div>;
   if (!user) return <Login config={config} onLogin={(u, d) => { setDashboard(null); setTickets(null); setUsers([]); setEvents([]); setUser(u); setDetail(d); setPage("overview"); }} />;
@@ -293,14 +292,14 @@ function App() {
     </nav>
     <div className="app-main">
       <main className="content">
-        {page !== "overview" && <div className="page-heading"><div><h1>{tx(pages[page])}</h1><p>{tx(page === "tickets" ? "tickets.description" : page === "users" ? "users.description" : page === "profile" ? "profile.description" : "lab.pageDescription")}</p></div>{page === "tickets" && <Button size="3" onClick={() => { setError(""); setNewTicket(true); }}><Plus size={18} />{tx("dashboard.createRequest")}</Button>}{page === "users" && <Button size="3" onClick={() => { setError(""); setNewUser(true); }}><Plus size={18} />{tx("users.create")}</Button>}</div>}
+        {page !== "overview" && <div className="page-heading"><div><h1>{tx(pages[page])}</h1><p>{tx(page === "tickets" ? "tickets.description" : page === "users" ? "users.description" : page === "profile" ? "profile.description" : "lab.pageDescription")}</p></div>{page === "tickets" && <Button size="3" onClick={() => { setError(""); setNewTicket(true); }}><Plus size={18} />{tx("dashboard.createRequest")}</Button>}{page === "users" && <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}><Button variant="soft" color="gray" disabled={saving} onClick={() => void resetDemoSeed()}>{tx("demo.resetSeed")}</Button><Button size="3" onClick={() => { setError(""); setNewUser(true); }}><Plus size={18} />{tx("users.create")}</Button></div>}</div>}
         <ErrorNotice message={error} />{notice && <Callout.Root color="teal" role="status"><Callout.Text>{tx(notice)}</Callout.Text></Callout.Root>}
         {initialLoading ? <div className="content-loading"><ArrowClockwise size={24} /><p>{tx("app.loadingData")}</p></div> :
           <>{page === "overview" && dashboard && <Overview data={dashboard} user={user} onOpen={openTicket} onTickets={() => navigate("tickets")} onCreate={() => { setError(""); setNewTicket(true); }} />}
             {page === "tickets" && <section className="panel"><div className="list-toolbar"><TextField.Root aria-label={tx("tickets.searchLabel")} value={search} onChange={e => { setSearch(e.target.value); setListPage(1); }} placeholder={tx("tickets.searchPlaceholder")}><TextField.Slot><MagnifyingGlass size={18} /></TextField.Slot></TextField.Root><Select.Root value={filter} onValueChange={v => { setFilter(v); setListPage(1); }}><Select.Trigger aria-label={tx("tickets.filterStatus")} /><Select.Content><Select.Item value="all">{tx("tickets.allStatuses")}</Select.Item>{Object.entries(statusNames).map(([key, label]) => <Select.Item value={key} key={key}>{tx(label)}</Select.Item>)}</Select.Content></Select.Root></div><TicketTable items={tickets?.items || []} onOpen={openTicket} /><div className="pagination"><span>{tx("tickets.pagination", { count: formatNumber(tickets?.total || 0, activeLanguage()), page: listPage, pages: tickets?.pages || 1 })}</span><div><Button variant="soft" disabled={listPage <= 1} aria-label={tx("tickets.pagePrevious")} onClick={() => setListPage(n => n - 1)}><ArrowLeft size={16} /></Button><Button variant="soft" disabled={listPage >= (tickets?.pages || 1)} aria-label={tx("tickets.pageNext")} onClick={() => setListPage(n => n + 1)}><ArrowRight size={16} /></Button></div></div></section>}
-            {page === "users" && <section className="panel"><div className="table-scroll"><table><thead><tr><th>{tx("users.title")}</th><th>{tx("users.department")}</th><th>{tx("users.role")}</th><th>{tx("users.state")}</th><th>{tx("users.actions")}</th></tr></thead><tbody>{users.map(u => <tr key={u.id}><td><strong>{u.name}</strong><div className="muted small">{u.username} · {u.email}</div></td><td>{u.department}</td><td><Badge color={u.role === "admin" ? "blue" : "gray"}>{tx(roleNames[u.role])}</Badge></td><td><Badge color={u.active ? "teal" : "red"}>{tx(u.active ? "users.active" : "users.locked")}</Badge></td><td><Button variant="soft" color={u.active ? "red" : "teal"} disabled={u.id === user.id || saving} onClick={() => action(async () => { await api("/admin/users/" + u.id, "PATCH", { active: !u.active }); setNotice(u.active ? "users.lockedNotice" : "users.unlockedNotice"); })}>{tx(u.active ? "users.lock" : "users.unlock")}</Button></td></tr>)}</tbody></table></div></section>}
+            {page === "users" && <section className="panel"><p className="muted small">{tx("demo.resetScope")}</p><div className="table-scroll"><table><thead><tr><th>{tx("users.title")}</th><th>{tx("users.department")}</th><th>{tx("users.role")}</th><th>{tx("users.state")}</th><th>{tx("users.actions")}</th></tr></thead><tbody>{users.map(u => <tr key={u.id}><td><strong>{u.name}</strong><div className="muted small">{u.username} · {u.email}</div></td><td>{u.department}</td><td><Badge color={u.role === "admin" ? "blue" : "gray"}>{tx(roleNames[u.role])}</Badge></td><td><Badge color={u.active ? "teal" : "red"}>{tx(u.active ? "users.active" : "users.locked")}</Badge></td><td><Button variant="soft" color={u.active ? "red" : "teal"} disabled={u.id === user.id || saving} onClick={() => action(async () => { await api("/admin/users/" + u.id, "PATCH", { active: !u.active }); setNotice(u.active ? "users.lockedNotice" : "users.unlockedNotice"); })}>{tx(u.active ? "users.lock" : "users.unlock")}</Button></td></tr>)}</tbody></table></div></section>}
             {page === "profile" && <section className="panel profile-panel"><div className="profile-banner"><span className="avatar big">{user.name.slice(0, 1)}</span><div><h2>{user.name}</h2><p>{user.username} · {tx(roleNames[user.role])}</p></div></div><form className="stack" onSubmit={e => { e.preventDefault(); const values = Object.fromEntries(new FormData(e.currentTarget)); void action(async () => { const data = await api<{ user: User }>("/profile", "PATCH", values); setUser(data.user); setNotice("profile.save"); }); }}><label>{tx("common.fullName")}<TextField.Root name="name" aria-label={tx("common.fullName")} defaultValue={user.name} required maxLength={120} /></label><label>{tx("common.email")}<TextField.Root name="email" aria-label={tx("common.email")} type="email" defaultValue={user.email} required maxLength={160} /></label><label>{tx("common.department")}<TextField.Root name="department" aria-label={tx("common.department")} defaultValue={user.department} required maxLength={120} /></label><Button type="submit" disabled={saving}>{tx("common.saveChanges")}</Button></form></section>}
-            {page === "lab" && <><DemoPanel key={user.id} variant={config.variant} studentId={user.role === "user" ? user.id : undefined} /><section className="panel lab-overview"><VariantBadge config={config} /><h2>{tx("lab.currentSession")}</h2><Diagnostics detail={detail} config={config} /><VariantLinks config={config} /></section>{user.role === "admin" && <section className="panel recent"><div className="panel-head"><div><h2>{tx("audit.title")}</h2><p>{tx("audit.recent")}</p></div></div><div className="table-scroll"><table><thead><tr><th>{tx("common.time")}</th><th>{tx("common.account")}</th><th>{tx("common.result")}</th><th>{tx("common.requestType")}</th></tr></thead><tbody>{events.map(e => <tr key={e.id}><td>{formatDateTime(Number(e.createdAt), activeLanguage())}</td><td>{e.actor}</td><td><Badge color={e.result === "success" ? "teal" : "gray"}>{tx(e.result === "success" ? "audit.success" : "audit.denied")}</Badge></td><td>{localizedPayload(config, e.payload)}</td></tr>)}{!events.length && <tr><td colSpan={4}>{tx("audit.empty")}</td></tr>}</tbody></table></div></section>}</>}
+            {page === "lab" && <><DemoPanel key={user.id} variant={config.variant} /><section className="panel lab-overview"><VariantBadge config={config} /><h2>{tx("lab.currentSession")}</h2><Diagnostics detail={detail} config={config} /><VariantLinks config={config} /></section>{user.role === "admin" && <section className="panel recent"><div className="panel-head"><div><h2>{tx("audit.title")}</h2><p>{tx("audit.recent")}</p></div></div><div className="table-scroll"><table><thead><tr><th>{tx("common.time")}</th><th>{tx("common.account")}</th><th>{tx("common.result")}</th><th>{tx("common.requestType")}</th></tr></thead><tbody>{events.map(e => <tr key={e.id}><td>{formatDateTime(Number(e.createdAt), activeLanguage())}</td><td>{e.actor}</td><td><Badge color={e.result === "success" ? "teal" : "gray"}>{tx(e.result === "success" ? "audit.success" : "audit.denied")}</Badge></td><td>{localizedPayload(config, e.payload)}</td></tr>)}{!events.length && <tr><td colSpan={4}>{tx("audit.empty")}</td></tr>}</tbody></table></div></section>}</>}
           </>}
       </main>
     </div>

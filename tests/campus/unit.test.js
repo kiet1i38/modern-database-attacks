@@ -8,21 +8,31 @@ for (const variant of Object.keys(VARIANTS)) {
     assert.deepEqual(loginInput(input, variant), input);
   });
   test(variant + ": rejects extra role, missing input and object username", () => {
-    for (const body of [null, [], {}, { username: {}, password: "hi" }, { username: "admin", password: "hi", role: "admin" }, { username: "x".repeat(121), password: "hi" }]) {
+    for (const body of [null, [], {}, { username: {}, password: "hi" }, { username: "admin", password: "hi", role: "admin" }]) {
       assert.throws(() => loginInput(body, variant), { code: "INVALID_INPUT" });
     }
+    const longUsername = { username: "x".repeat(121), password: "hi" };
+    if (variant.endsWith("-unsafe")) assert.deepEqual(loginInput(longUsername, variant), longUsername);
+    else assert.throws(() => loginInput(longUsername, variant), { code: "INVALID_INPUT" });
   });
-  test(variant + ": six Mongo payloads only accepted by Mongo unsafe", () => {
+  test(variant + ": Mongo payload presets are accepted only by Mongo unsafe", () => {
     for (const payload of MONGO_PAYLOADS) {
       const body = { username: "admin", password: payload.password };
       if (variant === "mongo-unsafe") assert.deepEqual(loginInput(body, variant), body);
       else assert.throws(() => loginInput(body, variant), { status: 400 });
     }
   });
-  test(variant + ": password objects cannot use gt typo, $where, arbitrary regex, nested values or arrays", () => {
-    for (const password of [{ gt: "" }, { $where: "true" }, { $regex: "(a+)+" }, { $ne: {} }, { $nin: [{}] }, { $exists: "true" }, [], {}, { $gt: "", $ne: "" }]) {
-      assert.throws(() => loginInput({ username: "admin", password }, variant), { status: 400 });
+  test(variant + ": arbitrary JSON objects are accepted only by the intentionally unsafe Mongo login", () => {
+    for (const password of [{ gt: "" }, { $where: "true" }, { $regex: "(a+)+" }, { $ne: {} }, { $nin: [{}] }, { $exists: "true" }, {}, { $gt: "", $ne: "" }, { nested: { $not: { $eq: "x" } } }]) {
+      if (variant === "mongo-unsafe") assert.deepEqual(loginInput({ username: "admin", password }, variant).password, password);
+      else assert.throws(() => loginInput({ username: "admin", password }, variant), { status: 400 });
     }
+    for (const password of [[], null, 123, true]) assert.throws(() => loginInput({ username: "admin", password }, variant), { status: 400 });
+  });
+  test(variant + ": unsafe login accepts long manual payload strings within the JSON request limit", () => {
+    const body = { username: "admin", password: "x".repeat(10_000) };
+    if (variant === "sql-unsafe" || variant === "mongo-unsafe") assert.deepEqual(loginInput(body, variant), body);
+    else assert.throws(() => loginInput(body, variant), { status: 400 });
   });
 }
 test("public users never export hashes/plaintext password", () => {

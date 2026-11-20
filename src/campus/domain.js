@@ -37,24 +37,26 @@ export function loginInput(body, variant) {
       Object.keys(body).some(key => !["username", "password"].includes(key))) {
     throw fail(400, "INVALID_INPUT", "Chỉ nhận username và password.", "errors.usernameAndPasswordOnly");
   }
-  // Do not trim login strings: trailing spaces are material to MySQL -- comments.
-  textField(body.username, "Username", 120);
   const password = body.password;
-  if (typeof password === "string") {
-    textField(password, "Mật khẩu", 256);
-  } else if (variant !== "mongo-unsafe" || !password || Array.isArray(password)) {
-    throw fail(400, "INVALID_INPUT", "Mật khẩu phải là chuỗi; object không được dùng làm điều kiện xác thực.", "errors.passwordMustBeString");
+  const rawLabInput = variant === "sql-unsafe" || variant === "mongo-unsafe";
+  const maxRawInput = 12 * 1024;
+  if (rawLabInput) {
+    for (const [label, value] of [["Username", body.username], ["Mật khẩu", password]]) {
+      if (typeof value === "string" && (value.length < 1 || value.length > maxRawInput)) {
+        throw fail(400, "INVALID_INPUT", label + " phải có từ 1 đến " + maxRawInput + " ký tự.", "errors.fieldLength", { min: 1, max: maxRawInput });
+      }
+    }
+    if (typeof body.username !== "string" || (variant === "sql-unsafe" && typeof password !== "string")) {
+      throw fail(400, "INVALID_INPUT", "Payload không đúng kiểu của biến thể demo.", "errors.invalidInput");
+    }
   } else {
-    // Bound the teaching surface without removing the intentional operator-injection defect.
-    const entries = Object.entries(password);
-    const [key, value] = entries[0] || [];
-    const valid = entries.length === 1 && (
-      (["$gt", "$gte", "$ne"].includes(key) && typeof value === "string" && value.length <= 120) ||
-      (key === "$regex" && value === ".*") ||
-      (key === "$nin" && Array.isArray(value) && value.length <= 5 && value.every(v => typeof v === "string" && v.length <= 120)) ||
-      (key === "$exists" && typeof value === "boolean")
-    );
-    if (!valid) throw fail(400, "INVALID_INPUT", "Lab chỉ nhận sáu toán tử trong bộ demo.", "errors.demoOperatorsOnly");
+    // Do not trim login strings: trailing spaces are material to MySQL -- comments.
+    textField(body.username, "Username", 120);
+  }
+  if (typeof password === "string") {
+    if (!rawLabInput) textField(password, "Mật khẩu", 256);
+  } else if (variant !== "mongo-unsafe" || !password || Array.isArray(password) || typeof password !== "object") {
+    throw fail(400, "INVALID_INPUT", "Mật khẩu phải là chuỗi; object không được dùng làm điều kiện xác thực.", "errors.passwordMustBeString");
   }
   return { username: body.username, password };
 }

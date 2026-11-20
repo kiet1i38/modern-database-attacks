@@ -2,7 +2,7 @@ import assert from "node:assert/strict";
 import { mkdir, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { setTimeout as delay } from "node:timers/promises";
-import { VARIANTS, SQL_PAYLOADS, MONGO_PAYLOADS } from "../src/campus/domain.js";
+import { VARIANTS, SQL_PAYLOADS, MONGO_PAYLOADS, seedData } from "../src/campus/domain.js";
 const evidence = process.env.EVIDENCE_DIR || path.join("evidence", "campusdesk-" + new Date().toISOString().replaceAll(":", "-").slice(0, 19));
 await mkdir(evidence, { recursive: true });
 const results = [];
@@ -55,7 +55,11 @@ for (const [variant, definition] of Object.entries(VARIANTS)) {
   await check("object username rejected", async () => assert.equal((await c.login({$ne:""},"x")).status,400));
   await check("client role is not accepted", async () => assert.equal((await c.request("/auth/login","POST",{username:"admin",password:"Admin@123",role:"admin"})).status,400));
   await check("wrong password denied without session", async () => { assert.equal((await c.login("admin","wrong-password")).status,401); assert.equal((await c.request("/auth/me")).status,401); });
-  await check("gt without dollar is rejected", async () => assert.equal((await c.login("admin",{gt:""})).status,400));
+    await check("non-operator JSON field is not a Mongo operator", async () => {
+      const r=await c.login("admin",{gt:""});
+      assert.equal(r.status,variant==="mongo-unsafe"?401:400);
+      if (variant==="mongo-unsafe") assert.equal(r.data.diagnostic.authQueryExecuted,true);
+    });
   await check("stringified operator stays a literal password", async () => {
     const r = await c.login("admin", JSON.stringify({ $gt: "" }));
     assert.equal(r.status,401);
@@ -63,7 +67,10 @@ for (const [variant, definition] of Object.entries(VARIANTS)) {
     assert.equal(r.data.diagnostic.authQueryExecuted,true);
     assert.equal((await c.request("/auth/me")).status,401);
   });
-  await check("server-side JS operator excluded from teaching lab", async () => assert.equal((await c.login("admin",{$where:"true"})).status,400));
+    if (variant === "mongo-unsafe") await check("custom operator object reaches the real MongoDB predicate", async () => {
+      const r=await c.login("admin",{$regex:"^unmatched$"});
+      assert.equal(r.status,401); assert.equal(r.data.diagnostic.authQueryExecuted,true); assert.equal(r.data.diagnostic.payload,"operator");
+    });
   const payloads = variant.startsWith("sql") ? SQL_PAYLOADS : MONGO_PAYLOADS;
   for (const payload of payloads) {
     await check("payload " + payload.id + ": " + (definition.safe ? "blocked" : "real admin bypass"), async () => {
@@ -111,6 +118,17 @@ for (const [variant, definition] of Object.entries(VARIANTS)) {
     assert.equal((await c.request("/admin/users","POST",{...body,username:username+"x",role:"superadmin"})).status,400);
     const n=client(base); await n.init(); assert.equal((await n.login(username,newPassword)).status,200); await n.logout();
   });
+    await check("admin reset restores seeded users and tickets, preserving other rows and session", async () => {
+      const auditBefore=(await c.request("/admin/audit")).data.events.map(event=>event.id).sort();
+      const r=await c.request("/admin/demo/reset","POST",{});
+      assert.equal(r.status,200); assert.deepEqual(r.data,{ok:true,scope:"seed-users-and-tickets",usersRestored:3,ticketsRestored:12});
+      assert.equal((await c.request("/auth/me")).status,200);
+      const seedTicket=seedData(definition.safe).tickets[0];
+      const restoredTicket=(await c.request("/tickets/ticket-001")).data.ticket;
+      assert.equal(restoredTicket.status,seedTicket.status); assert.equal(restoredTicket.priority,seedTicket.priority);
+      assert.ok((await c.request("/admin/users")).data.users.some(user=>user.username===username));
+      assert.deepEqual((await c.request("/admin/audit")).data.events.map(event=>event.id).sort(),auditBefore);
+    });
   if (variant === "sql-unsafe") await check("tautology still returns real admin after creating extra accounts", async () => {
     const r=await c.login(SQL_PAYLOADS[0].username,SQL_PAYLOADS[0].password);
     assert.equal(r.status,200);assert.equal(r.data.user.role,"admin");

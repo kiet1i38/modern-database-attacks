@@ -1,17 +1,148 @@
-<!doctype html><html lang="vi"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Kịch bản thuyết trình final · CampusDesk</title><link rel="stylesheet" href="docs.css"></head><body><main><header><a href="index.html">campusdesk. / Final documentation</a><p>SQL &amp; MongoDB · Safe / Unsafe · Admin / User</p><nav><a href="PROJECT_OVERVIEW.html">Tổng quan bài final</a><a href="RUN_AND_TEST.html">Cách chạy, truy cập và xử lý lỗi</a><a href="ARCHITECTURE.html">Kiến trúc và luồng xử lý</a><a href="DATABASE.html">Database, tài khoản và session</a><a href="API.html">Hợp đồng API</a><a href="SECURITY.html">Safe / unsafe và ranh giới an toàn</a><a href="TESTING.html">Kiểm thử và bằng chứng</a><a href="DEVELOPMENT.html">Phát triển và cấu trúc code</a><a href="DEMO_GUIDE.html">Kịch bản thuyết trình final</a></nav><p class="language-link"><a href="en/DEMO_GUIDE.html" lang="en">English version</a></p></header><article><h1>Kịch bản thuyết trình final</h1><h2>Chuẩn bị</h2><p>Chạy Docker, reset dữ liệu demo nếu cần, mở bốn tab ở 3001–3004. Giới thiệu CampusDesk, admin/user và nhãn safe/unsafe.</p><p><a href="CODE_AND_SECURITY_FLOW.html">Code và luồng bảo mật</a></p><h2 id="phase-two">So sánh thêm các tình huống bảo mật</h2>
-<p>Ngay trên trang đăng nhập, chọn <strong>Demo injection → Payload demo → Kịch bản mô phỏng</strong>. Chọn một tình huống rồi bấm <strong>So sánh kết quả</strong>. Phần này dùng bản ghi hư cấu và mã HTTP minh họa.</p>
-<ol>
-<li><strong>Lộ bản ghi ngoài phạm vi.</strong> Đối chiếu số bản ghi và nhóm sở hữu ở hai kết quả.</li>
-<li><strong>Sửa ngoài phạm vi và sửa hàng loạt.</strong> Chỉ rõ mã bản ghi được yêu cầu, mã thực sự thay đổi trong mô phỏng và số bản ghi bị ảnh hưởng.</li>
-<li><strong>Xóa nhiều bản ghi và mất bảng hoặc bộ sưu tập.</strong> So sánh dữ liệu ban đầu với kết quả. Dùng <strong>Đặt lại mô phỏng</strong> để quay về bộ dữ liệu minh họa.</li>
-<li><strong>Thay đổi quyền.</strong> So sánh tên hiển thị và vai trò của tài khoản mẫu sau thao tác.</li>
-<li><strong>Lộ chi tiết qua lỗi và khác biệt phản hồi.</strong> Giải thích loại thông tin mà mỗi phản hồi có thể làm lộ.</li>
-<li><strong>Xác thực và kiểu dữ liệu MongoDB.</strong> Giải thích vì sao cần kiểm tra mật khẩu và kiểu dữ liệu trước khi cấp phiên.</li>
-<li><strong>Quyền xem yêu cầu và hành động bị cấm.</strong> Đối chiếu kết quả của sinh viên với thao tác dành cho quản trị viên.</li>
-<li><strong>Phiên và dữ liệu hợp lệ.</strong> So sánh phiên còn hiệu lực với phiên không được chấp nhận. Mở lại yêu cầu mẫu để kiểm tra dấu nháy trong tiêu đề.</li>
-</ol>
-<p>Để đối chiếu với kết quả thực tế, đăng nhập bằng tài khoản sinh viên, mở <strong>Nhật ký &amp; demo → Kiểm tra trên CampusDesk</strong> và chạy <strong>Kiểm tra quyền đọc của sinh viên</strong>. Đọc mã HTTP dự kiến và thực tế cho quyền xem yêu cầu của mình và quyền xem nhật ký quản trị. Bấm <strong>Tải kết quả JSON</strong> để lưu bằng chứng. Tệp đánh dấu <code>simulation</code> cho mô phỏng và <code>live-api</code> cho kiểm tra API thực tế.</p>
-<h2>Demo bắt buộc MongoDB trước trong khoảng 5 phút</h2><ol><li>Mongo Unsafe (3003): đăng nhập admin đúng, đăng xuất; nhập mật khẩu sai để thấy 401.</li><li>Chọn Demo injection → $gt; quan sát password object, gửi request và mở Người dùng để chứng minh quyền admin thật.</li><li>Đăng xuất; nhập payload tùy chỉnh dạng chuỗi JSON có dấu nháy để thấy 401. Object và chuỗi không giống nhau.</li><li>Mongo Safe (3004): cùng object $gt → 400, diagnostic ghi chưa chạy truy vấn xác thực. Mật khẩu sai dạng chuỗi → 401; mật khẩu đúng vẫn thành công.</li><li>Mở code walkthrough, chỉ ra loginInput, unsafeLogin và verifyPassword. Giải thích session/audit vẫn dùng DB khi credential lookup bị chặn.</li></ol><h2>Phần so sánh mở rộng nếu còn thời gian</h2><ol><li>Đăng nhập student: dashboard cá nhân, tạo yêu cầu. Cho thấy user không có trang quản lý tài khoản.</li><li>Đăng xuất; đăng nhập admin bằng mật khẩu đúng: dashboard toàn hệ thống, xử lý yêu cầu và tài khoản.</li><li>SQL Unsafe: sai mật khẩu bị từ chối; chọn Demo injection → OR luôn đúng hoặc comment → vào dashboard admin mà không cung cấp mật khẩu đúng.</li><li>SQL Safe: gửi cùng preset → bị chặn; mật khẩu đúng vẫn hoạt động.</li><li>Mongo Unsafe: gửi password object {"$gt":""}; tiếp tục $ne, $regex và các toán tử còn lại nếu có thời gian → session admin thật.</li><li>Mongo Safe: cùng object bị HTTP 400; input chuỗi sai bị 401; mật khẩu đúng vẫn đăng nhập.</li><li>Vào Nhật ký & demo để giải thích query shape, metadata và khác biệt; mở evidence report để đối chiếu test.</li></ol><h2>Điểm cần giải thích</h2><p>SQL Injection thay đổi cú pháp/điều kiện SQL do nối chuỗi. NoSQL Injection thay đổi cấu trúc predicate dù không có cú pháp SQL. Bypass đăng nhập vào một tài khoản admin là authentication failure; không phải việc user bình thường được phép gọi API admin.</p><h2>Payload SQL được kiểm thử</h2><pre>Password: ' OR '1'='1' --&#32;
-Username: admin' --&#32;
-Password: ' OR 1=1 #
-Username: ' OR role = 'admin' -- </pre><p>Dấu cách sau <code>--</code> quan trọng trong MySQL. Demo tab có preset để tránh lỗi gõ.</p><h2>Giới hạn cần giải thích</h2><p>Payload chỉ thay điều kiện password nên username không tồn tại vẫn thất bại. Sáu toán tử được giới hạn cho bài lab; không bảo đảm bypass mọi MongoDB app. Hash đơn thuần không đủ nếu vẫn xác thực bằng một query do client thay đổi. CSRF và rate limit không sửa injection; authorization giới hạn quyền sau khi danh tính được xác thực. Ở safe, chưa chạy truy vấn xác thực không có nghĩa là session store/audit không truy cập DB. Lab dùng HTTP local, secret và dữ liệu synthetic, không phải cấu hình production.</p><h2>Recovery</h2><p>Nếu CSRF/phiên cũ: reload. Nếu DB down: mở health/log, khởi động lại đúng service. Không sửa payload hoặc mock kết quả để báo thành công.</p></article><footer>Chỉ dùng dữ liệu giả lập tại localhost. Tài liệu v1 lưu ở <a href="legacy/index.html">legacy/</a>.</footer></main></body></html>
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Kịch bản demo thao tác trực tiếp · CampusDesk</title>
+  <link rel="stylesheet" href="docs.css">
+</head>
+<body>
+<main>
+  <header>
+    <a href="index.html">CampusDesk · tài liệu final</a>
+    <p>SQL &amp; MongoDB · Safe / Unsafe · Admin / User</p>
+    <nav>
+      <a href="index.html">Trang tài liệu</a>
+      <a href="RUN_AND_TEST.html">Chạy và xử lý lỗi</a>
+      <a href="DATABASE.html">Database và tài khoản</a>
+      <a href="SECURITY.html">Safe / unsafe</a>
+      <a href="TESTING.html">Kiểm thử</a>
+      <a href="DEMO_GUIDE.html">Kịch bản demo</a>
+    </nav>
+    <p class="language-link"><a href="en/DEMO_GUIDE.html" lang="en">English version</a></p>
+  </header>
+  <article>
+    <h1>Kịch bản demo thao tác trực tiếp</h1>
+    <p><strong>Bạn tự nhập payload và gửi từng thao tác.</strong> Trang không chạy sẵn một loạt kịch bản. Form login gọi database thật của từng biến thể; tài khoản và yêu cầu là dữ liệu tổng hợp của CampusDesk.</p>
+
+    <h2>1. Mở bốn bản demo</h2>
+    <table>
+      <thead><tr><th>Biến thể</th><th>Docker local</th><th>Vercel Production</th></tr></thead>
+      <tbody>
+        <tr><td>SQL Unsafe</td><td><a href="http://localhost:3001">localhost:3001</a></td><td><a href="https://campusdesk-kiet-sql-unsafe.vercel.app">Mở SQL Unsafe</a></td></tr>
+        <tr><td>SQL Safe</td><td><a href="http://localhost:3002">localhost:3002</a></td><td><a href="https://campusdesk-kiet-sql-safe.vercel.app">Mở SQL Safe</a></td></tr>
+        <tr><td>MongoDB Unsafe</td><td><a href="http://localhost:3003">localhost:3003</a></td><td><a href="https://campusdesk-kiet-mongo-unsafe.vercel.app">Mở MongoDB Unsafe</a></td></tr>
+        <tr><td>MongoDB Safe</td><td><a href="http://localhost:3004">localhost:3004</a></td><td><a href="https://campusdesk-kiet-mongo-safe.vercel.app">Mở MongoDB Safe</a></td></tr>
+      </tbody>
+    </table>
+    <p>Local cần Docker Compose đang chạy. Dùng `docker compose up -d --build --wait --wait-timeout 240` để khởi động; lệnh này giữ nguyên các volume hiện tại.</p>
+
+    <h2>2. Chuẩn bị hai cửa sổ cho hai role</h2>
+    <ol>
+      <li>Mở hai browser profile tách cookie, ví dụ Chrome thường và Edge/InPrivate. Hai cửa sổ cùng một profile sẽ dùng chung session.</li>
+      <li>Cửa sổ User: đăng nhập <code>student</code> / <code>Student@123</code>.</li>
+      <li>Cửa sổ Admin: đăng nhập <code>admin</code> / <code>Admin@123</code>. Có thể đăng xuất rồi dùng cửa sổ này để thử payload trên bản Unsafe.</li>
+      <li>Tài khoản thứ ba để thử khóa/mở lại là <code>student2</code> / <code>Student2@123</code>.</li>
+    </ol>
+    <p>Tất cả tài khoản trên đều là dữ liệu demo. Không nhập mật khẩu hoặc thông tin cá nhân thật.</p>
+
+    <h2>3. Tự bypass form SQL</h2>
+    <ol>
+      <li>Mở SQL Unsafe, bấm <strong>Demo injection</strong>, nhập username <code>admin</code>, bật <strong>Nhập payload tùy chỉnh</strong>.</li>
+      <li>Nhập vào ô SQL password payload rồi gửi:</li>
+    </ol>
+    <pre><code>' OR 1=1 #</code></pre>
+    <p>Kết quả mong đợi: request <code>POST /api/auth/login</code> trả HTTP 200 và dashboard mở bằng role Admin. Trong Diagnostics, query được đánh dấu đã chạy. <code>#</code> là comment MySQL, làm phần kiểm tra mật khẩu phía sau bị bỏ qua.</p>
+    <p>Thử thêm các input khác bằng cách thay từng ô; mỗi lần chỉ gửi một request:</p>
+    <pre><code>Username: admin' --␠
+Password: not-the-password
+
+Username: ' OR role = 'admin' --␠
+Password: not-the-password
+
+Username: admin
+Password: ' OR '1'='1' --␠</code></pre>
+    <p>Ký hiệu <code>␠</code> ở cuối chỉ nhắc rằng MySQL yêu cầu dấu cách sau <code>--</code>; khi nhập, nhấn Space một lần rồi gửi. Có thể xem thêm các payload định sẵn, nhưng hãy tự gõ vào ô tùy chỉnh để tường thuật từng bước.</p>
+
+    <h2>4. Gửi cùng payload trên SQL Safe</h2>
+    <ol>
+      <li>Mở SQL Safe, chọn cùng chế độ Demo injection.</li>
+      <li>Nhập lại username <code>admin</code> và password payload <code>' OR 1=1 #</code>.</li>
+      <li>Kết quả mong đợi là HTTP 401, không tạo phiên Admin. Query tìm username có tham số; mật khẩu được kiểm tra riêng.</li>
+      <li>Để đối chiếu hoạt động bình thường, nhập <code>admin</code> / <code>Admin@123</code>; đăng nhập phải thành công.</li>
+    </ol>
+
+    <h2>5. Tự bypass form MongoDB</h2>
+    <ol>
+      <li>Mở MongoDB Unsafe, bấm <strong>Demo injection</strong>, nhập username <code>admin</code>, bật ô payload tùy chỉnh.</li>
+      <li>Nhập JSON này vào ô Password object rồi gửi:</li>
+    </ol>
+    <pre><code>{"$gt":""}</code></pre>
+    <p>Kết quả mong đợi: HTTP 200 và dashboard Admin. Đây là object truy vấn MongoDB, không phải mật khẩu dạng chuỗi: điều kiện <code>$gt</code> làm password predicate khớp dữ liệu tổng hợp.</p>
+    <p>Có thể tự thử thêm từng object JSON sau trên MongoDB Unsafe:</p>
+    <pre><code>{"$gte":""}
+{"$ne":"not-the-password"}
+{"$regex":".*"}
+{"$nin":["not-the-password"]}
+{"$exists":true}</code></pre>
+    <p>Ô tùy chỉnh nhận JSON object tự nhập, không giới hạn vào sáu preset. Giới hạn kỹ thuật của request là tối đa 16 KB JSON; input chuỗi unsafe tối đa 12.288 ký tự.</p>
+
+    <h2>6. Gửi cùng object trên MongoDB Safe</h2>
+    <ol>
+      <li>Mở MongoDB Safe, nhập username <code>admin</code> và cùng JSON <code>{"$gt":""}</code>.</li>
+      <li>Kết quả mong đợi là HTTP 400; validation từ chối object trước truy vấn xác thực. Diagnostics ghi <strong>Chưa chạy</strong> cho truy vấn đăng nhập.</li>
+      <li>Thử password sai dạng chuỗi để thấy HTTP 401, sau đó nhập <code>Admin@123</code> để xác nhận đăng nhập hợp lệ vẫn hoạt động.</li>
+    </ol>
+
+    <h2>7. Xem request và phản hồi trong DevTools</h2>
+    <ol>
+      <li>Nhấn F12, mở tab <strong>Network</strong>, bật <strong>Preserve log</strong> và lọc <strong>Fetch/XHR</strong>.</li>
+      <li>Gửi payload từ form. Chọn <code>POST /api/auth/login</code> để xem Request Payload, HTTP status và Response.</li>
+      <li>Sau khi vào dashboard, đối chiếu <code>GET /api/auth/me</code>, <code>GET /api/dashboard</code>, <code>GET /api/tickets</code>; Admin còn gọi <code>GET /api/admin/users</code> và <code>GET /api/admin/audit</code>.</li>
+      <li>Diagnostics trong trang giải thích luồng ứng dụng; đó không phải trace SQL/MongoDB từ driver. Với payload tùy chỉnh, xem giá trị đã gửi trong Request Payload của DevTools.</li>
+    </ol>
+    <p>Không chụp hoặc chia sẻ cookie, CSRF token hay header xác thực.</p>
+
+    <h2>8. So sánh User và Admin; cho thấy tác động lên dữ liệu</h2>
+    <ol>
+      <li>Trong cửa sổ User, mở Yêu cầu: user <code>student</code> chỉ thấy các yêu cầu do tài khoản đó sở hữu; không có trang Người dùng.</li>
+      <li>Để chứng minh server cũng chặn API, mở Console trên cửa sổ User và chạy:</li>
+    </ol>
+    <pre><code>fetch('/api/admin/users').then(async r =&gt; console.log(r.status, await r.json()))
+fetch('/api/tickets/ticket-001').then(async r =&gt; console.log(r.status, await r.json()))</code></pre>
+    <p>Kết quả mong đợi: cả hai trả HTTP 403 cho user <code>student</code>; ticket-001 thuộc student2. Ticket-002 thuộc student và có thể mở bình thường.</p>
+    <ol start="3">
+      <li>Trong cửa sổ Admin, mở Yêu cầu, chọn mã <code>CD-1002</code>, đổi trạng thái thành <strong>Đã xử lý</strong> và mức ưu tiên thành <strong>Cao</strong>, rồi lưu.</li>
+      <li>Quay lại cửa sổ User và tải lại. Ticket-002 phải hiện thay đổi vừa lưu. Network cho thấy request <code>PATCH /api/tickets/ticket-002</code> cập nhật bản ghi thật trong DB của biến thể.</li>
+      <li>Trong Admin → Người dùng, khóa tài khoản <code>student</code>. Cửa sổ User mất quyền ở request kế tiếp; đây là tác động lên trạng thái tài khoản trong DB.</li>
+      <li>Ở Admin → Người dùng, bấm <strong>Reset dữ liệu mẫu</strong> và xác nhận. Nút khôi phục 3 tài khoản seed và 12 yêu cầu seed để demo có thể chạy lại.</li>
+      <li>Tải lại cửa sổ User. Tài khoản student được kích hoạt lại; CD-1002 trở về trạng thái và mức ưu tiên ban đầu.</li>
+    </ol>
+
+    <h2>9. Phạm vi payload và điều không nên kết luận</h2>
+    <ul>
+      <li>Đây là login injection chạy trên DB thật của biến thể, sau đó bạn tự thao tác các chức năng CampusDesk bằng phiên vừa tạo.</li>
+      <li>SQL injection point hiện tại là truy vấn đăng nhập dạng <code>SELECT</code>; cấu hình MySQL tắt multi-statement. Payload login không tự chạy <code>UPDATE</code>, <code>DELETE</code> hoặc <code>DROP TABLE</code>.</li>
+      <li>Phần tác động sau bypass được chứng minh qua chức năng Admin thật: sửa yêu cầu và khóa tài khoản. Không nói rằng payload đăng nhập đã xóa bảng.</li>
+      <li>Reset chỉ upsert các ID seed đã biết: <code>admin-001</code>, <code>user-001</code>, <code>user-002</code>, <code>ticket-001</code> đến <code>ticket-012</code>. Nó giữ bản ghi tự tạo, session và audit; không phải nút khôi phục toàn bộ database.</li>
+      <li>Safe/unsafe dùng database tách riêng theo từng biến thể. Hãy chạy lại reset trên bản Admin tương ứng nếu bạn muốn khôi phục dữ liệu ở cả bốn bản.</li>
+    </ul>
+
+    <h2>10. Xử lý lỗi khi đang trình bày</h2>
+    <table>
+      <thead><tr><th>Kết quả</th><th>Ý nghĩa / thao tác tiếp</th></tr></thead>
+      <tbody>
+        <tr><td>HTTP 400, <code>SQL_SYNTAX</code></td><td>Payload SQL làm câu truy vấn sai cú pháp. Thử payload đã ghi ở trên; với <code>--</code>, nhớ dấu cách cuối.</td></tr>
+        <tr><td>HTTP 400 trên Mongo Safe</td><td>Object bị validation chặn trước truy vấn xác thực; đây là kết quả mong đợi.</td></tr>
+        <tr><td>HTTP 401</td><td>Thông tin sai hoặc safe đã từ chối bypass. Kiểm tra username, rồi thử tài khoản demo đúng.</td></tr>
+        <tr><td>HTTP 403</td><td>Phiên User bị chặn ở chức năng chỉ dành cho Admin hoặc ở bản ghi thuộc user khác.</td></tr>
+        <tr><td>HTTP 413 / JSON không hợp lệ</td><td>Request vượt 16 KB hoặc JSON object sai định dạng. Dùng object ngắn, hợp lệ.</td></tr>
+        <tr><td>HTTP 503 / trang chưa kết nối</td><td>Local: chạy <code>docker compose ps</code>, xem <code>docker compose logs --tail 100 sql-unsafe</code> hoặc tên service tương ứng, rồi thử lại. Vercel: mở trang Health/Logs của project để kiểm tra DB.</td></tr>
+        <tr><td>Reset báo lỗi</td><td>Đăng nhập Admin của đúng biến thể, tải lại để lấy phiên/CSRF mới, sau đó thử reset lại.</td></tr>
+      </tbody>
+    </table>
+  </article>
+  <footer>CampusDesk final · Chỉ dùng dữ liệu demo tổng hợp · <a href="index.html">Trang tài liệu</a></footer>
+</main>
+</body>
+</html>

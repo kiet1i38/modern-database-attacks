@@ -125,6 +125,11 @@ export function createCampusApp({ repo, variant, secret, sessionMaxAge = 1800000
   }));
   app.get("/api/auth/me", (req, res) => res.json({ user: req.user }));
   const admin = (req, res, next) => req.user.role === "admin" ? next() : next(fail(403, "FORBIDDEN", "Chỉ admin được thực hiện thao tác này.", "errors.adminOnly"));
+  app.post("/api/admin/demo/reset", admin, asyncRoute(async (req, res) => {
+    if (typeof repo.resetDemoSeed !== "function") throw fail(503, "RESET_UNAVAILABLE", "Không thể khôi phục dữ liệu mẫu.", "errors.databaseUnavailable");
+    const restored = await repo.resetDemoSeed();
+    res.json({ ok: true, scope: "seed-users-and-tickets", ...restored });
+  }));
   app.get("/api/dashboard", asyncRoute(async (req, res) => {
     const items = await repo.tickets(req.user.role === "admin" ? null : req.user.id);
     const counts = Object.fromEntries(STATUSES.map(status => [status, items.filter(t => t.status === status).length]));

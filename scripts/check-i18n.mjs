@@ -95,11 +95,15 @@ for (const file of ["../frontend/src/main.tsx", "../frontend/src/demo-panel.tsx"
   }
 }
 const scenarioSource = readFileSync(new URL("../frontend/src/demo-scenarios.ts", import.meta.url), "utf8");
-for (const [, id] of scenarioSource.matchAll(/\bid:\s*"([a-z0-9-]+)"/g)) {
-  for (const field of ["title", "request", "defense", "unsafe", "safe"]) {
+const frontendScenarioIds = [...scenarioSource.matchAll(/\bid:\s*"([a-z0-9-]+)"/g)].map(([, id]) => id);
+assert.ok(frontendScenarioIds.length > 0, "Manual presentation must list scenarios");
+assert.equal(new Set(frontendScenarioIds).size, frontendScenarioIds.length, "Manual scenario IDs must be unique");
+for (const id of frontendScenarioIds) {
+  for (const field of ["title", "request", "defense"]) {
     assert.ok(vi[`demo.scenarios.${id}.${field}`] && en[`demo.scenarios.${id}.${field}`], `Missing scenario text for ${id}.${field}`);
   }
 }
+for (const key of Object.keys(vi).filter(key => key.startsWith("demo.liveOutcomes."))) assert.ok(en[key], `Missing English live outcome ${key}`);
 
 for (const value of ["open", "in_progress", "resolved"]) assert.ok(vi[`status.${value}`] && en[`status.${value}`]);
 for (const value of ["low", "medium", "high"]) assert.ok(vi[`priority.${value}`] && en[`priority.${value}`]);
