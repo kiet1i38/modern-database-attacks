@@ -1,6 +1,7 @@
 import { VARIANTS } from "./domain.js";
 import { createCampusApp } from "./app.js";
 import { createRepository } from "./repository.js";
+import { createLiveLabRepository, validateLiveLabConfig } from "./live-lab.js";
 
 export function loadHostedConfig(env = process.env) {
   if (env.CAMPUS_HOSTED_DEMO !== "true") throw new Error("Set CAMPUS_HOSTED_DEMO=true for a synthetic hosted demo.");
@@ -11,6 +12,7 @@ export function loadHostedConfig(env = process.env) {
   if (!Object.hasOwn(VARIANTS, variant) || (!VARIANTS[variant].safe && env.CAMPUS_ALLOW_UNSAFE_DEMO !== "true")) {
     throw new Error("Only safe hosted variants are enabled unless CAMPUS_ALLOW_UNSAFE_DEMO=true.");
   }
+  validateLiveLabConfig(variant, env);
   if (!env.SESSION_SECRET || env.SESSION_SECRET.length < 32) throw new Error("SESSION_SECRET must contain at least 32 characters.");
   const sessionMaxAge = Number(env.SESSION_MAX_AGE_MS || 1800000);
   if (!Number.isSafeInteger(sessionMaxAge) || sessionMaxAge <= 0) throw new Error("SESSION_MAX_AGE_MS must be a positive integer.");
@@ -36,14 +38,23 @@ export function loadHostedConfig(env = process.env) {
   return { variant, secret: env.SESSION_SECRET, sessionMaxAge, hosted: true, variantUrls };
 }
 
-export function createHostedHandler({ env = process.env, connect = createRepository } = {}) {
+export function createHostedHandler({ env = process.env, connect = createRepository, connectLab = createLiveLabRepository } = {}) {
   let application;
   return async (req, res) => {
     try {
       application ||= (async () => {
         const config = loadHostedConfig(env);
         const repo = await connect(config.variant, env);
-        return createCampusApp({ repo, ...config });
+        let lab;
+        try {
+          lab = await connectLab(config.variant, env);
+          await lab?.initialize();
+          return createCampusApp({ repo, lab, ...config });
+        } catch (error) {
+          await lab?.close?.();
+          await repo?.close?.();
+          throw error;
+        }
       })();
       const app = await application;
       app(req, res);

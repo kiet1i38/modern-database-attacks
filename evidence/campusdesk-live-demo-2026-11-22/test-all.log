@@ -1,0 +1,267 @@
+
+> modern-database-attacks@1.0.0 test:all
+> npm test && npm run test:integration
+
+
+> modern-database-attacks@1.0.0 test
+> node --test tests/campus/unit.test.js tests/campus/auth.test.js tests/campus/hosted.test.js tests/campus/i18n.test.js tests/campus/live-lab.test.js tests/campus/scenarios.test.js
+
+✔ mongo-safe: invalid types never reach credential lookup; valid login still works (352.2209ms)
+✔ sql-safe: invalid types never reach credential lookup; valid login still works (204.9778ms)
+✔ phase-two controls protect ticket access, roles, sessions, and error details (191.5711ms)
+✔ hosted config validates opt-in, secrets, databases and HTTPS variant links (1.8675ms)
+✔ production and unsafe variants require separate explicit deployment opt-ins (0.3377ms)
+✔ Vercel API rewrite restores nested routes, preserves query parameters and rejects traversal (0.4916ms)
+✔ Vercel routes nested API requests through the hosted function (7.0012ms)
+✔ hosted SQL passes verified TLS and the selected database to the existing driver (2.1659ms)
+✔ hosted MongoDB enforces TLS and rejects connection strings that disable it (10.1981ms)
+✔ hosted handlers reuse connections, accept same-origin HTTPS and share persistent sessions (197.8169ms)
+✔ hosted initialization retries after failure and hides connection credentials (12.6191ms)
+✔ Accept-Language resolves supported locales safely (1.329ms)
+✔ API message catalogs localize known keys, interpolate safe params, and handle unknown keys (0.4626ms)
+✔ localized API responses keep status, code, and diagnostic security fields stable (335.6881ms)
+✔ diagnostic translation uses keys without changing SQL or MongoDB payload data (0.2317ms)
+✔ live-lab configuration stays inside the named unsafe sandbox databases (2.806ms)
+✔ live-lab routes require an authenticated CSRF-protected session and stay scoped by engine (104.1802ms)
+✔ hosted lab URLs require exact database names and TLS remote endpoints (0.3119ms)
+✔ manual presentation has no public one-click scenario endpoint (346.9337ms)
+✔ sql-unsafe: scalar credentials accepted without trimming SQL comment space (2.9375ms)
+✔ sql-unsafe: rejects extra role, missing input and object username (1.3284ms)
+✔ sql-unsafe: Mongo payload presets are accepted only by Mongo unsafe (0.3499ms)
+✔ sql-unsafe: arbitrary JSON objects are accepted only by the intentionally unsafe Mongo login (0.3557ms)
+✔ sql-unsafe: unsafe login accepts long manual payload strings within the JSON request limit (0.1401ms)
+✔ sql-safe: scalar credentials accepted without trimming SQL comment space (0.1071ms)
+✔ sql-safe: rejects extra role, missing input and object username (0.1203ms)
+✔ sql-safe: Mongo payload presets are accepted only by Mongo unsafe (0.1276ms)
+✔ sql-safe: arbitrary JSON objects are accepted only by the intentionally unsafe Mongo login (0.1761ms)
+✔ sql-safe: unsafe login accepts long manual payload strings within the JSON request limit (0.184ms)
+✔ mongo-unsafe: scalar credentials accepted without trimming SQL comment space (0.0958ms)
+✔ mongo-unsafe: rejects extra role, missing input and object username (0.1374ms)
+✔ mongo-unsafe: Mongo payload presets are accepted only by Mongo unsafe (0.1352ms)
+✔ mongo-unsafe: arbitrary JSON objects are accepted only by the intentionally unsafe Mongo login (0.1966ms)
+✔ mongo-unsafe: unsafe login accepts long manual payload strings within the JSON request limit (0.0448ms)
+✔ mongo-safe: scalar credentials accepted without trimming SQL comment space (0.0323ms)
+✔ mongo-safe: rejects extra role, missing input and object username (0.1244ms)
+✔ mongo-safe: Mongo payload presets are accepted only by Mongo unsafe (0.0888ms)
+✔ mongo-safe: arbitrary JSON objects are accepted only by the intentionally unsafe Mongo login (0.2068ms)
+✔ mongo-safe: unsafe login accepts long manual payload strings within the JSON request limit (0.0412ms)
+✔ public users never export hashes/plaintext password (100.519ms)
+✔ safe seed stores scrypt and no plaintext (211.5335ms)
+✔ unsafe synthetic seed deliberately stores comparable password (0.2735ms)
+✔ ordinary diagnostics redact username and password (0.2613ms)
+✔ rejection diagnostics redact custom credentials and distinguish JSON types (0.2177ms)
+✔ known teaching payload is classified without normal password export (0.0907ms)
+✔ diagnostics match every Mongo preset without walking rejected nested input (2.6558ms)
+✔ unsafe explanations distinguish SQL strings from Mongo operators (0.9836ms)
+✔ ticket input validates enum/length and ignores forged owner/role (0.4085ms)
+ℹ tests 48
+ℹ suites 0
+ℹ pass 48
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 1183.4448
+
+> modern-database-attacks@1.0.0 test:integration
+> node scripts/test-campus-api.js
+
+PASS sql-unsafe health is real database ready
+PASS sql-unsafe configuration is fixed per server
+PASS sql-unsafe anonymous cannot access dashboard
+PASS sql-unsafe live lab requires an authenticated CampusDesk session
+PASS sql-unsafe CSRF required at login
+PASS sql-unsafe cross-origin writes rejected
+PASS sql-unsafe multibyte invalid CSRF does not crash server
+PASS sql-unsafe malformed JSON rejected
+PASS sql-unsafe oversized body rejected
+PASS sql-unsafe object username rejected
+PASS sql-unsafe client role is not accepted
+PASS sql-unsafe wrong password denied without session
+PASS sql-unsafe non-operator JSON field is not a Mongo operator
+PASS sql-unsafe stringified operator stays a literal password
+PASS sql-unsafe payload tautology: real admin bypass
+PASS sql-unsafe payload comment: real admin bypass
+PASS sql-unsafe payload hash-comment: real admin bypass
+PASS sql-unsafe payload target-admin: real admin bypass
+PASS sql-unsafe malformed SQL is reported without stack
+PASS sql-unsafe normal admin login rotates session
+PASS sql-unsafe live SQL sandbox compares safe and unsafe login, executes DROP TABLE, and restores only sandbox data
+PASS sql-unsafe refresh session restores real admin
+PASS sql-unsafe public user never leaks password/hash
+PASS sql-unsafe dashboard metrics use database
+PASS sql-unsafe tickets paginate and filter
+PASS sql-unsafe unknown ticket is 404
+PASS sql-unsafe admin can change ticket status, invalid enum rejected
+PASS sql-unsafe audit contains metadata only
+PASS sql-unsafe admin cannot lock itself
+PASS sql-unsafe admin creates usable user and rejects duplicate
+PASS sql-unsafe admin reset restores seeded users and tickets, preserving other rows and session
+PASS sql-unsafe tautology still returns real admin after creating extra accounts
+PASS sql-unsafe normal student login creates user session
+PASS sql-unsafe student denied /admin/users
+PASS sql-unsafe student denied /admin/audit
+PASS sql-unsafe student cannot create users or change ticket status
+PASS sql-unsafe student sees only own metrics/tickets
+PASS sql-unsafe other student's ticket denied by backend
+PASS sql-unsafe profile cannot escalate role or id
+PASS sql-unsafe profile update preserves a legitimate apostrophe
+PASS sql-unsafe ticket create preserves literal injection text and ignores forged owner
+PASS sql-unsafe second user cannot view created ticket
+PASS sql-unsafe cookie role spoof does not grant admin
+PASS sql-unsafe locked accounts lose already-issued session and cannot log in
+PASS sql-unsafe new account lock type validation
+PASS sql-unsafe logout destroys server-side session
+PASS sql-unsafe HTTP security and no-store headers present
+PASS sql-safe health is real database ready
+PASS sql-safe configuration is fixed per server
+PASS sql-safe anonymous cannot access dashboard
+PASS sql-safe live lab requires an authenticated CampusDesk session
+PASS sql-safe CSRF required at login
+PASS sql-safe cross-origin writes rejected
+PASS sql-safe multibyte invalid CSRF does not crash server
+PASS sql-safe malformed JSON rejected
+PASS sql-safe oversized body rejected
+PASS sql-safe object username rejected
+PASS sql-safe client role is not accepted
+PASS sql-safe wrong password denied without session
+PASS sql-safe non-operator JSON field is not a Mongo operator
+PASS sql-safe stringified operator stays a literal password
+PASS sql-safe payload tautology: blocked
+PASS sql-safe payload comment: blocked
+PASS sql-safe payload hash-comment: blocked
+PASS sql-safe payload target-admin: blocked
+PASS sql-safe normal admin login rotates session
+PASS sql-safe refresh session restores real admin
+PASS sql-safe public user never leaks password/hash
+PASS sql-safe dashboard metrics use database
+PASS sql-safe tickets paginate and filter
+PASS sql-safe unknown ticket is 404
+PASS sql-safe admin can change ticket status, invalid enum rejected
+PASS sql-safe audit contains metadata only
+PASS sql-safe admin cannot lock itself
+PASS sql-safe admin creates usable user and rejects duplicate
+PASS sql-safe admin reset restores seeded users and tickets, preserving other rows and session
+PASS sql-safe normal student login creates user session
+PASS sql-safe student denied /admin/users
+PASS sql-safe student denied /admin/audit
+PASS sql-safe student cannot create users or change ticket status
+PASS sql-safe student sees only own metrics/tickets
+PASS sql-safe other student's ticket denied by backend
+PASS sql-safe profile cannot escalate role or id
+PASS sql-safe profile update preserves a legitimate apostrophe
+PASS sql-safe ticket create preserves literal injection text and ignores forged owner
+PASS sql-safe second user cannot view created ticket
+PASS sql-safe cookie role spoof does not grant admin
+PASS sql-safe locked accounts lose already-issued session and cannot log in
+PASS sql-safe new account lock type validation
+PASS sql-safe logout destroys server-side session
+PASS sql-safe HTTP security and no-store headers present
+PASS mongo-unsafe health is real database ready
+PASS mongo-unsafe configuration is fixed per server
+PASS mongo-unsafe anonymous cannot access dashboard
+PASS mongo-unsafe live lab requires an authenticated CampusDesk session
+PASS mongo-unsafe CSRF required at login
+PASS mongo-unsafe cross-origin writes rejected
+PASS mongo-unsafe multibyte invalid CSRF does not crash server
+PASS mongo-unsafe malformed JSON rejected
+PASS mongo-unsafe oversized body rejected
+PASS mongo-unsafe object username rejected
+PASS mongo-unsafe client role is not accepted
+PASS mongo-unsafe wrong password denied without session
+PASS mongo-unsafe non-operator JSON field is not a Mongo operator
+PASS mongo-unsafe stringified operator stays a literal password
+PASS mongo-unsafe custom operator object reaches the real MongoDB predicate
+PASS mongo-unsafe payload gt: real admin bypass
+PASS mongo-unsafe payload gte: real admin bypass
+PASS mongo-unsafe payload ne: real admin bypass
+PASS mongo-unsafe payload regex: real admin bypass
+PASS mongo-unsafe payload nin: real admin bypass
+PASS mongo-unsafe payload exists: real admin bypass
+PASS mongo-unsafe operator cannot authenticate nonexistent username
+PASS mongo-unsafe normal admin login rotates session
+PASS mongo-unsafe live Mongo sandbox compares safe and unsafe operators, deletes documents, and restores only sandbox data
+PASS mongo-unsafe refresh session restores real admin
+PASS mongo-unsafe public user never leaks password/hash
+PASS mongo-unsafe dashboard metrics use database
+PASS mongo-unsafe tickets paginate and filter
+PASS mongo-unsafe unknown ticket is 404
+PASS mongo-unsafe admin can change ticket status, invalid enum rejected
+PASS mongo-unsafe audit contains metadata only
+PASS mongo-unsafe admin cannot lock itself
+PASS mongo-unsafe admin creates usable user and rejects duplicate
+PASS mongo-unsafe admin reset restores seeded users and tickets, preserving other rows and session
+PASS mongo-unsafe normal student login creates user session
+PASS mongo-unsafe student denied /admin/users
+PASS mongo-unsafe student denied /admin/audit
+PASS mongo-unsafe student cannot create users or change ticket status
+PASS mongo-unsafe student sees only own metrics/tickets
+PASS mongo-unsafe other student's ticket denied by backend
+PASS mongo-unsafe profile cannot escalate role or id
+PASS mongo-unsafe profile update preserves a legitimate apostrophe
+PASS mongo-unsafe ticket create preserves literal injection text and ignores forged owner
+PASS mongo-unsafe second user cannot view created ticket
+PASS mongo-unsafe cookie role spoof does not grant admin
+PASS mongo-unsafe locked accounts lose already-issued session and cannot log in
+PASS mongo-unsafe new account lock type validation
+PASS mongo-unsafe logout destroys server-side session
+PASS mongo-unsafe HTTP security and no-store headers present
+PASS mongo-safe health is real database ready
+PASS mongo-safe configuration is fixed per server
+PASS mongo-safe anonymous cannot access dashboard
+PASS mongo-safe live lab requires an authenticated CampusDesk session
+PASS mongo-safe CSRF required at login
+PASS mongo-safe cross-origin writes rejected
+PASS mongo-safe multibyte invalid CSRF does not crash server
+PASS mongo-safe malformed JSON rejected
+PASS mongo-safe oversized body rejected
+PASS mongo-safe object username rejected
+PASS mongo-safe client role is not accepted
+PASS mongo-safe wrong password denied without session
+PASS mongo-safe non-operator JSON field is not a Mongo operator
+PASS mongo-safe stringified operator stays a literal password
+PASS mongo-safe payload gt: blocked
+PASS mongo-safe payload gte: blocked
+PASS mongo-safe payload ne: blocked
+PASS mongo-safe payload regex: blocked
+PASS mongo-safe payload nin: blocked
+PASS mongo-safe payload exists: blocked
+PASS mongo-safe normal admin login rotates session
+PASS mongo-safe refresh session restores real admin
+PASS mongo-safe public user never leaks password/hash
+PASS mongo-safe dashboard metrics use database
+PASS mongo-safe tickets paginate and filter
+PASS mongo-safe unknown ticket is 404
+PASS mongo-safe admin can change ticket status, invalid enum rejected
+PASS mongo-safe audit contains metadata only
+PASS mongo-safe admin cannot lock itself
+PASS mongo-safe admin creates usable user and rejects duplicate
+PASS mongo-safe admin reset restores seeded users and tickets, preserving other rows and session
+PASS mongo-safe normal student login creates user session
+PASS mongo-safe student denied /admin/users
+PASS mongo-safe student denied /admin/audit
+PASS mongo-safe student cannot create users or change ticket status
+PASS mongo-safe student sees only own metrics/tickets
+PASS mongo-safe other student's ticket denied by backend
+PASS mongo-safe profile cannot escalate role or id
+PASS mongo-safe profile update preserves a legitimate apostrophe
+PASS mongo-safe ticket create preserves literal injection text and ignores forged owner
+PASS mongo-safe second user cannot view created ticket
+PASS mongo-safe cookie role spoof does not grant admin
+PASS mongo-safe locked accounts lose already-issued session and cannot log in
+PASS mongo-safe new account lock type validation
+PASS mongo-safe logout destroys server-side session
+PASS mongo-safe HTTP security and no-store headers present
+PASS sql-safe session cookie from sql-unsafe cannot authenticate here
+PASS mongo-unsafe session cookie from sql-unsafe cannot authenticate here
+PASS mongo-safe session cookie from sql-unsafe cannot authenticate here
+PASS sql-unsafe session cookie from sql-safe cannot authenticate here
+PASS mongo-unsafe session cookie from sql-safe cannot authenticate here
+PASS mongo-safe session cookie from sql-safe cannot authenticate here
+PASS sql-unsafe session cookie from mongo-unsafe cannot authenticate here
+PASS sql-safe session cookie from mongo-unsafe cannot authenticate here
+PASS mongo-safe session cookie from mongo-unsafe cannot authenticate here
+PASS sql-unsafe session cookie from mongo-safe cannot authenticate here
+PASS sql-safe session cookie from mongo-safe cannot authenticate here
+PASS mongo-unsafe session cookie from mongo-safe cannot authenticate here
+{"evidence":"evidence/campusdesk-live-demo-2026-11-22","total":198,"passed":198,"failed":0}

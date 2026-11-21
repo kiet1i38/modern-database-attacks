@@ -24,7 +24,7 @@ class DatabaseStore extends session.Store {
   destroy(sid, callback) { this.repo.deleteSession(sid).then(() => callback?.()).catch(callback); }
   touch(sid, data, callback) { this.set(sid, data, callback); }
 }
-export function createCampusApp({ repo, variant, secret, sessionMaxAge = 1800000, hosted = false, variantUrls = {} }) {
+export function createCampusApp({ repo, lab = null, variant, secret, sessionMaxAge = 1800000, hosted = false, variantUrls = {} }) {
   if (!VARIANTS[variant] || !secret || secret.length < 32) throw new Error("Invalid variant/session configuration.");
   const app = express();
   if (hosted) app.set("trust proxy", 1);
@@ -54,9 +54,10 @@ export function createCampusApp({ repo, variant, secret, sessionMaxAge = 1800000
   app.get("/api/config", (req, res) => res.json({
     variant, ...definition, variants: Object.fromEntries(Object.entries(VARIANTS).map(([id, value]) => [id, { ...value, ...(variantUrls[id] ? { url: variantUrls[id] } : {}) }])),
     payloads: variant.startsWith("sql") ? SQL_PAYLOADS : MONGO_PAYLOADS,
+      liveLab: Boolean(lab?.enabled),
     localOnly: !hosted
   }));
-  app.use("/api", express.json({ limit: "16kb" }));
+  app.use("/api", (req, res, next) => express.json({ limit: req.path.startsWith("/live-lab/") ? "4mb" : "16kb" })(req, res, next));
   app.use("/api", session({
     name: cookieName, secret, store: new DatabaseStore(repo), resave: false, saveUninitialized: false,
     cookie: { httpOnly: true, sameSite: "strict", secure: hosted, maxAge: sessionMaxAge }
@@ -122,6 +123,41 @@ export function createCampusApp({ repo, variant, secret, sessionMaxAge = 1800000
     req.user = await currentUser(req);
     if (!req.user) throw fail(401, "UNAUTHENTICATED", "Vui lòng đăng nhập.", "errors.unauthenticated");
     next();
+  }));
+  const requireLiveLab = (kind) => {
+    if (!lab?.enabled || (kind && lab.kind !== kind)) throw fail(404, "LIVE_LAB_UNAVAILABLE", "Live lab không được bật cho biến thể này.", "errors.apiNotFound");
+    return lab;
+  };
+  app.get("/api/live-lab/state", asyncRoute(async (req, res) => {
+    res.json(await requireLiveLab().state());
+  }));
+  app.post("/api/live-lab/login", asyncRoute(async (req, res) => {
+    const store = requireLiveLab();
+    const { mode, username, password } = req.body || {};
+    if (!["safe", "unsafe"].includes(mode) || typeof username !== "string" || !username.length) {
+      throw fail(400, "INVALID_INPUT", "Thông tin lab không hợp lệ.", "errors.invalidInput");
+    }
+    try { res.json(await store.login(mode, username, password)); }
+    catch (error) {
+      if (error.code === "ER_PARSE_ERROR" || error.code === "ER_NO_SUCH_TABLE" || error.name === "MongoServerError") {
+        return res.status(400).json({ ok: false, code: "LAB_QUERY_ERROR", message: "Sandbox database rejected this query." });
+      }
+      throw error;
+    }
+  }));
+  app.post("/api/live-lab/delete", asyncRoute(async (req, res) => {
+    const store = requireLiveLab("mongo");
+    const { mode, owner } = req.body || {};
+    if (!["safe", "unsafe"].includes(mode)) throw fail(400, "INVALID_INPUT", "Chế độ lab không hợp lệ.", "errors.invalidInput");
+    try { res.json(await store.deleteOwner(mode, owner)); }
+    catch (error) {
+      if (error.name === "MongoServerError") return res.status(400).json({ ok: false, code: "LAB_QUERY_ERROR", message: "Sandbox database rejected this delete." });
+      throw error;
+    }
+  }));
+  app.post("/api/live-lab/reset", asyncRoute(async (req, res) => {
+    const store = requireLiveLab();
+    res.json({ ok: true, ...(await store.reset()) });
   }));
   app.get("/api/auth/me", (req, res) => res.json({ user: req.user }));
   const admin = (req, res, next) => req.user.role === "admin" ? next() : next(fail(403, "FORBIDDEN", "Chỉ admin được thực hiện thao tác này.", "errors.adminOnly"));

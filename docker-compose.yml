@@ -37,22 +37,35 @@ services:
       timeout: 5s
       retries: 30
     restart: unless-stopped
+  sql-lab-bootstrap:
+    image: mysql:8.4
+    restart: "no"
+    entrypoint: ["sh", "-ec", "mysql --protocol=TCP -h mysql -uroot -p\"$$MYSQL_ROOT_PASSWORD\" < /bootstrap/lab.sql"]
+    environment:
+      MYSQL_ROOT_PASSWORD: campus-root-local-demo-only
+    volumes:
+      - ./docker/mysql-lab-init.sql:/bootstrap/lab.sql:ro
+    depends_on:
+      mysql: {condition: service_healthy}
   sql-unsafe:
     <<: *app
     environment:
       <<: *env
       VARIANT: sql-unsafe
       SESSION_SECRET: sql-unsafe-local-session-secret-not-for-production
-    ports: ["127.0.0.1:3001:3000"]
+      CAMPUS_SQL_STACKED_LAB: "true"
+      CAMPUS_SQL_LAB_URL: mysql://campus_lab:campus-lab-local-demo-only@mysql:3306/campus_sql_unsafe_lab
+    ports: ["127.0.0.1:${CAMPUS_SQL_UNSAFE_PORT:-3001}:3000"]
     depends_on:
       mysql: {condition: service_healthy}
+      sql-lab-bootstrap: {condition: service_completed_successfully}
   sql-safe:
     <<: *app
     environment:
       <<: *env
       VARIANT: sql-safe
       SESSION_SECRET: sql-safe-local-session-secret-not-for-production
-    ports: ["127.0.0.1:3002:3000"]
+    ports: ["127.0.0.1:${CAMPUS_SQL_SAFE_PORT:-3002}:3000"]
     depends_on:
       mysql: {condition: service_healthy}
   mongo-unsafe:
@@ -61,7 +74,9 @@ services:
       <<: *env
       VARIANT: mongo-unsafe
       SESSION_SECRET: mongo-unsafe-local-session-secret-not-for-production
-    ports: ["127.0.0.1:3003:3000"]
+      CAMPUS_MONGO_DELETE_LAB: "true"
+      CAMPUS_MONGO_LAB_URI: mongodb://mongodb:27017/campus_mongo_unsafe_lab
+    ports: ["127.0.0.1:${CAMPUS_MONGO_UNSAFE_PORT:-3003}:3000"]
     depends_on:
       mongodb: {condition: service_healthy}
   mongo-safe:
@@ -70,7 +85,7 @@ services:
       <<: *env
       VARIANT: mongo-safe
       SESSION_SECRET: mongo-safe-local-session-secret-not-for-production
-    ports: ["127.0.0.1:3004:3000"]
+    ports: ["127.0.0.1:${CAMPUS_MONGO_SAFE_PORT:-3004}:3000"]
     depends_on:
       mongodb: {condition: service_healthy}
 volumes:

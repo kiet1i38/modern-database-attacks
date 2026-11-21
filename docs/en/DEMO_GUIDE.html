@@ -119,16 +119,28 @@ fetch('/api/tickets/ticket-001').then(async r =&gt; console.log(r.status, await 
       <li>Reload the User window. The student account is active again and CD-1002 has its original status and priority.</li>
     </ol>
 
-    <h2>9. Payload scope and claims to avoid</h2>
+    <h2>9. Data scope and claims to avoid</h2>
     <ul>
-      <li>This is a real database-backed login injection. Afterward, you manually operate actual CampusDesk features in the resulting session.</li>
-      <li>The current SQL injection point is a <code>SELECT</code> used for login; MySQL multi-statements are disabled. A login payload does not directly execute <code>UPDATE</code>, <code>DELETE</code>, or <code>DROP TABLE</code>.</li>
+      <li>The main login form uses the real database for its variant and synthetic accounts/requests. After sign-in, you operate the CampusDesk dashboard, roles, and features yourself.</li>
+      <li>MySQL multi-statements remain disabled on the main SQL login connection. Stacked statements and <code>DROP TABLE</code> use a separate connection to <code>campus_sql_unsafe_lab</code>.</li>
+      <li>MongoDB delete actions use a separate <code>campus_mongo_unsafe_lab</code> database and <code>lab_notes</code> collection. They do not delete CampusDesk accounts or tickets.</li>
       <li>Show post-bypass impact through real Admin functions: update a request and lock an account. Do not claim the login payload deleted a table.</li>
       <li>Reset only upserts known seed IDs: <code>admin-001</code>, <code>user-001</code>, <code>user-002</code>, and <code>ticket-001</code> through <code>ticket-012</code>. It preserves user-created records, sessions, and audit events; it does not restore the whole database.</li>
       <li>Each safe/unsafe variant has its own database. If you want to restore all four, sign in as Admin on each variant and run its reset separately.</li>
     </ul>
 
-    <h2>10. Troubleshooting during the presentation</h2>
+    <h2>10. Operate the live database sandbox yourself</h2>
+    <p>The panel appears on <strong>Audit log &amp; demo</strong> in SQL Unsafe and MongoDB Unsafe when its isolated sandbox connection is enabled. First sign in with an ordinary demo account; panel actions do not change your CampusDesk session.</p>
+    <ol>
+      <li><strong>SQL sandbox bypass:</strong> choose <em>Unsafe query</em>, use username <code>labadmin</code>, and enter password <code>' OR '1'='1' -- </code>. The lab user should match. Select <em>Safe query</em> and submit the same input to see no match.</li>
+      <li><strong>SQL stacked statement:</strong> choose Unsafe, keep username <code>labadmin</code>, and enter password <code>'; DROP TABLE lab_events; -- </code>. The table list below reports that it is gone. The CampusDesk dashboard remains available because it uses another database.</li>
+      <li><strong>MongoDB login:</strong> on MongoDB Unsafe, choose Unsafe and enter the object <code>{"$ne":""}</code> as the password. It should match the lab account; Safe rejects the object type.</li>
+      <li><strong>MongoDB delete:</strong> in the delete-notes form, choose Unsafe and enter owner filter <code>{"$ne":"alice"}</code>. Two documents are deleted, leaving <code>alice</code>. Safe accepts only one plain owner string.</li>
+      <li>After observing the result, click <strong>Reset sandbox</strong> and confirm. The page reloads its records from the database after each action; reset restores only the lab data.</li>
+    </ol>
+    <p>The sandbox uses dedicated DB users and database names with synthetic data only. Local Docker grants the lab user access only to its lab database. Vercel shows the panel only after the unsafe project has a dedicated sandbox URL and database user scoped to that lab database. Anyone with a public unsafe link can change or reset that sandbox.</p>
+
+    <h2>11. Troubleshooting during the presentation</h2>
     <table>
       <thead><tr><th>Result</th><th>Meaning / next step</th></tr></thead>
       <tbody>
@@ -136,7 +148,9 @@ fetch('/api/tickets/ticket-001').then(async r =&gt; console.log(r.status, await 
         <tr><td>HTTP 400 on MongoDB Safe</td><td>The object was blocked by validation before authentication; this is expected.</td></tr>
         <tr><td>HTTP 401</td><td>Credentials are wrong or Safe blocked the bypass. Check the username, then try the documented demo account.</td></tr>
         <tr><td>HTTP 403</td><td>The User role was denied an Admin action or a request owned by someone else.</td></tr>
-        <tr><td>HTTP 413 / invalid JSON</td><td>The request exceeded 16 KB or the JSON object is malformed. Use a short, valid object.</td></tr>
+        <tr><td>HTTP 413 / invalid JSON</td><td>The main login form still uses a 16 KB request limit; the live lab accepts bodies up to 4 MB. Check that the JSON is valid and that the hosting platform's request limit is not lower.</td></tr>
+        <tr><td>SQL table reports missing</td><td>This is expected after the stacked payload. Use <strong>Reset sandbox</strong>, not the CampusDesk data reset.</td></tr>
+        <tr><td>Live panel is not visible</td><td>The panel appears only on Audit log &amp; demo in the two Unsafe variants after each separate lab URL and database permission is configured. Check the project's Health/Logs view.</td></tr>
         <tr><td>HTTP 503 / connection unavailable</td><td>Local: run <code>docker compose ps</code> and inspect <code>docker compose logs --tail 100 sql-unsafe</code> or the relevant service. Vercel: inspect the project's Health and Logs views for DB connectivity.</td></tr>
         <tr><td>Reset fails</td><td>Sign in as Admin on the same variant, reload to get a fresh session/CSRF token, then retry.</td></tr>
       </tbody>

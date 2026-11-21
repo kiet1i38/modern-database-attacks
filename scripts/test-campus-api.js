@@ -4,6 +4,9 @@ import path from "node:path";
 import { setTimeout as delay } from "node:timers/promises";
 import { VARIANTS, SQL_PAYLOADS, MONGO_PAYLOADS, seedData } from "../src/campus/domain.js";
 const evidence = process.env.EVIDENCE_DIR || path.join("evidence", "campusdesk-" + new Date().toISOString().replaceAll(":", "-").slice(0, 19));
+const portOffset = Number(process.env.CAMPUS_PORT_OFFSET || 0);
+if (!Number.isSafeInteger(portOffset)) throw new Error("CAMPUS_PORT_OFFSET must be an integer.");
+const appUrl = definition => (process.env.CAMPUS_BASE_HOST || "http://127.0.0.1") + ":" + (definition.port + portOffset);
 await mkdir(evidence, { recursive: true });
 const results = [];
 let currentVariant = "";
@@ -34,19 +37,20 @@ function client(base) {
 }
 const clients = {};
 for (let retry = 0; ; retry++) {
-  const statuses = await Promise.all(Object.values(VARIANTS).map(v => fetch((process.env.CAMPUS_BASE_HOST || "http://127.0.0.1") + ":" + v.port + "/api/health").then(r => r.status).catch(() => 0)));
+  const statuses = await Promise.all(Object.values(VARIANTS).map(v => fetch(appUrl(v) + "/api/health").then(r => r.status).catch(() => 0)));
   if (statuses.every(status => status === 200)) break;
   if (retry >= 120) throw new Error("Start all four Docker services and wait for health before integration tests.");
   await delay(500);
 }
 for (const [variant, definition] of Object.entries(VARIANTS)) {
   currentVariant = variant;
-  const base = (process.env.CAMPUS_BASE_HOST || "http://127.0.0.1") + ":" + definition.port;
+  const base = appUrl(definition);
   const c = client(base); clients[variant] = c;
   await check("health is real database ready", async () => { const r = await c.request("/health"); assert.equal(r.status,200); assert.equal(r.data.variant,variant); });
-  await check("configuration is fixed per server", async () => { const r=await c.request("/config"); assert.equal(r.data.safe,definition.safe); assert.equal(r.data.database,definition.database); });
+  await check("configuration is fixed per server", async () => { const r=await c.request("/config"); assert.equal(r.data.safe,definition.safe); assert.equal(r.data.database,definition.database); assert.equal(r.data.liveLab,variant==="sql-unsafe"||variant==="mongo-unsafe"); });
   await check("anonymous cannot access dashboard", async () => assert.equal((await c.request("/dashboard")).status,401));
   await c.init();
+  await check("live lab requires an authenticated CampusDesk session", async () => assert.equal((await c.request("/live-lab/state")).status,401));
   await check("CSRF required at login", async () => assert.equal((await c.request("/auth/login","POST",{ username:"admin",password:"Admin@123" },{noCsrf:true})).status,403));
   await check("cross-origin writes rejected", async () => assert.equal((await c.request("/auth/login","POST",{username:"admin",password:"Admin@123"},{headers:{origin:"http://localhost:9999"}})).status,403));
   await check("multibyte invalid CSRF does not crash server", async () => assert.equal((await c.request("/auth/login","POST",{username:"admin",password:"x"},{headers:{"x-csrf-token":"é".repeat(48)}})).status,403));
@@ -93,6 +97,42 @@ for (const [variant, definition] of Object.entries(VARIANTS)) {
   if (variant === "sql-unsafe") await check("malformed SQL is reported without stack", async () => { const r=await c.login("admin","'"); assert.equal(r.status,400); assert.equal(r.data.code,"QUERY_SYNTAX"); });
   const oldCookie = c.cookie();
   await check("normal admin login rotates session", async () => { const r=await c.login(); assert.equal(r.status,200); assert.notEqual(c.cookie(),oldCookie); assert.match(r.headers.get("set-cookie"),/HttpOnly/); assert.match(r.headers.get("set-cookie"),/SameSite=Strict/); });
+  if (variant === "sql-unsafe") await check("live SQL sandbox compares safe and unsafe login, executes DROP TABLE, and restores only sandbox data", async () => {
+    const before=await c.request("/live-lab/state"); assert.equal(before.status,200); assert.equal(before.data.database,"campus_sql_unsafe_lab"); assert.equal(before.data.events.length,3);
+    try {
+      const safe=await c.request("/live-lab/login","POST",{mode:"safe",username:"labadmin",password:"' OR '1'='1' -- "});
+      assert.equal(safe.status,200); assert.equal(safe.data.matched,false);
+      const unsafe=await c.request("/live-lab/login","POST",{mode:"unsafe",username:"labadmin",password:"' OR '1'='1' -- "});
+      assert.equal(unsafe.status,200); assert.equal(unsafe.data.matched,true); assert.equal(unsafe.data.user.role,"admin");
+      const dropped=await c.request("/live-lab/login","POST",{mode:"unsafe",username:"labadmin",password:"'; DROP TABLE lab_events; -- "});
+      assert.equal(dropped.status,200);
+      const afterDrop=await c.request("/live-lab/state"); assert.equal(afterDrop.status,200); assert.equal(afterDrop.data.eventsTableExists,false);
+      assert.equal((await c.request("/dashboard")).status,200);
+    } finally {
+      const reset=await c.request("/live-lab/reset","POST",{}); assert.equal(reset.status,200);
+      const restored=await c.request("/live-lab/state"); assert.equal(restored.data.eventsTableExists,true); assert.equal(restored.data.events.length,3);
+    }
+  });
+  if (variant === "mongo-unsafe") await check("live Mongo sandbox compares safe and unsafe operators, deletes documents, and restores only sandbox data", async () => {
+    const before=await c.request("/live-lab/state"); assert.equal(before.status,200); assert.equal(before.data.database,"campus_mongo_unsafe_lab"); assert.equal(before.data.notes.length,3);
+    try {
+      const safeLogin=await c.request("/live-lab/login","POST",{mode:"safe",username:"labadmin",password:{$ne:""}});
+      assert.equal(safeLogin.status,200); assert.equal(safeLogin.data.blocked,true); assert.equal(safeLogin.data.matched,false);
+      const unsafeLogin=await c.request("/live-lab/login","POST",{mode:"unsafe",username:"labadmin",password:{$ne:""}});
+      assert.equal(unsafeLogin.status,200); assert.equal(unsafeLogin.data.matched,true);
+      const safeDelete=await c.request("/live-lab/delete","POST",{mode:"safe",owner:{$ne:"alice"}});
+      assert.equal(safeDelete.status,200); assert.equal(safeDelete.data.blocked,true); assert.equal(safeDelete.data.deletedCount,0);
+      assert.equal((await c.request("/live-lab/state")).data.notes.length,3);
+      const unsafeDelete=await c.request("/live-lab/delete","POST",{mode:"unsafe",owner:{$ne:"alice"}});
+      assert.equal(unsafeDelete.status,200); assert.equal(unsafeDelete.data.deletedCount,2);
+      assert.deepEqual((await c.request("/live-lab/state")).data.notes.map(note=>note.owner),["alice"]);
+      const safeDeleteOne=await c.request("/live-lab/delete","POST",{mode:"safe",owner:"alice"});
+      assert.equal(safeDeleteOne.status,200); assert.equal(safeDeleteOne.data.deletedCount,1);
+    } finally {
+      const reset=await c.request("/live-lab/reset","POST",{}); assert.equal(reset.status,200);
+      const restored=await c.request("/live-lab/state"); assert.equal(restored.data.notes.length,3);
+    }
+  });
   await check("refresh session restores real admin", async () => assert.equal((await c.request("/auth/session")).data.user.role,"admin"));
   await check("public user never leaks password/hash", async () => { const user=(await c.request("/auth/me")).data.user; assert.equal(Object.hasOwn(user,"password"),false); assert.equal(Object.hasOwn(user,"passwordHash"),false); });
   await check("dashboard metrics use database", async () => { const d=(await c.request("/dashboard")).data; assert.ok(d.total >= 12); assert.equal(d.users >= 3,true); assert.equal(d.total,Object.values(d.counts).reduce((a,b)=>a+b,0)); });
@@ -182,7 +222,7 @@ for (const [source, sourceClient] of Object.entries(clients)) for (const [target
   if (source===target) continue;
   currentVariant=target;
   await check("session cookie from "+source+" cannot authenticate here", async () => {
-    const other=client((process.env.CAMPUS_BASE_HOST || "http://127.0.0.1")+":"+definition.port);
+    const other=client(appUrl(definition));
     other.injectCookie(sourceClient.cookie());
     assert.equal((await other.request("/auth/me")).status,401);
   });

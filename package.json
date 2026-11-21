@@ -19,7 +19,7 @@
     "db:logs": "docker compose logs -f mysql mongodb",
     "db:reset": "node scripts/campus-seed.js --reset --yes",
     "db:prepare:hosted": "node scripts/prepare-hosted-db.js",
-    "test": "node --test tests/campus/unit.test.js tests/campus/auth.test.js tests/campus/hosted.test.js tests/campus/i18n.test.js tests/campus/scenarios.test.js",
+    "test": "node --test tests/campus/unit.test.js tests/campus/auth.test.js tests/campus/hosted.test.js tests/campus/i18n.test.js tests/campus/live-lab.test.js tests/campus/scenarios.test.js",
     "test:i18n": "node scripts/check-i18n.mjs",
     "test:legacy": "node --test tests/unit/validation.test.js tests/unit/password.test.js tests/security/routes.test.js",
     "test:integration": "node scripts/test-campus-api.js",

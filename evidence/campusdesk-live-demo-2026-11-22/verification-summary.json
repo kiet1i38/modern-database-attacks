@@ -1,0 +1,49 @@
+{
+  "generatedAt": "2026-11-21T18:53:17.674Z",
+  "scope": "Local Docker applications with synthetic database lab data; browser checks ran in Chromium.",
+  "unit": {
+    "total": 48,
+    "passed": 48,
+    "failed": 0
+  },
+  "integration": {
+    "total": 198,
+    "passed": 198,
+    "failed": 0
+  },
+  "legacy": {
+    "total": 12,
+    "passed": 12,
+    "failed": 0
+  },
+  "browser": {
+    "total": 128,
+    "passed": 128,
+    "failed": 0,
+    "screenshots": 143,
+    "runtimeErrors": 0,
+    "consoleErrors": 0,
+    "networkFailures": 0
+  },
+  "vercelBuild": {
+    "passed": true,
+    "chunkWarning": true
+  },
+  "productionDependencyAudit": {
+    "zeroVulnerabilities": true
+  },
+  "limitations": [
+    "This report verifies the local Docker stack; it does not claim that the latest source is deployed or the live database lab is enabled on Vercel.",
+    "Browser evidence is from Chromium; Firefox and Safari were not run.",
+    "The Vercel build passes with the existing Vite advisory that the JavaScript bundle is above 500 kB."
+  ],
+  "files": [
+    "test-all.log",
+    "api-results.json",
+    "api-results.log",
+    "legacy-tests.log",
+    "build-vercel.log",
+    "audit-production.log",
+    "browser-verified/browser-results.json"
+  ]
+}
