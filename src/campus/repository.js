@@ -5,11 +5,22 @@ import { seedData, VARIANTS } from "./domain.js";
 export async function createRepository(variant, env = process.env) {
   if (!VARIANTS[variant]) throw new Error("VARIANT phải là sql-safe/sql-unsafe/mongo-safe/mongo-unsafe.");
   const databaseName = env.CAMPUS_DATABASE || "campus_" + variant.replaceAll("-", "_");
+
+  // Explicit opt-in. Never expose these demonstrations to external connections.
+  const stackedSqlLab = variant === "sql-unsafe" && env.CAMPUS_SQL_STACKED_LAB === "true";
+  const mongoDeleteLab = variant === "mongo-unsafe" && env.CAMPUS_MONGO_DELETE_LAB === "true";
+  const localHosts = new Set(["127.0.0.1", "localhost", "::1"]);
+
   if (variant.startsWith("sql")) {
+    const host = env.MYSQL_HOST || "127.0.0.1";
+    if (stackedSqlLab && (!localHosts.has(host) || databaseName !== "campus_sql_unsafe_lab")) {
+      throw new Error("Stacked SQL lab requires a local MySQL host and database campus_sql_unsafe_lab.");
+    }
     const pool = mysql.createPool({
-      host: env.MYSQL_HOST || "127.0.0.1", port: Number(env.MYSQL_PORT || 3306),
+      host, port: Number(env.MYSQL_PORT || 3306),
       user: env.MYSQL_USER || "campus", password: env.MYSQL_PASSWORD || "campus-local-demo-only",
-      database: databaseName, connectionLimit: 8, connectTimeout: 5000, multipleStatements: false,
+      database: databaseName, connectionLimit: 8, connectTimeout: 5000,
+      multipleStatements: stackedSqlLab,
       ...(env.MYSQL_SSL === "true" ? { ssl: { rejectUnauthorized: true, ...(env.MYSQL_SSL_CA ? { ca: env.MYSQL_SSL_CA } : {}) } } : {})
     });
     const query = async (sql, params = []) => (await pool.execute(sql, params))[0];
@@ -21,6 +32,9 @@ export async function createRepository(variant, env = process.env) {
         await query("CREATE TABLE IF NOT EXISTS tickets (id VARCHAR(36) PRIMARY KEY, code VARCHAR(24) UNIQUE, ownerId VARCHAR(36) NOT NULL, title VARCHAR(160), description TEXT, category VARCHAR(24), priority VARCHAR(24), status VARCHAR(24), createdAt BIGINT, updatedAt BIGINT, FOREIGN KEY(ownerId) REFERENCES users(id))");
         await query("CREATE TABLE IF NOT EXISTS sessions (sid VARCHAR(128) PRIMARY KEY, data JSON NOT NULL, expires BIGINT NOT NULL)");
         await query("CREATE TABLE IF NOT EXISTS audit (id VARCHAR(36) PRIMARY KEY, actor VARCHAR(120), action VARCHAR(60), result VARCHAR(20), payload VARCHAR(24), createdAt BIGINT)");
+        if (stackedSqlLab) {
+          await query("CREATE TABLE IF NOT EXISTS lab_events (id INT AUTO_INCREMENT PRIMARY KEY, note VARCHAR(80) NOT NULL)");
+        }
         await this.seed();
       },
       async seed(reset = false) {
@@ -47,11 +61,23 @@ export async function createRepository(variant, env = process.env) {
       async userByUsername(username) { return normalize((await query("SELECT * FROM users WHERE username = ?", [username]))[0]); },
       async userById(id) { return normalize((await query("SELECT * FROM users WHERE id = ?", [id]))[0]); },
       async unsafeLogin(username, password) {
-        // INTENTIONALLY VULNERABLE: only this isolated login query interpolates input.
-        // A newline preserves this server-owned ORDER BY after MySQL line comments.
-        // Admin sorts first so the demonstration stays deterministic after adding users.
-        const [rows] = await pool.query("SELECT * FROM users WHERE username = '" + username + "' AND password = '" + password + "'\nORDER BY role ASC, username ASC LIMIT 1");
-        return normalize(rows[0]);
+        // INTENTIONALLY VULNERABLE. Only enable stacked statements in isolated lab.
+        // Normal demo retains newline + ORDER BY; stacked lab uses one line so
+        // a MySQL line-comment does not leave a dangling ORDER BY statement.
+        const sql = "SELECT * FROM users WHERE username = '" + username + "' AND password = '" + password +
+          (stackedSqlLab ? "'" : "'\nORDER BY role ASC, username ASC LIMIT 1");
+        const [result] = await pool.query(sql);
+        // mysql2 returns [resultSet, resultSetOrHeader] for multiple statements.
+        const firstResult = Array.isArray(result[0]) ? result[0] : result;
+        return normalize(firstResult[0]);
+      },
+      async labEvents() {
+        if (!stackedSqlLab) throw new Error("SQL stacked demo is disabled.");
+        return query("SELECT id, note FROM lab_events ORDER BY id");
+      },
+      async resetLabEvents() {
+        if (!stackedSqlLab) throw new Error("SQL stacked demo is disabled.");
+        await query("DELETE FROM lab_events");
       },
       async users() { return (await query("SELECT * FROM users ORDER BY role, username")).map(normalize); },
       async createUser(user) {
@@ -93,7 +119,14 @@ export async function createRepository(variant, env = process.env) {
     };
     return repository;
   }
-  const client = new MongoClient(env.MONGODB_URI || "mongodb://127.0.0.1:27017", {
+  const mongoUri = env.MONGODB_URI || "mongodb://127.0.0.1:27017";
+  if (mongoDeleteLab) {
+    const server = new URL(mongoUri);
+    if (!localHosts.has(server.hostname) || databaseName !== "campus_mongo_unsafe_lab") {
+      throw new Error("Mongo delete lab requires local MongoDB and database campus_mongo_unsafe_lab.");
+    }
+  }
+  const client = new MongoClient(mongoUri, {
     serverSelectionTimeoutMS: 3000,
     ...(env.CAMPUS_HOSTED_DEMO === "true" ? { tls: true, tlsAllowInvalidCertificates: false, tlsAllowInvalidHostnames: false } : {})
   });
@@ -101,6 +134,12 @@ export async function createRepository(variant, env = process.env) {
   catch (error) { await client.close(); throw error; }
   const db = client.db(databaseName);
   const users = db.collection("users"), tickets = db.collection("tickets"), sessions = db.collection("sessions"), audit = db.collection("audit");
+  const labNotes = db.collection("lab_notes");
+  const syntheticLabNotes = [
+    { id: "note-1", owner: "alice", body: "synthetic A" },
+    { id: "note-2", owner: "bob", body: "synthetic B" },
+    { id: "note-3", owner: "charlie", body: "synthetic C" }
+  ];
   const strip = row => { if (!row) return null; const { _id, ...rest } = row; return rest; };
   return {
     databaseName,
@@ -111,6 +150,9 @@ export async function createRepository(variant, env = process.env) {
       await tickets.createIndex({ ownerId: 1, createdAt: -1 });
       await sessions.createIndex({ expires: 1 }, { expireAfterSeconds: 0 });
       await this.seed();
+      if (mongoDeleteLab && !(await labNotes.countDocuments({}))) {
+        await labNotes.insertMany(syntheticLabNotes);
+      }
     },
     async seed(reset = false) {
       if (reset) for (const collection of [sessions, audit, tickets, users]) await collection.deleteMany({});
@@ -130,6 +172,29 @@ export async function createRepository(variant, env = process.env) {
     async unsafeLogin(username, password) {
       // INTENTIONALLY VULNERABLE: password object changes MongoDB query predicates.
       return strip(await users.findOne({ username, password }));
+    },
+    // MongoDB does NOT support SQL stacked statements. This is a separate
+    // operator-injection exercise limited to synthetic lab_notes documents.
+    async unsafeDeleteLabNotesByOwner(ownerFilter) {
+      if (!mongoDeleteLab) throw new Error("Mongo delete lab is disabled.");
+      const result = await labNotes.deleteMany({ owner: ownerFilter });
+      return result.deletedCount;
+    },
+    async safeDeleteLabNotesByOwner(owner) {
+      if (!mongoDeleteLab) throw new Error("Mongo delete lab is disabled.");
+      if (typeof owner !== "string") throw new TypeError("owner must be a string");
+      const result = await labNotes.deleteMany({ owner: { $eq: owner } });
+      return result.deletedCount;
+    },
+    async labNotes() {
+      if (!mongoDeleteLab) throw new Error("Mongo delete lab is disabled.");
+      return labNotes.find({}, { projection: { _id: 0 } }).toArray();
+    },
+    async resetLabNotes() {
+      if (!mongoDeleteLab) throw new Error("Mongo delete lab is disabled.");
+      await labNotes.deleteMany({});
+      await labNotes.insertMany(syntheticLabNotes);
+      return syntheticLabNotes.length;
     },
     async users() { return (await users.find({}, { projection: { _id: 0 } }).sort({ role: 1, username: 1 }).toArray()); },
     async createUser(user) { await users.insertOne({ ...user }); },
