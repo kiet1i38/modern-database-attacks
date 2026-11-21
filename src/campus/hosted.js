@@ -38,17 +38,23 @@ export function loadHostedConfig(env = process.env) {
   return { variant, secret: env.SESSION_SECRET, sessionMaxAge, hosted: true, variantUrls };
 }
 
-export function createHostedHandler({ env = process.env, connect = createRepository, connectLab = createLiveLabRepository } = {}) {
+export function createHostedHandler({ env = process.env, connect = createRepository, connectLab = createLiveLabRepository, logger = console } = {}) {
   let application;
+  let initializationStage = "configuration";
   return async (req, res) => {
     try {
       application ||= (async () => {
+        initializationStage = "configuration";
         const config = loadHostedConfig(env);
+        initializationStage = "primary-database-connect";
         const repo = await connect(config.variant, env);
         let lab;
         try {
+          initializationStage = "live-lab-connect";
           lab = await connectLab(config.variant, env);
+          initializationStage = "live-lab-initialize";
           await lab?.initialize();
+          initializationStage = "application-create";
           return createCampusApp({ repo, lab, ...config });
         } catch (error) {
           await lab?.close?.();
@@ -58,7 +64,15 @@ export function createHostedHandler({ env = process.env, connect = createReposit
       })();
       const app = await application;
       app(req, res);
-    } catch {
+    } catch (error) {
+      const details = {
+        stage: initializationStage,
+        name: typeof error?.name === "string" ? error.name.slice(0, 64) : "Error"
+      };
+      if (typeof error?.code === "string" || typeof error?.code === "number") {
+        details.code = String(error.code).slice(0, 64);
+      }
+      try { logger?.error?.("[campus-hosted] initialization failed", details); } catch {}
       application = undefined;
       res.statusCode = 503;
       res.setHeader("Content-Type", "application/json; charset=utf-8");

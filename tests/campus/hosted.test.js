@@ -168,18 +168,23 @@ test("hosted handlers reuse connections, accept same-origin HTTPS and share pers
 
 test("hosted initialization retries after failure and hides connection credentials", async t => {
   let attempts = 0;
+  const failures = [];
+  const logger = { error: (...entry) => failures.push(entry) };
   const connect = async () => {
     attempts++;
     if (attempts === 1) throw new Error("database-password-must-not-be-returned");
     return { async ping() {} };
   };
-  const base = await listen(createHostedHandler({ env: environment, connect }), t);
+  const base = await listen(createHostedHandler({ env: environment, connect, logger }), t);
   const failed = await fetch(base + "/api/health");
   assert.equal(failed.status, 503);
   assert.equal(failed.headers.get("cache-control"), "no-store");
   assert.ok(!(await failed.text()).includes("database-password"));
+  assert.deepEqual(failures[0], ["[campus-hosted] initialization failed", { stage: "primary-database-connect", name: "Error" }]);
+  assert.ok(!JSON.stringify(failures).includes("database-password"));
   assert.equal((await fetch(base + "/api/health")).status, 200);
   assert.equal(attempts, 2);
-  const invalid = await listen(createHostedHandler({ env: {}, connect: () => assert.fail("Invalid config reached database") }), t);
+  const invalid = await listen(createHostedHandler({ env: {}, connect: () => assert.fail("Invalid config reached database"), logger }), t);
   assert.equal((await fetch(invalid + "/api/health")).status, 503);
+  assert.equal(failures[1][1].stage, "configuration");
 });
