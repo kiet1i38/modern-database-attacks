@@ -50,6 +50,10 @@ export function createHostedHandler({ env = process.env, connect = createReposit
         const repo = await connect(config.variant, env);
         let lab;
         try {
+          if (config.variant === "sql-unsafe" && env.CAMPUS_SQL_STACKED_LAB === "true") {
+            initializationStage = "stacked-sql-lab-initialize";
+            await repo.initializeStackedSqlLab?.();
+          }
           initializationStage = "live-lab-connect";
           lab = await connectLab(config.variant, env);
           initializationStage = "live-lab-initialize";

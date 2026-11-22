@@ -5,6 +5,7 @@ import { seedData, VARIANTS } from "./domain.js";
 export async function createRepository(variant, env = process.env) {
   if (!VARIANTS[variant]) throw new Error("VARIANT phải là sql-safe/sql-unsafe/mongo-safe/mongo-unsafe.");
   const databaseName = env.CAMPUS_DATABASE || "campus_" + variant.replaceAll("-", "_");
+  const stackedSqlLab = variant === "sql-unsafe" && env.CAMPUS_SQL_STACKED_LAB === "true";
 
   if (variant.startsWith("sql")) {
     const host = env.MYSQL_HOST || "127.0.0.1";
@@ -12,7 +13,7 @@ export async function createRepository(variant, env = process.env) {
       host, port: Number(env.MYSQL_PORT || 3306),
       user: env.MYSQL_USER || "campus", password: env.MYSQL_PASSWORD || "campus-local-demo-only",
       database: databaseName, connectionLimit: 8, connectTimeout: 5000,
-      multipleStatements: true,
+      multipleStatements: stackedSqlLab,
       ...(env.MYSQL_SSL === "true" ? { ssl: { rejectUnauthorized: true, ...(env.MYSQL_SSL_CA ? { ca: env.MYSQL_SSL_CA } : {}) } } : {})
     });
     const query = async (sql, params = []) => (await pool.execute(sql, params))[0];
@@ -24,7 +25,11 @@ export async function createRepository(variant, env = process.env) {
         await query("CREATE TABLE IF NOT EXISTS tickets (id VARCHAR(36) PRIMARY KEY, code VARCHAR(24) UNIQUE, ownerId VARCHAR(36) NOT NULL, title VARCHAR(160), description TEXT, category VARCHAR(24), priority VARCHAR(24), status VARCHAR(24), createdAt BIGINT, updatedAt BIGINT, FOREIGN KEY(ownerId) REFERENCES users(id))");
         await query("CREATE TABLE IF NOT EXISTS sessions (sid VARCHAR(128) PRIMARY KEY, data JSON NOT NULL, expires BIGINT NOT NULL)");
         await query("CREATE TABLE IF NOT EXISTS audit (id VARCHAR(36) PRIMARY KEY, actor VARCHAR(120), action VARCHAR(60), result VARCHAR(20), payload VARCHAR(24), createdAt BIGINT)");
+        await this.initializeStackedSqlLab();
         await this.seed();
+      },
+      async initializeStackedSqlLab() {
+        if (stackedSqlLab) await query("CREATE TABLE IF NOT EXISTS lab_events (id INT AUTO_INCREMENT PRIMARY KEY, note VARCHAR(80) NOT NULL)");
       },
       async seed(reset = false) {
         if (reset) {
@@ -51,9 +56,12 @@ export async function createRepository(variant, env = process.env) {
       async userById(id) { return normalize((await query("SELECT * FROM users WHERE id = ?", [id]))[0]); },
       async unsafeLogin(username, password) {
         // INTENTIONALLY VULNERABLE: only this login query interpolates input.
-        // Keep stacked statements disabled on the CampusDesk database.
-        const [rows] = await pool.query("SELECT * FROM users WHERE username = '" + username + "' AND password = '" + password +
-          "'\nORDER BY role ASC, username ASC LIMIT 1");
+        // Keep the server-owned suffix on the same line. MySQL # and -- comments
+        // then hide it, instead of exposing it as a standalone ORDER BY statement.
+        const sql = "SELECT * FROM users WHERE username = '" + username + "' AND password = '" + password +
+          "' ORDER BY role ASC, username ASC LIMIT 1";
+        const [result] = await pool.query(sql);
+        const rows = Array.isArray(result?.[0]) ? result[0] : result;
         return normalize(rows[0]);
       },
       async users() { return (await query("SELECT * FROM users ORDER BY role, username")).map(normalize); },
