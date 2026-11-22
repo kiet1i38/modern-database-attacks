@@ -12,7 +12,7 @@ export async function createRepository(variant, env = process.env) {
       host, port: Number(env.MYSQL_PORT || 3306),
       user: env.MYSQL_USER || "campus", password: env.MYSQL_PASSWORD || "campus-local-demo-only",
       database: databaseName, connectionLimit: 8, connectTimeout: 5000,
-      multipleStatements: false,
+      multipleStatements: true,
       ...(env.MYSQL_SSL === "true" ? { ssl: { rejectUnauthorized: true, ...(env.MYSQL_SSL_CA ? { ca: env.MYSQL_SSL_CA } : {}) } } : {})
     });
     const query = async (sql, params = []) => (await pool.execute(sql, params))[0];
