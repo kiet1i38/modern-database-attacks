@@ -6,12 +6,10 @@ npm-debug.log*
 .DS_Store
 coverage/
 *.log
-!evidence/**/*.log
 dist/
 output/
 .playwright-cli/
 test-results/
 .npm-cache/
 .vercel/
-evidence/live-scenario-demo-2026-11-20/**
 evidence/

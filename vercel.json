@@ -37,15 +37,11 @@
   ],
   "rewrites": [
     {
-      "source": "/docs",
-      "destination": "/docs/index.html"
-    },
-    {
       "source": "/api/:path*",
       "destination": "/api/index?__route=:path*"
     },
     {
-      "source": "/((?!api/|docs/|evidence/|assets/).*)",
+      "source": "/((?!api/|assets/).*)",
       "destination": "/index.html"
     }
   ]

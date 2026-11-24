@@ -1,2 +1,0 @@
- Container modern-database-attacks-mongodb  Stopping
- Container modern-database-attacks-mongodb  Stopped

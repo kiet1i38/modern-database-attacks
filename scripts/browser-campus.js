@@ -252,13 +252,6 @@ async (page) => {
       await logout();await noOverflow();await capture("login-mobile");pass("logout returns login and mobile login fits");
       assert((await page.request.get(base+"/api/auth/me")).status()===401,"Logout session remained authenticated");pass("browser logout destroys real session");
       await page.setViewportSize({width:768,height:1024});await noOverflow();await capture("login-tablet");pass("768px tablet login fits");
-      await page.setViewportSize({width:1440,height:1000});await page.goto(base+"/docs/");
-      await page.getByRole("heading",{name:"Tài liệu & cổng demo",exact:true}).waitFor();await capture("documentation-hub");
-      for(const file of ["RUN_AND_TEST","ARCHITECTURE","DATABASE","API","SECURITY","TESTING","DEVELOPMENT","DEMO_GUIDE","PROJECT_OVERVIEW"]) {
-        const response=await page.request.get(base+"/docs/"+file+".html");
-        assert(response.status()===200&&(await response.text()).includes("<article>"),"Documentation missing: "+file);
-      }
-      pass("documentation hub and nine current HTML documents");
     } catch(error) {
       results.push({variant,name:"browser flow",pass:false,error:error.message});
       await capture("FAIL-current-state").catch(()=>{});

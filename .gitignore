@@ -6,10 +6,12 @@ npm-debug.log*
 .DS_Store
 coverage/
 *.log
-!evidence/**/*.log
 dist/
 output/
 .playwright-cli/
 test-results/
 .npm-cache/
 .vercel/
+
+# Locally generated test artifacts
+/evidence/

@@ -11,6 +11,6 @@ export default defineConfig(({ mode }) => {
       outDir: fileURLToPath(new URL(presentation ? "../output/presentation/" : "../dist/", import.meta.url)),
       emptyOutDir: true
     },
-    server: { host: "127.0.0.1", port: 5173, proxy: { "/api": "http://127.0.0.1:3004", "/docs": "http://127.0.0.1:3004" } }
+    server: { host: "127.0.0.1", port: 5173, proxy: { "/api": "http://127.0.0.1:3004" } }
   };
 });

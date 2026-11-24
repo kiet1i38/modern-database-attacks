@@ -1,5 +1,0 @@
-UTC: 2026-10-08T21:24:17.596Z
-Command: docker compose exec -T sql-safe node scripts/check-campus-db.js
-{"variant":"sql-safe","database":"campus_sql_safe","passwordStorage":"scrypt-only","passwordStorageValid":true,"ticketCount":12,"ok":true}
-
-Exit code: 0

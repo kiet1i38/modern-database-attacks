@@ -14,7 +14,7 @@ docker compose up -d --build --wait --wait-timeout 240
 
 No host database or .env file is required.
 
-For Vercel preparation, see [Hosted demo setup](docs/VERCEL.html), including the $0 configuration: Vercel Hobby, TiDB Cloud Starter with spending limit 0, and MongoDB Atlas Free M0. The hosted entry point is `api/index.js`; local Docker continues to use `src/campus/server.js`. Free-plan limits can interrupt service; no paid upgrade is required by the code.
+For Vercel preparation, use four separate projects with isolated synthetic databases and the $0 configuration: Vercel Hobby, TiDB Cloud Starter with spending limit 0, and MongoDB Atlas Free M0. The hosted entry point is `api/index.js`; local Docker continues to use `src/campus/server.js`. Free-plan limits can interrupt service; no paid upgrade is required by the code.
 
 | Website | URL |
 | --- | --- |
@@ -35,7 +35,7 @@ Use normal login first, then select **Demo injection** on the login page. Four S
 
 Admin: global dashboard, ticket processing, account creation/lock, authentication audit. User: own dashboard/tickets and profile. Backend checks role and ownership on every protected request; account locking invalidates access from existing sessions.
 
-Start the presentation with Mongo Unsafe and Mongo Safe. Diagnostics show the password's JSON type and whether the credential query ran; rejected input can still use the database for session storage and audit. Recognized Mongo presets show their query shape. These explanations come from application control flow, not a database profiler. See the [code walkthrough](docs/CODE_AND_SECURITY_FLOW.html) for the vulnerable query and safe verification path.
+Start the presentation with Mongo Unsafe and Mongo Safe. Diagnostics show the password's JSON type and whether the credential query ran; rejected input can still use the database for session storage and audit. Recognized Mongo presets show their query shape. These explanations come from application control flow, not a database profiler. The authentication and repository implementation is in `src/campus/app.js` and `src/campus/repository.js`.
 
 ## Test and evidence
 
@@ -46,20 +46,14 @@ npm ci
 npm test
 npm run test:integration
 npm run build
+npm run build:vercel
 npm audit --omit=dev
 ~~~
 
 Integration tests use the four running Docker sites and write a timestamped evidence folder. They create synthetic QA data. Browser reproduction on Windows: **scripts/run-browser-evidence.ps1**.
 
-- [Run, access, reset and troubleshoot](docs/RUN_AND_TEST.html)
-- [Final demonstration script](docs/DEMO_GUIDE.html)
-- [Architecture](docs/ARCHITECTURE.html)
-- [API and session/CSRF contract](docs/API.html)
-- [Testing and limitations](docs/TESTING.html)
-- [New evidence report](evidence/campusdesk-final-2026-10-09/REPORT.html)
-- [Documentation hub](docs/index.html) — also served at http://localhost:3004/docs/
 
-HTML documents can be opened in a browser. Documentation v1 is archived in docs/legacy/; previous source/tests remain for comparison but are not the CampusDesk entrypoint.
+Test results are generated locally under `evidence/` (ignored by Git); historical reports are available in the original main-branch history.
 
 ## Reset / stop
 

@@ -1,5 +1,0 @@
-UTC: 2026-10-08T20:52:47.668Z
-Command: npm audit --omit=dev
-found 0 vulnerabilities
-
-Exit code: 0

@@ -12,7 +12,6 @@ RUN npm ci --omit=dev && npm cache clean --force
 COPY src ./src
 COPY scripts ./scripts
 COPY tests ./tests
-COPY docs ./docs
 COPY --from=build /app/dist ./dist
 ENV NODE_ENV=development HOST=0.0.0.0 PORT=3000
 USER node

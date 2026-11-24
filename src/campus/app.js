@@ -230,8 +230,6 @@ export function createCampusApp({ repo, lab = null, variant, secret, sessionMaxA
     res.json({ user: publicUser(await repo.updateUser(req.user.id, changes)) });
   }));
   app.use("/api", (req, res) => res.status(404).json({ code: "NOT_FOUND", messageKey: "errors.apiNotFound", messageParams: {}, message: translateApiMessage("errors.apiNotFound", req.locale) }));
-  app.use("/docs", express.static(path.resolve("docs")), (req, res) => res.status(404).send("Documentation not found"));
-  app.use("/evidence", express.static(path.resolve("evidence")), (req, res) => res.status(404).send("Evidence not found"));
   app.get("/favicon.ico", (req, res) => res.redirect("/favicon.svg"));
   app.use(express.static(path.resolve("dist")));
   app.get("*", (req, res) => res.sendFile(path.resolve("dist/index.html")));

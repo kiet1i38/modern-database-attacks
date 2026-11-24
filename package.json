@@ -12,7 +12,7 @@
     "start": "node src/campus/server.js",
     "build": "tsc -p frontend/tsconfig.json && vite build --config frontend/vite.config.ts",
     "build:presentation": "npm run build -- --mode presentation",
-    "build:vercel": "npm run build && node scripts/build-vercel.js",
+    "build:vercel": "npm run build",
     "seed": "node scripts/campus-seed.js",
     "db:up": "docker compose up -d mysql mongodb",
     "db:down": "docker compose down",

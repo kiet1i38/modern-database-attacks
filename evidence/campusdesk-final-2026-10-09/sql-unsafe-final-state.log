@@ -1,5 +1,0 @@
-UTC: 2026-10-08T21:24:15.771Z
-Command: docker compose exec -T sql-unsafe node scripts/check-campus-db.js
-{"variant":"sql-unsafe","database":"campus_sql_unsafe","passwordStorage":"synthetic-plaintext-intentionally-unsafe","passwordStorageValid":true,"ticketCount":12,"ok":true}
-
-Exit code: 0
